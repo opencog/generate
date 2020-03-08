@@ -36,7 +36,35 @@ the Curry-Howard correspondance, and the extremely broad generalizations
 thereof that have been discovered in modern times.
 
 ## Overview
+Algorithms that learn network structure, that learn grammars, need to be
+evaluated for accuracy. One way to do this is to generate random
+grammars, use them to generate a corpus of "sentences" (graphs) and
+see how well the learned grammar corresponds to the input grammar.
+This promises to be a much better strategy than evaluating against
+a curated corpus, e.g. of English-language sentences, as one can more
+finely control and measure different grammatical behaviors.
 
+Generation is also a cornerstone to algorithms that can express
+themselves, i.e. to move from deep syntax to suraface structure. For
+example, given the abstract concepts "Ben", "pizza" and "to eat", and
+the grammar for the English language, a key task is generating a
+grammatically valid sentence with those three concepts embedded in it.
+
+The goal of the code here is to work with grammars, expressed as "germs"
+(or as link-grammar-style "disjuncts"), and generate graphs, usually
+sequential sentences of words. It is hoped that the design will be
+generic enough that the system can also be used to generate proofs
+given either Hilbert-style axioms or given natural dedcution; i.e. that
+the system will be broad enough to be a proof system. In particular,
+it is hoped that the system will be sufficiently general to host
+uncertain inference, thus providing an alternative implementation for
+[PLN](https://github.com/opencog/pln) (Probabilistic Logic Networks),
+the [URE](https://github.com/opencog/ure) (Unified Rule Engine) and
+the OpenPsi rule scheduling system.
+
+In the short term, it is expected that the generative abilities will
+be used to evaluated the accuray of the learning algorithms in the
+OpenCog [language learning subsystem](https://github.com/opencog/learn).
 
 # Version 0.0.1
 There is nothing here, yet.
