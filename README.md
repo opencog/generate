@@ -66,5 +66,65 @@ In the short term, it is expected that the generative abilities will
 be used to evaluated the accuracy of the learning algorithms in the
 OpenCog [language learning subsystem](https://github.com/opencog/learn).
 
+# Architecture
+In what follows, the terms "section", "germ" and "disjunct" will be
+used somewhat interchangeably. The differences are as follows:
+* A "germ" is just one item, with a list of connectors on it.
+* Commonly, an object will have several germs associated with it;
+  these are disjoined from one-another, and are thus called "disjuncts".
+  The disjoin is in the sense of a menu-entry: you can pick one,
+  but only one.
+* A "section" is a collection of multiple germs, connected to
+  one-another. Such a collection will typically have unconnected
+  connectors, and thus behaves much like one giant-sized germ.
+  It's like a partially-assembled jigsaw-puzzle: the assembled
+  portions behave much like single giant-sized pieces. The term
+  "section" refers to a "section of a sheaf": starting from one
+  particular germ, one can extend outwards "horizontally" in a
+  coherent fashion. Coherency requires that all of the gluing
+  axioms of a sheaf must be satisfied.
+
+## Germs
+With this in mind, germs are represented as OpenCog Atoms as
+follows:
+```
+   Section
+       Atom "foo"
+       ConnectorSeq
+           Connector
+               Atom "bar"
+               ConnectorDir "+"
+           Connector
+               ...
+```
+Here, `Atom "foo"` and `Atom "bar"` can be any Atomese Atom; for
+natural language, these will typically be either `WordNode`s for
+individual words, or `WordClassNode`s for collections of words
+(nouns, verbs, etc.).
+
+Two germs can be connected together if and only if they have
+matching connectors of opposite polarity. Thus,
+```
+    Connector
+        Atom "bar"
+        ConnectorDir "+"
+```
+can only connect to
+```
+    Connector
+        Atom "bar"
+        ConnectorDir "-"
+```
+The polarity is indicated with `ConnectorDir`. Several different kinds
+of polarity are possible, and are in common use. By convention, the +/-
+polarities indicate linear order: something must come to the left/right
+of the other.  The h/d polarities indicate head/dependent relationships:
+a directed edge. The v/g polarities indicate variable/ground
+relationships: a variable that can be beta-reduced with a particular
+value.  The polarity pairs are by convention only; they are not
+mandated by the system.
+
+
+
 # Version 0.0.1
 There is nothing here, yet.
