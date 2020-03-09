@@ -100,7 +100,9 @@ follows:
 Here, `Atom "foo"` and `Atom "bar"` can be any Atomese Atom; for
 natural language, these will typically be either `WordNode`s for
 individual words, or `WordClassNode`s for collections of words
-(nouns, verbs, etc.).
+(nouns, verbs, etc.). The user is free to choose what kind of Atoms
+to use here; there is no pre-established convention (except for
+words, when dealing with linguistic graphs).
 
 Two germs can be connected together if and only if they have
 matching connectors of opposite polarity. Thus,
