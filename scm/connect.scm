@@ -34,6 +34,8 @@
 	(define (glob STR)
 		(TypedVariable (Glob STR) (Interval (Number 0) (Number -1))))
 
+	(define connection (Predicate "connection"))
+
 	(define getter
 		(Bind
 			(VariableList
@@ -53,20 +55,21 @@
 						(Connector CONNECTOR POL-R)
 						(Glob "$rback"))))
 
-			; Just repeat what was joined.
-			(List
-				(Section
-					(Variable "$latom")
-					(ConnectorSeq
-						(Glob "$lfront")
-						(Connector CONNECTOR POL-L)
-						(Glob "$lback")))
-				(Section
-					(Variable "$ratom")
-					(ConnectorSeq
-						(Glob "$rfront")
-						(Connector CONNECTOR POL-R)
-						(Glob "$rback"))))
+			; Replace the matched connectors with a connection
+			(Section
+				(Variable "$latom")
+				(ConnectorSeq
+					(Glob "$lfront")
+					(Evaluation connection
+						(List CONNECTOR (Variable "$latom") (Variable "$ratom")))
+					(Glob "$lback")))
+			(Section
+				(Variable "$ratom")
+				(ConnectorSeq
+					(Glob "$rfront")
+					(Evaluation connection
+						(List CONNECTOR (Variable "$latom") (Variable "$ratom")))
+					(Glob "$rback")))
 	))
 
 	(cog-execute! getter)
