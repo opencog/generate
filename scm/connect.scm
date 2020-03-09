@@ -29,11 +29,16 @@
   CONNECTOR is the atom in the connectors to join together
   POL-L and POL-R are the polarities to join together.
 "
+
+	; Argh. By default, glob matches one or more; we want zero or more.
+	(define (glob STR)
+		(TypedVariable (Glob STR) (Interval (Number 0) (Number -1))))
+
 	(define getter
 		(Bind
 			(VariableList
-				(Variable "$latom") (Glob "$lfront") (Glob "$lback")
-				(Variable "$ratom") (Glob "$rfront") (Glob "$rback"))
+				(Variable "$latom") (glob "$lfront") (glob "$lback")
+				(Variable "$ratom") (glob "$rfront") (glob "$rback"))
 			(And
 				(Section
 					(Variable "$latom")
