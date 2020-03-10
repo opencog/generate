@@ -1,6 +1,15 @@
 # Network Generation
 Generate graphical networks (sheaf sections) from graph germs.
-Currently focused on natural language generation.
+This is a form of search through problem space. Unlike traditional
+search-space exploration through chaining, which looks for a path from
+a single initial state to a single final state, the theory/algorithms
+here focus on transformative changes, from a complex of intial states,
+to a constrained complex of desirable final state, via a large set of
+constraining transformative moves or rules.
+
+Currently focused on natural language generation; however, the theory
+is generic, and is intended for use on any deduction or induction
+problem.
 
 Knowledge, including sentences in natural language, can be represented
 as graphs. Such graphs can be generated from grammars (syntax rules).
@@ -30,10 +39,20 @@ living in a conceptually different world.  Thinking of them as a place
 to plug something in, and something to plug into it emphasizes the
 duality between the two. Connectors provide a simpler, more natural
 representation for joining typed classes of things together.
-
 To summarize: the concept of joining together connectors underpins
 the Curry-Howard correspondence, and the extremely broad generalizations
 thereof that have been discovered in modern times.
+
+Graph generation via syntax rules can be understood as a search of a
+problem space. However, unlike tradional path search, where the start
+and end-points are of the same general kind (e.g. travelling salesman)
+here, path is transformative: for example, from an unordered bag of
+semantic concepts to a grammatically correct sequence of words. There
+is no single path; rather, there is a network that bridges from one
+side to the other. Not only does it extend from the bag (the starting
+point) to the sentence (the end-point) but it specifically constructs
+a network interconnecting each of the concepts in the bag to each of
+the words in the sentence.
 
 ## Overview
 Algorithms that learn network structure, that learn grammars, need to be
