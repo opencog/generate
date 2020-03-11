@@ -4,6 +4,8 @@
 (use-modules (srfi srfi-1))
 (use-modules (opencog) (opencog exec))
 
+(define wall (Concept "LEFT-WALL"))
+
 ; A test dictionary of basic data.
 (Section
 	(Concept "LEFT-WALL")

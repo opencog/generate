@@ -1,6 +1,8 @@
 /*
  * opencog/generate/Aggregate.h
  *
+ * Copyright (C) 2020 Linas Vepstas <linasvepstas@gmail.com>
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License v3 as
  * published by the Free Software Foundation and including the exceptions
@@ -20,13 +22,25 @@
 #ifndef _OPENCOG_AGGREGATE_H
 #define _OPENCOG_AGGREGATE_H
 
+#include <opencog/atomspace/AtomSpace.h>
+
 namespace opencog
 {
 /** \addtogroup grp_generate
  *  @{
  */
 
-// stuff ...
+class Aggregate
+{
+private:
+	AtomSpace* _as;
+
+public:
+	Aggregate(AtomSpace*);
+	~Aggregate();
+
+	Handle aggregate(const HandleSet&);
+};
 
 
 /** @}*/

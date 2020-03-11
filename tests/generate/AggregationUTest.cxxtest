@@ -72,6 +72,12 @@ void AggregationUTest::test_basic()
 {
 	logger().debug("BEGIN TEST: %s", __FUNCTION__);
 
+	Handle wall = eval->eval_h("left-wall");
+	Aggregate* ag = new Aggregate(as);
+	Handle result = ag->aggregate({wall});
+
+	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
+	delete ag;
 
 	logger().debug("END TEST: %s", __FUNCTION__);
 }

@@ -1,4 +1,5 @@
 LINK_LIBRARIES(
+	generate
 	atomspace
 	logger
 )

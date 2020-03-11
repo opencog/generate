@@ -17,10 +17,29 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <opencog/atomspace/AtomSpace.h>
+
 #include "Aggregate.h"
+
+using namespace opencog;
 
 // Strategy: starting from a single nucleation center (e.g. the left
 // wall), recursively aggregate connections until there are no
 // unconnected connectors.
 
-// void ...
+Aggregate::Aggregate(AtomSpace* as)
+	: _as(as)
+{
+}
+
+Aggregate::~Aggregate()
+{
+}
+
+Handle Aggregate::aggregate(const HandleSet& nuclei)
+{
+	if (1 != nuclei.size())
+		throw RuntimeException(TRACE_INFO, "Not implemented!!");
+
+	return Handle::UNDEFINED;
+}
