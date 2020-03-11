@@ -1,14 +1,17 @@
 /*
  * AggregationUTest.cxxtest
  *
+ * Copyright (C) 2020 Linas Vepstas <linasvepstas@gmail.com>
+ * All Rights Reserved
+ * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
 #include <opencog/atomspace/AtomSpace.h>
+#include <opencog/guile/SchemeEval.h>
 #include <opencog/generate/Aggregate.h>
 
 #include <cxxtest/TestSuite.h>
 
-using namespace std;
 using namespace opencog;
 
 #define al _as.add_link
@@ -17,10 +20,12 @@ using namespace opencog;
 class AggregationUTest: public CxxTest::TestSuite
 {
 private:
-	AtomSpace _as;
+	AtomSpace* as;
+	SchemeEval* eval;
 
 public:
 	AggregationUTest();
+	~AggregationUTest();
 
 	void setUp();
 	void tearDown();
@@ -30,14 +35,37 @@ public:
 
 AggregationUTest::AggregationUTest()
 {
+	logger().set_level(Logger::DEBUG);
+	logger().set_print_to_stdout_flag(true);
+	logger().set_timestamp_flag(false);
+}
+
+AggregationUTest::~AggregationUTest()
+{
+	logger().info("Completed running UnorderedUTest");
+
+	// erase the log file if no assertions failed
+	if (!CxxTest::TestTracker::tracker().suiteFailed())
+		std::remove(logger().get_filename().c_str());
+	else
+	{
+		logger().info("AggregationUTest failed!");
+		logger().flush();
+	}
 }
 
 void AggregationUTest::setUp()
 {
+	as = new AtomSpace();
+	eval = new SchemeEval(as);
+	eval->eval("(add-to-load-path \"" PROJECT_SOURCE_DIR "\")");
+	eval->eval("(load-from-path \"tests/generate/simple-disjuncts.scm\")");
 }
 
 void AggregationUTest::tearDown()
 {
+	delete eval;
+	delete as;
 }
 
 void AggregationUTest::test_basic()
