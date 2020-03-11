@@ -49,6 +49,16 @@ ELSE (ATOMSPACE_FOUND)
 ENDIF (ATOMSPACE_FOUND)
 
 # ----------------------------------------------------------
+# Needed for unit tests.
+
+FIND_PACKAGE(Cxxtest)
+IF (CXXTEST_FOUND)
+	MESSAGE(STATUS "CxxTest found.")
+ELSE (CXXTEST_FOUND)
+	MESSAGE(STATUS "CxxTest missing: needed for unit tests.")
+ENDIF (CXXTEST_FOUND)
+
+# ----------------------------------------------------------
 # This is required for Guile
 FIND_LIBRARY(GMP_LIBRARY gmp)
 FIND_PATH(GMP_INCLUDE_DIR gmp.h)
@@ -70,9 +80,21 @@ ENDIF (GUILE_FOUND AND GMP_LIBRARY AND GMP_INCLUDE_DIR)
 
 ADD_SUBDIRECTORY(opencog)
 
+IF (CXXTEST_FOUND)
+	ADD_CUSTOM_TARGET(tests)
+	ADD_SUBDIRECTORY(tests EXCLUDE_FROM_ALL)
+	ADD_CUSTOM_TARGET(test
+		DEPENDS tests
+		WORKING_DIRECTORY tests
+		COMMAND ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure $(ARGS)
+		COMMENT "Running tests..."
+	)
+ENDIF (CXXTEST_FOUND)
+
 # ===================================================================
 # Show a summary of what we got
 
 SUMMARY_ADD("Generate" "Graph Generation" HAVE_ATOMSPACE)
 SUMMARY_ADD("Scheme bindings" "Scheme (guile) bindings" HAVE_GUILE)
+SUMMARY_ADD("Unit tests" "Unit tests" CXXTEST_FOUND)
 SUMMARY_SHOW()

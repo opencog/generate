@@ -18,3 +18,9 @@
  */
 
 #include "Aggregate.h"
+
+// Strategy: starting from a single nucleation center (e.g. the left
+// wall), recursively aggregate connections until there are no
+// unconnected connectors.
+
+// void ...

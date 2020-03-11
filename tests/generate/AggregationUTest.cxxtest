@@ -1,0 +1,49 @@
+/*
+ * AggregationUTest.cxxtest
+ *
+ */
+
+#include <opencog/atomspace/AtomSpace.h>
+#include <opencog/generate/Aggregate.h>
+
+#include <cxxtest/TestSuite.h>
+
+using namespace std;
+using namespace opencog;
+
+#define al _as.add_link
+#define an _as.add_node
+
+class AggregationUTest: public CxxTest::TestSuite
+{
+private:
+	AtomSpace _as;
+
+public:
+	AggregationUTest();
+
+	void setUp();
+	void tearDown();
+
+	void test_basic();
+};
+
+AggregationUTest::AggregationUTest()
+{
+}
+
+void AggregationUTest::setUp()
+{
+}
+
+void AggregationUTest::tearDown()
+{
+}
+
+void AggregationUTest::test_basic()
+{
+	logger().debug("BEGIN TEST: %s", __FUNCTION__);
+
+
+	logger().debug("END TEST: %s", __FUNCTION__);
+}
