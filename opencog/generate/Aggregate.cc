@@ -17,6 +17,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <stdio.h>
+
+#include <opencog/atoms/base/Handle.h>
 #include <opencog/atomspace/AtomSpace.h>
 
 #include "Aggregate.h"
@@ -41,5 +44,7 @@ Handle Aggregate::aggregate(const HandleSet& nuclei)
 	if (1 != nuclei.size())
 		throw RuntimeException(TRACE_INFO, "Not implemented!!");
 
-	return Handle::UNDEFINED;
+	Handle nucleus = *nuclei.begin();
+
+	return nucleus;
 }
