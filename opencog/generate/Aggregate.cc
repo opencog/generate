@@ -23,6 +23,7 @@
 #include <opencog/atomspace/AtomSpace.h>
 
 #include "Aggregate.h"
+#include "Frame.h"
 
 using namespace opencog;
 

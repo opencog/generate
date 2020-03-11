@@ -1,7 +1,5 @@
 /*
- * opencog/generate/Aggregate.h
- *
- * Copyright (C) 2020 Linas Vepstas <linasvepstas@gmail.com>
+ * opencog/generate/Frame.cc
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License v3 as
@@ -19,36 +17,24 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _OPENCOG_AGGREGATE_H
-#define _OPENCOG_AGGREGATE_H
+#include <stdio.h>
 
-#include <set>
-
+#include <opencog/atoms/base/Handle.h>
 #include <opencog/atomspace/AtomSpace.h>
-#include <opencog/generate/Frame.h>
 
-namespace opencog
+#include "Frame.h"
+
+using namespace opencog;
+
+Frame::Frame(AtomSpace* as)
+	: _as(as)
 {
-/** \addtogroup grp_generate
- *  @{
- */
+}
 
-class Aggregate
+Frame::~Frame()
 {
-private:
-	AtomSpace* _as;
+}
 
-	std::set<Frame> _frames;
-
-public:
-	Aggregate(AtomSpace*);
-	~Aggregate();
-
-	Handle aggregate(const HandleSet&);
-};
-
-
-/** @}*/
-}  // namespace opencog
-
-#endif // _OPENCOG_AGGREGATE_H
+void Frame::add(const Handle& stuff)
+{
+}
