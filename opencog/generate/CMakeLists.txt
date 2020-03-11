@@ -1,7 +1,7 @@
 
 
 ADD_LIBRARY(generate SHARED
-	aggregate
+	Aggregate
 )
 
 TARGET_LINK_LIBRARIES(generate
@@ -13,6 +13,6 @@ INSTALL(TARGETS generate
 	LIBRARY DESTINATION "lib${LIB_DIR_SUFFIX}/opencog")
 
 INSTALL(FILES
-	aggregate.h
+	Aggregate.h
 	DESTINATION "include/opencog/generate"
 )

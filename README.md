@@ -146,6 +146,23 @@ value.  The polarity pairs are by convention only; they are not
 mandated by the system.
 
 
+## Implementation
+There is an inherent combinatorial explosion, which will certainly be
+CPU-intensive, and require considerable algorithmic sophistication,
+e.g. pruning, to make things run fast. Thus, in anticipation of this,
+the prototype implementation will be in C++.  There were/are two other
+design choices:
+
+* Use the Link-Grammar internal code. This code is now extremely fast,
+  and uses some very robust pruning algos. It has two drawbacks: it
+  assumes sequential order (i.e. words in a sentance) and has a large
+  number of in-built assumptions aimed at langauge parsing, rather than
+  generation.
+
+* Write everything in scheme (or even python), and use the pattern
+  matcher for all heavy lifting. This does not seem tenable at this
+  time.
+
 
 # Version 0.0.1
 There is nothing here, yet.
