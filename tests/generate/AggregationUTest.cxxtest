@@ -6,6 +6,7 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
+#include <opencog/atoms/atom_types/atom_types.h>
 #include <opencog/atomspace/AtomSpace.h>
 #include <opencog/guile/SchemeEval.h>
 #include <opencog/generate/Aggregate.h>
@@ -14,8 +15,8 @@
 
 using namespace opencog;
 
-#define al _as.add_link
-#define an _as.add_node
+#define al as->add_link
+#define an as->add_node
 
 class AggregationUTest: public CxxTest::TestSuite
 {
@@ -74,7 +75,14 @@ void AggregationUTest::test_basic()
 
 	Handle wall = eval->eval_h("left-wall");
 	Aggregate* ag = new Aggregate(as);
-	Handle result = ag->aggregate({wall});
+
+	Handle plus = an(CONNECTOR_DIR_NODE, "+");
+	Handle minus = an(CONNECTOR_DIR_NODE, "-");
+	HandlePairSeq pole_pairs;
+	pole_pairs.push_back({minus, plus});
+	pole_pairs.push_back({plus, minus});
+
+	Handle result = ag->aggregate({wall}, pole_pairs);
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
 	delete ag;

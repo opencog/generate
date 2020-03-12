@@ -40,22 +40,35 @@ void Frame::add(const Handle& section)
 	_open.insert(section);
 }
 
-// Extend unconnected connectors by one step.
-// Return false if not done (more work remains)
-// Else return true if done.
-bool Frame::extend(void)
+/// Extend unconnected connectors by one step.
+/// Return false if not done (more work remains)
+/// Else return true if done.
+///
+/// pol_pairs is a list of polarization pairs, i.e.
+/// match pairs of ConnectorDir pairs (from, to) which
+/// are to be connected.
+bool Frame::extend(const HandlePairSeq& pole_pairs)
 {
 	if (0 == _open.size()) return true;
 
 	for (const Handle& section : _open)
 	{
-		extend_one(section);
+		extend_one(section, pole_pairs);
 	}
 
 	return (0 == _open.size());
 }
 
-void Frame::extend_one(const Handle& section)
+void Frame::extend_one(const Handle& section,
+                       const HandlePairSeq& pole_pairs)
 {
 	printf("duude extend =%s\n", section->to_string().c_str());
+
+	// Connector seq is always second in the outset.
+	Handle conseq = section->getOutgoingAtom(1);
+
+	for (const Handle& con : conseq->getOutgoingSet())
+	{
+		printf("duude connect =%s\n", con->to_string().c_str());
+	}
 }

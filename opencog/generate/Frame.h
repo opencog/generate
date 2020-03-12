@@ -42,14 +42,14 @@ private:
 	// Completed links.
 	HandleSet _closed;
 
-	void extend_one(const Handle&);
+	void extend_one(const Handle&, const HandlePairSeq&);
 
 public:
 	Frame(AtomSpace*);
 	~Frame();
 
 	void add(const Handle&);
-	bool extend(void);
+	bool extend(const HandlePairSeq&);
 };
 
 typedef std::shared_ptr<Frame> FramePtr;

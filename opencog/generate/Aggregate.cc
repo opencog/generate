@@ -40,7 +40,8 @@ Aggregate::~Aggregate()
 {
 }
 
-Handle Aggregate::aggregate(const HandleSet& nuclei)
+Handle Aggregate::aggregate(const HandleSet& nuclei,
+                            const HandlePairSeq& pole_pairs)
 {
 	if (1 != nuclei.size())
 		throw RuntimeException(TRACE_INFO, "Not implemented!!");
@@ -61,7 +62,7 @@ Handle Aggregate::aggregate(const HandleSet& nuclei)
 	// Extend...
 	for (const FramePtr& fm : _frames)
 	{
-		fm->extend();
+		fm->extend(pole_pairs);
 	}
 
 	printf("done for now\n");

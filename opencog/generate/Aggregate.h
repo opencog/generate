@@ -44,7 +44,7 @@ public:
 	Aggregate(AtomSpace*);
 	~Aggregate();
 
-	Handle aggregate(const HandleSet&);
+	Handle aggregate(const HandleSet&, const HandlePairSeq&);
 };
 
 
