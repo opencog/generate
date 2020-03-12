@@ -31,6 +31,7 @@ namespace opencog
  */
 
 class Frame
+	: public std::enable_shared_from_this<Frame>
 {
 private:
 	AtomSpace* _as;
@@ -42,6 +43,8 @@ public:
 	void add(const Handle&);
 };
 
+typedef std::shared_ptr<Frame> FramePtr;
+#define createFrame std::make_shared<Frame>
 
 /** @}*/
 }  // namespace opencog

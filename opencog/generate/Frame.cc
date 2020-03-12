@@ -35,6 +35,7 @@ Frame::~Frame()
 {
 }
 
-void Frame::add(const Handle& stuff)
+void Frame::add(const Handle& conseq)
 {
+	printf("duudde insert seq=%s\n", conseq->to_string().c_str());
 }

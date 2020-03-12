@@ -45,7 +45,18 @@ Handle Aggregate::aggregate(const HandleSet& nuclei)
 	if (1 != nuclei.size())
 		throw RuntimeException(TRACE_INFO, "Not implemented!!");
 
+	// Starting point for nucleation.
 	Handle nucleus = *nuclei.begin();
+
+	HandleSeq section = nucleus->getIncomingSetByType(SECTION);
+
+	// Start a new frame for each connector seq.
+	for (const Handle& conseq : section)
+	{
+		FramePtr fm(createFrame(_as));
+		fm->add(conseq);
+		_frames.insert(std::move(fm));
+	}
 
 	return nucleus;
 }

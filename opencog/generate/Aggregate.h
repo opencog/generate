@@ -38,7 +38,7 @@ class Aggregate
 private:
 	AtomSpace* _as;
 
-	std::set<Frame> _frames;
+	std::set<FramePtr> _frames;
 
 public:
 	Aggregate(AtomSpace*);
