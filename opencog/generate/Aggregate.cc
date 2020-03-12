@@ -48,15 +48,23 @@ Handle Aggregate::aggregate(const HandleSet& nuclei)
 	// Starting point for nucleation.
 	Handle nucleus = *nuclei.begin();
 
-	HandleSeq section = nucleus->getIncomingSetByType(SECTION);
+	HandleSeq sections = nucleus->getIncomingSetByType(SECTION);
 
 	// Start a new frame for each connector seq.
-	for (const Handle& conseq : section)
+	for (const Handle& sect : sections)
 	{
 		FramePtr fm(createFrame(_as));
-		fm->add(conseq);
+		fm->add(sect);
 		_frames.insert(std::move(fm));
 	}
+
+	// Extend...
+	for (const FramePtr& fm : _frames)
+	{
+		fm->extend();
+	}
+
+	printf("done for now\n");
 
 	return nucleus;
 }

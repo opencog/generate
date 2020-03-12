@@ -35,7 +35,27 @@ Frame::~Frame()
 {
 }
 
-void Frame::add(const Handle& conseq)
+void Frame::add(const Handle& section)
 {
-	printf("duudde insert seq=%s\n", conseq->to_string().c_str());
+	_open.insert(section);
+}
+
+// Extend unconnected connectors by one step.
+// Return false if not done (more work remains)
+// Else return true if done.
+bool Frame::extend(void)
+{
+	if (0 == _open.size()) return true;
+
+	for (const Handle& section : _open)
+	{
+		extend_one(section);
+	}
+
+	return (0 == _open.size());
+}
+
+void Frame::extend_one(const Handle& section)
+{
+	printf("duude extend =%s\n", section->to_string().c_str());
 }

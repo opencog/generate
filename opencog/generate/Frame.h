@@ -36,11 +36,20 @@ class Frame
 private:
 	AtomSpace* _as;
 
+	// Sections with unconnected connectors.
+	HandleSet _open;
+
+	// Completed links.
+	HandleSet _closed;
+
+	void extend_one(const Handle&);
+
 public:
 	Frame(AtomSpace*);
 	~Frame();
 
 	void add(const Handle&);
+	bool extend(void);
 };
 
 typedef std::shared_ptr<Frame> FramePtr;
