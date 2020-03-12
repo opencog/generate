@@ -20,6 +20,7 @@
 #include <stdio.h>
 
 #include <opencog/atoms/base/Handle.h>
+#include <opencog/atoms/base/Link.h>
 #include <opencog/atomspace/AtomSpace.h>
 
 #include "Frame.h"
@@ -59,6 +60,9 @@ bool Frame::extend(const HandlePairSeq& pole_pairs)
 	return (0 == _open.size());
 }
 
+#define al _as->add_link
+#define an _as->add_node
+
 void Frame::extend_one(const Handle& section,
                        const HandlePairSeq& pole_pairs)
 {
@@ -69,6 +73,34 @@ void Frame::extend_one(const Handle& section,
 
 	for (const Handle& con : conseq->getOutgoingSet())
 	{
-		printf("duude connect =%s\n", con->to_string().c_str());
+
+		// Nothing to do, if not a connector.
+		if (CONNECTOR != con->get_type()) continue;
+
+		// For now, assume only one connector.
+		Handle fromdir = con->getOutgoingAtom(1);
+		Handle todir;
+		for (const HandlePair& popr: pole_pairs)
+			if (fromdir == popr.first) { todir = popr.second; break; }
+
+		// A matching pole was not found.
+		if (!todir) continue;
+
+		printf("duude connect =%s\n%s\n", todir->to_string().c_str(), con->to_string().c_str());
+
+		// Link type of the desired link to make...
+		Handle linkt = con->getOutgoingAtom(0);
+
+		// Find appropriate connector, if it exists
+		Handle matching = _as->get_atom(createLink(CONNECTOR, linkt, todir));
+		if (!matching) continue;
+
+		// Find all ConnectorSeq with the matching connector in it.
+		HandleSeq seqs = matching->getIncomingSetByType(CONNECTOR_SEQ);
+		for (const Handle& seq : seqs)
+		{
+			printf("duude found %s\n", seq->to_string().c_str());
+
+		}
 	}
 }

@@ -76,6 +76,7 @@ void AggregationUTest::test_basic()
 	Handle wall = eval->eval_h("left-wall");
 	Aggregate* ag = new Aggregate(as);
 
+	// The directions to connect.
 	Handle plus = an(CONNECTOR_DIR_NODE, "+");
 	Handle minus = an(CONNECTOR_DIR_NODE, "-");
 	HandlePairSeq pole_pairs;
