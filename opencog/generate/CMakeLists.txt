@@ -2,7 +2,6 @@
 
 ADD_LIBRARY(generate SHARED
 	Aggregate
-	Frame
 )
 
 TARGET_LINK_LIBRARIES(generate
@@ -15,6 +14,5 @@ INSTALL(TARGETS generate
 
 INSTALL(FILES
 	Aggregate.h
-	Frame.h
 	DESTINATION "include/opencog/generate"
 )

@@ -37,11 +37,13 @@ class Aggregate
 {
 private:
 	AtomSpace* _as;
-
-	Frame _frame;
-	std::stack<Frame> _frame_stack;
-
 	HandlePairSeq _pole_pairs;
+
+	// Current state
+	HandleSet _open_points;
+	HandleSet _open_sections;
+	HandleSet _linkage;
+
 
 public:
 	Aggregate(AtomSpace*);
@@ -49,7 +51,8 @@ public:
 
 	Handle aggregate(const HandleSet&, const HandlePairSeq&);
 
-	bool extend(void);
+	bool extend_point(void);
+	void extend_section(const Handle&);
 };
 
 

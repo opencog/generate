@@ -20,6 +20,7 @@
 #include <stdio.h>
 
 #include <opencog/atoms/base/Handle.h>
+#include <opencog/atoms/base/Link.h>
 #include <opencog/atomspace/AtomSpace.h>
 
 #include "Aggregate.h"
@@ -42,26 +43,30 @@ Aggregate::~Aggregate()
 
 /// The nuclei are the nucleation points: points that must
 /// appear in sections, some section of which must be linkable.
+///
+/// pol_pairs is a list of polarization pairs, i.e.
+/// match pairs of ConnectorDir pairs (from, to) which
+/// are to be connected.
 Handle Aggregate::aggregate(const HandleSet& nuclei,
                             const HandlePairSeq& pole_pairs)
 {
-	_frame._open = nuclei;
+	_open_points = nuclei;
 	_pole_pairs = pole_pairs;
 
-	extend();
+	extend_point();
 	return Handle::UNDEFINED;
 }
 
 // Return value of true means halt, no more solutions possible.
 // Return value of false means there's more.
-bool Aggregate::extend(void)
+bool Aggregate::extend_point(void)
 {
 	// If there are no more points, we are done.
-	if (0 == _open.size()) return true;
+	if (0 == _open_points.size()) return true;
 
 	// Pick a point, any point.
 	// XXX TODO replace this by a heuristic of some kind.
-	Handle nucleus = *_open.begin();
+	Handle nucleus = *_open_points.begin();
 
 	HandleSeq sections = nucleus->getIncomingSetByType(SECTION);
 
@@ -72,12 +77,56 @@ bool Aggregate::extend(void)
 
 	// Each section is a branch point that has to be explored on
 	// it's own.
-
 	for (const Handle& sect : sections)
 	{
+		extend_section(sect);
 	}
 
 	printf("done for now\n");
 
 	return true;
+}
+
+#define al _as->add_link
+#define an _as->add_node
+
+void Aggregate::extend_section(const Handle& section)
+{
+	printf("duude extend =%s\n", section->to_string().c_str());
+
+	// Connector seq is always second in the outset.
+	Handle conseq = section->getOutgoingAtom(1);
+
+	for (const Handle& con : conseq->getOutgoingSet())
+	{
+
+		// Nothing to do, if not a connector.
+		if (CONNECTOR != con->get_type()) continue;
+
+		// For now, assume only one connector.
+		Handle fromdir = con->getOutgoingAtom(1);
+		Handle todir;
+		for (const HandlePair& popr: _pole_pairs)
+			if (fromdir == popr.first) { todir = popr.second; break; }
+
+		// A matching pole was not found.
+		if (!todir) continue;
+
+		printf("duude connect =%s\n%s\n", todir->to_string().c_str(), con->to_string().c_str());
+
+		// Link type of the desired link to make...
+		Handle linkt = con->getOutgoingAtom(0);
+
+		// Find appropriate connector, if it exists
+		Handle matching = _as->get_atom(createLink(CONNECTOR, linkt, todir));
+		if (!matching) continue;
+
+		// Find all ConnectorSeq with the matching connector in it.
+		HandleSeq seqs = matching->getIncomingSetByType(CONNECTOR_SEQ);
+		for (const Handle& seq : seqs)
+		{
+			printf("duude found %s\n", seq->to_string().c_str());
+
+		}
+	}
 }
