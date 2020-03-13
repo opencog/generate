@@ -25,7 +25,6 @@
 #include <set>
 
 #include <opencog/atomspace/AtomSpace.h>
-#include <opencog/generate/Frame.h>
 
 namespace opencog
 {

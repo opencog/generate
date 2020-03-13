@@ -24,7 +24,6 @@
 #include <opencog/atomspace/AtomSpace.h>
 
 #include "Aggregate.h"
-#include "Frame.h"
 
 using namespace opencog;
 
@@ -90,6 +89,7 @@ bool Aggregate::extend_point(void)
 #define al _as->add_link
 #define an _as->add_node
 
+//// Attempt to connect every connector in a section.
 void Aggregate::extend_section(const Handle& section)
 {
 	printf("duude extend =%s\n", section->to_string().c_str());
@@ -103,22 +103,22 @@ void Aggregate::extend_section(const Handle& section)
 		// Nothing to do, if not a connector.
 		if (CONNECTOR != con->get_type()) continue;
 
-		// For now, assume only one connector.
-		Handle fromdir = con->getOutgoingAtom(1);
-		Handle todir;
+		// For now, assume only one pole per connector.
+		Handle from_pole = con->getOutgoingAtom(1);
+		Handle to_pole;
 		for (const HandlePair& popr: _pole_pairs)
-			if (fromdir == popr.first) { todir = popr.second; break; }
+			if (from_pole == popr.first) { to_pole = popr.second; break; }
 
 		// A matching pole was not found.
-		if (!todir) continue;
+		if (!to_pole) continue;
 
-		printf("duude connect =%s\n%s\n", todir->to_string().c_str(), con->to_string().c_str());
+		printf("duude connect =%s\n%s\n", to_pole->to_string().c_str(), con->to_string().c_str());
 
 		// Link type of the desired link to make...
-		Handle linkt = con->getOutgoingAtom(0);
+		Handle linkty = con->getOutgoingAtom(0);
 
 		// Find appropriate connector, if it exists
-		Handle matching = _as->get_atom(createLink(CONNECTOR, linkt, todir));
+		Handle matching = _as->get_atom(createLink(CONNECTOR, linkty, to_pole));
 		if (!matching) continue;
 
 		// Find all ConnectorSeq with the matching connector in it.
@@ -126,7 +126,6 @@ void Aggregate::extend_section(const Handle& section)
 		for (const Handle& seq : seqs)
 		{
 			printf("duude found %s\n", seq->to_string().c_str());
-
 		}
 	}
 }
