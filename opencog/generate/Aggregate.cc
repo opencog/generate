@@ -53,33 +53,39 @@ Handle Aggregate::aggregate(const HandleSet& nuclei,
 	_open_points = nuclei;
 	_pole_pairs = pole_pairs;
 
-	extend_point();
-	return Handle::UNDEFINED;
-}
-
-// Return value of true means halt, no more solutions possible.
-// Return value of false means there's more.
-bool Aggregate::extend_point(void)
-{
-	// If there are no more points, we are done.
-	if (0 == _open_points.size()) return true;
-
 	// Pick a point, any point.
 	// XXX TODO replace this by a heuristic of some kind.
 	Handle nucleus = *_open_points.begin();
 
 	HandleSeq sections = nucleus->getIncomingSetByType(SECTION);
 
-	// If there are no sections, then this point is not extendable.
-	// This is actually an error condition, I guess?
-	if (0 == sections.size())
-		throw RuntimeException(TRACE_INFO, "Can't find sections!");
+	for (const Handle& sect : sections)
+	{
+		push();
+		_open_sections.insert(sect);
+		extend();
+		pop();
+	}
+	return Handle::UNDEFINED;
+}
+
+// Return value of true means halt, no more solutions possible.
+// Return value of false means there's more.
+bool Aggregate::extend(void)
+{
+printf("------------------------------------\n");
+printf("Begin recursion. open-points=%lu open-sect=%lu, lkg=%lu\n",
+_open_points.size(), _open_sections.size(), _linkage.size());
+	// If there are no more sections, we are done.
+	if (0 == _open_sections.size()) return true;
 
 	// Each section is a branch point that has to be explored on
 	// it's own.
-	for (const Handle& sect : sections)
+	for (const Handle& sect : _open_sections)
 	{
+		push();
 		extend_section(sect);
+		pop();
 	}
 
 	printf("done for now\n");
@@ -136,6 +142,9 @@ printf("duude found seq %s\n", to_seq->to_string().c_str());
 
 				push();
 				connect_section(section, con, to_sect, matching, link);
+
+				// And now, recurse...
+				extend();
 				pop();
 			}
 		}
@@ -198,7 +207,10 @@ bool Aggregate::make_link(const Handle& sect,
 	// If it has remaining unconnected connectors, then
 	// add it to the unfinished set. Else we are done with it.
 	if (is_open)
+	{
 		_open_sections.insert(linking);
+		_open_points.insert(point);
+	}
 	else
 	{
 		_linkage.insert(linking);
