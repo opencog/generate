@@ -34,6 +34,7 @@ using namespace opencog;
 Aggregate::Aggregate(AtomSpace* as)
 	: _as(as)
 {
+	_cpred = _as->add_node(PREDICATE_NODE, "connection");
 }
 
 Aggregate::~Aggregate()
@@ -142,4 +143,32 @@ void Aggregate::connect_section(const Handle& from_sect,
 {
 printf("duude connect =%s\nto %s\n", from_sect->to_string().c_str(), to_sect->to_string().c_str());
 
+	Handle from_point = from_sect->getOutgoingAtom(0);
+	Handle to_point = to_sect->getOutgoingAtom(0);
+	Handle link = _as->add_link(EVALUATION_LINK, _cpred,
+		_as->add_link(LIST_LINK, linkty, from_point, to_point));
+
+	Handle from_seq = from_sect->getOutgoingAtom(1);
+	Handle to_seq = to_sect->getOutgoingAtom(1);
+
+	make_link(from_point, from_seq, from_con, link);
+	make_link(to_point, to_seq, to_con, link);
+}
+
+/// Create a link.
+void Aggregate::make_link(const Handle& point, const Handle& seq,
+                          const Handle& con, const Handle& link)
+{
+	HandleSeq oset;
+	for (const Handle& fc: seq->getOutgoingSet())
+	{
+		// If it's not the relevant connector, then just copy.
+		if (fc != con)
+			oset.push_back(fc);
+		else
+			oset.push_back(link);
+	}
+
+	_as->add_link(SECTION, point,
+		_as->add_link(CONNECTOR_SEQ, std::move(oset)));
 }

@@ -36,6 +36,7 @@ class Aggregate
 {
 private:
 	AtomSpace* _as;
+	Handle _cpred;
 	HandlePairSeq _pole_pairs;
 
 	// Current state
@@ -44,17 +45,20 @@ private:
 	HandleSet _linkage;
 
 
+	bool extend_point(void);
+	void extend_section(const Handle&);
+	void connect_section(const Handle&, const Handle&,
+	                     const Handle&, const Handle&,
+	                     const Handle&);
+	void make_link(const Handle&, const Handle&,
+	               const Handle&, const Handle&);
+
 public:
 	Aggregate(AtomSpace*);
 	~Aggregate();
 
 	Handle aggregate(const HandleSet&, const HandlePairSeq&);
 
-	bool extend_point(void);
-	void extend_section(const Handle&);
-	void connect_section(const Handle&, const Handle&,
-	                     const Handle&, const Handle&,
-	                     const Handle&);
 };
 
 
