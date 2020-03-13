@@ -50,7 +50,7 @@ private:
 	void connect_section(const Handle&, const Handle&,
 	                     const Handle&, const Handle&,
 	                     const Handle&);
-	void make_link(const Handle&, const Handle&,
+	bool make_link(const Handle&, const Handle&,
 	               const Handle&, const Handle&);
 
 public:

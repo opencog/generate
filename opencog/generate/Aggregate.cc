@@ -152,12 +152,19 @@ printf("duude connect =%s\nto %s\n", from_sect->to_string().c_str(), to_sect->to
 	make_link(to_point, to_sect, to_con, link);
 }
 
-/// Create a link.
+/// Create a link.  That is, replace a connector `con` by `link` in
+/// the section `sect`. Then update the aggregation state. The section
+/// is removed from the set of open sections. If the new linked section
+/// has no (unconnected) connector in it, then the new section is added
+/// to the linkage; the point is removed from the set of open points.
+///
 /// `point` should be the first atom of a section (the point)
 /// `sect` should be the section to connect
 /// `con` should be the connector to connect
 /// `link` should be the connecting link.
-void Aggregate::make_link(const Handle& point, const Handle& sect,
+///
+/// Returns true if the new link is not fully connected.
+bool Aggregate::make_link(const Handle& point, const Handle& sect,
                           const Handle& con, const Handle& link)
 {
 	bool is_open = false;
@@ -187,5 +194,10 @@ void Aggregate::make_link(const Handle& point, const Handle& sect,
 	if (is_open)
 		_open_sections.insert(linking);
 	else
+	{
 		_linkage.insert(linking);
+		_open_points.erase(point);
+	}
+
+	return is_open;
 }
