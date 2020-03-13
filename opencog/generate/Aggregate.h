@@ -51,7 +51,7 @@ private:
 	                     const Handle&, const Handle&,
 	                     const Handle&);
 	bool make_link(const Handle&, const Handle&,
-	               const Handle&, const Handle&);
+	               const Handle&);
 
 public:
 	Aggregate(AtomSpace*);

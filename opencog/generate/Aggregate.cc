@@ -95,10 +95,11 @@ void Aggregate::extend_section(const Handle& section)
 {
 	printf("duude extend =%s\n", section->to_string().c_str());
 
-	// Connector seq is always second in the outset.
-	Handle conseq = section->getOutgoingAtom(1);
+	// Unpack the two parts of the section.
+	Handle from_point = section->getOutgoingAtom(0);
+	Handle from_seq = section->getOutgoingAtom(1);
 
-	for (const Handle& con : conseq->getOutgoingSet())
+	for (const Handle& con : from_seq->getOutgoingSet())
 	{
 		// Nothing to do, if not a connector.
 		if (CONNECTOR != con->get_type()) continue;
@@ -129,27 +130,29 @@ printf("duude found seq %s\n", to_seq->to_string().c_str());
 			HandleSeq to_sects = to_seq->getIncomingSetByType(SECTION);
 			for (const Handle& to_sect : to_sects)
 			{
-				connect_section(section, con, to_sect, matching, linkty);
+				Handle to_point = to_sect->getOutgoingAtom(0);
+				Handle link = _as->add_link(EVALUATION_LINK, _cpred,
+					_as->add_link(LIST_LINK, linkty, from_point, to_point));
+
+				connect_section(section, con, to_sect, matching, link);
 			}
 		}
 	}
 }
 
+/// Connect a pair of sections together, by connecting two matched
+/// connectors. Two new sections will be created, with the connector
+// in each section replaced by the link.
 void Aggregate::connect_section(const Handle& from_sect,
                                 const Handle& from_con,
                                 const Handle& to_sect,
                                 const Handle& to_con,
-                                const Handle& linkty)
+                                const Handle& link)
 {
 printf("duude connect =%s\nto %s\n", from_sect->to_string().c_str(), to_sect->to_string().c_str());
 
-	Handle from_point = from_sect->getOutgoingAtom(0);
-	Handle to_point = to_sect->getOutgoingAtom(0);
-	Handle link = _as->add_link(EVALUATION_LINK, _cpred,
-		_as->add_link(LIST_LINK, linkty, from_point, to_point));
-
-	make_link(from_point, from_sect, from_con, link);
-	make_link(to_point, to_sect, to_con, link);
+	make_link(from_sect, from_con, link);
+	make_link(to_sect, to_con, link);
 }
 
 /// Create a link.  That is, replace a connector `con` by `link` in
@@ -164,11 +167,12 @@ printf("duude connect =%s\nto %s\n", from_sect->to_string().c_str(), to_sect->to
 /// `link` should be the connecting link.
 ///
 /// Returns true if the new link is not fully connected.
-bool Aggregate::make_link(const Handle& point, const Handle& sect,
+bool Aggregate::make_link(const Handle& sect,
                           const Handle& con, const Handle& link)
 {
 	bool is_open = false;
 	HandleSeq oset;
+	Handle point = sect->getOutgoingAtom(0);
 	Handle seq = sect->getOutgoingAtom(1);
 	for (const Handle& fc: seq->getOutgoingSet())
 	{
