@@ -50,6 +50,7 @@ private:
 	void push();
 	void pop();
 
+	std::set<HandleSet> _solutions;
 
 	bool extend(void);
 	void extend_section(const Handle&);

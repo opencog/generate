@@ -66,6 +66,8 @@ Handle Aggregate::aggregate(const HandleSet& nuclei,
 		extend();
 		pop();
 	}
+
+printf("Have %lu solutions\n", _solutions.size());
 	return Handle::UNDEFINED;
 }
 
@@ -76,19 +78,24 @@ bool Aggregate::extend(void)
 printf("------------------------------------\n");
 printf("Begin recursion. open-points=%lu open-sect=%lu, lkg=%lu\n",
 _open_points.size(), _open_sections.size(), _linkage.size());
+
 	// If there are no more sections, we are done.
-	if (0 == _open_sections.size()) return true;
+	if (0 == _open_sections.size())
+	{
+printf("Obtained solution: %s\n", oc_to_string(_linkage).c_str());
+		_solutions.insert(_linkage);
+		return true;
+	}
 
 	// Each section is a branch point that has to be explored on
 	// it's own.
-	for (const Handle& sect : _open_sections)
+	HandleSet sects = _open_sections;
+	for (const Handle& sect : sects)
 	{
 		push();
 		extend_section(sect);
 		pop();
 	}
-
-	printf("done for now\n");
 
 	return true;
 }
