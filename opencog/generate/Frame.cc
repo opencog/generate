@@ -36,11 +36,6 @@ Frame::~Frame()
 {
 }
 
-void Frame::add(const Handle& section)
-{
-	_open.insert(section);
-}
-
 /// Extend unconnected connectors by one step.
 /// Return false if not done (more work remains)
 /// Else return true if done.

@@ -40,32 +40,44 @@ Aggregate::~Aggregate()
 {
 }
 
+/// The nuclei are the nucleation points: points that must
+/// appear in sections, some section of which must be linkable.
 Handle Aggregate::aggregate(const HandleSet& nuclei,
                             const HandlePairSeq& pole_pairs)
 {
-	if (1 != nuclei.size())
-		throw RuntimeException(TRACE_INFO, "Not implemented!!");
+	_frame._open = nuclei;
+	_pole_pairs = pole_pairs;
 
-	// Starting point for nucleation.
-	Handle nucleus = *nuclei.begin();
+	extend();
+	return Handle::UNDEFINED;
+}
+
+// Return value of true means halt, no more solutions possible.
+// Return value of false means there's more.
+bool Aggregate::extend(void)
+{
+	// If there are no more points, we are done.
+	if (0 == _open.size()) return true;
+
+	// Pick a point, any point.
+	// XXX TODO replace this by a heuristic of some kind.
+	Handle nucleus = *_open.begin();
 
 	HandleSeq sections = nucleus->getIncomingSetByType(SECTION);
 
-	// Start a new frame for each connector seq.
+	// If there are no sections, then this point is not extendable.
+	// This is actually an error condition, I guess?
+	if (0 == sections.size())
+		throw RuntimeException(TRACE_INFO, "Can't find sections!");
+
+	// Each section is a branch point that has to be explored on
+	// it's own.
+
 	for (const Handle& sect : sections)
 	{
-		FramePtr fm(createFrame(_as));
-		fm->add(sect);
-		_frames.insert(std::move(fm));
-	}
-
-	// Extend...
-	for (const FramePtr& fm : _frames)
-	{
-		fm->extend(pole_pairs);
 	}
 
 	printf("done for now\n");
 
-	return nucleus;
+	return true;
 }

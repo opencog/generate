@@ -38,13 +38,18 @@ class Aggregate
 private:
 	AtomSpace* _as;
 
-	std::set<FramePtr> _frames;
+	Frame _frame;
+	std::stack<Frame> _frame_stack;
+
+	HandlePairSeq _pole_pairs;
 
 public:
 	Aggregate(AtomSpace*);
 	~Aggregate();
 
 	Handle aggregate(const HandleSet&, const HandlePairSeq&);
+
+	bool extend(void);
 };
 
 

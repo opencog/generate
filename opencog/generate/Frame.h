@@ -30,12 +30,8 @@ namespace opencog
  *  @{
  */
 
-class Frame
-	: public std::enable_shared_from_this<Frame>
+struct Frame
 {
-private:
-	AtomSpace* _as;
-
 	// Sections with unconnected connectors.
 	HandleSet _open;
 
@@ -44,16 +40,9 @@ private:
 
 	void extend_one(const Handle&, const HandlePairSeq&);
 
-public:
-	Frame(AtomSpace*);
-	~Frame();
-
 	void add(const Handle&);
 	bool extend(const HandlePairSeq&);
 };
-
-typedef std::shared_ptr<Frame> FramePtr;
-#define createFrame std::make_shared<Frame>
 
 /** @}*/
 }  // namespace opencog
