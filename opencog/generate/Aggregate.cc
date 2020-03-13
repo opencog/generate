@@ -134,7 +134,9 @@ printf("duude found seq %s\n", to_seq->to_string().c_str());
 				Handle link = _as->add_link(EVALUATION_LINK, _cpred,
 					_as->add_link(LIST_LINK, linkty, from_point, to_point));
 
+				push();
 				connect_section(section, con, to_sect, matching, link);
+				pop();
 			}
 		}
 	}
@@ -204,4 +206,18 @@ bool Aggregate::make_link(const Handle& sect,
 	}
 
 	return is_open;
+}
+
+void Aggregate::push(void)
+{
+	_point_stack.push(_open_points);
+	_open_stack.push(_open_sections);
+	_link_stack.push(_linkage);
+}
+
+void Aggregate::pop(void)
+{
+	_open_points = _point_stack.top(); _point_stack.pop();
+	_open_sections = _open_stack.top(); _open_stack.pop();
+	_linkage = _link_stack.top(); _link_stack.pop();
 }

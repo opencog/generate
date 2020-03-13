@@ -44,6 +44,12 @@ private:
 	HandleSet _open_sections;
 	HandleSet _linkage;
 
+	std::stack<HandleSet> _point_stack;
+	std::stack<HandleSet> _open_stack;
+	std::stack<HandleSet> _link_stack;
+	void push();
+	void pop();
+
 
 	bool extend_point(void);
 	void extend_section(const Handle&);
