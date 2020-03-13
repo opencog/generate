@@ -68,7 +68,19 @@ Handle Aggregate::aggregate(const HandleSet& nuclei,
 	}
 
 printf("Have %lu solutions\n", _solutions.size());
-	return Handle::UNDEFINED;
+	// Ugh. This is kind-of unpleasant, but for now we will use SetLink
+	// to return results. This obviously fails to scale if the section is
+	// large.
+	HandleSeq solns;
+	for (const auto& sol : _solutions)
+	{
+		HandleSeq sects;
+		for (const Handle& sect : sol)
+			sects.push_back(sect);
+
+		solns.push_back(createLink(std::move(sects), SET_LINK));
+	}
+	return createLink(std::move(solns), SET_LINK);
 }
 
 // Return value of true means halt, no more solutions possible.

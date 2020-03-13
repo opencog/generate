@@ -86,6 +86,15 @@ void AggregationUTest::test_basic()
 	Handle result = ag->aggregate({wall}, pole_pairs);
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
+
+	printf("basic result is  %s\n", result->to_string().c_str());
+	TSM_ASSERT("Bad result set!", result->get_arity() == 1);
+	Handle soln = result->getOutgoingAtom(0);
+
+	TSM_ASSERT("Bad section!", soln->get_arity() == 3);
+
+	// We expect the soultion to be LEFT_WALL --W--> Hello --OH--> world
+
 	delete ag;
 
 	logger().debug("END TEST: %s", __FUNCTION__);
