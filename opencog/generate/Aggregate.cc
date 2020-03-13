@@ -99,7 +99,6 @@ void Aggregate::extend_section(const Handle& section)
 
 	for (const Handle& con : conseq->getOutgoingSet())
 	{
-
 		// Nothing to do, if not a connector.
 		if (CONNECTOR != con->get_type()) continue;
 
@@ -112,7 +111,7 @@ void Aggregate::extend_section(const Handle& section)
 		// A matching pole was not found.
 		if (!to_pole) continue;
 
-		printf("duude connect =%s\n%s\n", to_pole->to_string().c_str(), con->to_string().c_str());
+printf("duude connect =%s\n%s\n", to_pole->to_string().c_str(), con->to_string().c_str());
 
 		// Link type of the desired link to make...
 		Handle linkty = con->getOutgoingAtom(0);
@@ -122,10 +121,25 @@ void Aggregate::extend_section(const Handle& section)
 		if (!matching) continue;
 
 		// Find all ConnectorSeq with the matching connector in it.
-		HandleSeq seqs = matching->getIncomingSetByType(CONNECTOR_SEQ);
-		for (const Handle& seq : seqs)
+		HandleSeq to_seqs = matching->getIncomingSetByType(CONNECTOR_SEQ);
+		for (const Handle& to_seq : to_seqs)
 		{
-			printf("duude found %s\n", seq->to_string().c_str());
+printf("duude found seq %s\n", to_seq->to_string().c_str());
+			HandleSeq to_sects = to_seq->getIncomingSetByType(SECTION);
+			for (const Handle& to_sect : to_sects)
+			{
+				connect_section(section, con, to_sect, matching, linkty);
+			}
 		}
 	}
+}
+
+void Aggregate::connect_section(const Handle& from_sect,
+                                const Handle& from_con,
+                                const Handle& to_sect,
+                                const Handle& to_con,
+                                const Handle& linkty)
+{
+printf("duude connect =%s\nto %s\n", from_sect->to_string().c_str(), to_sect->to_string().c_str());
+
 }
