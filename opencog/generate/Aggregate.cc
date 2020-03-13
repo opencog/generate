@@ -148,27 +148,44 @@ printf("duude connect =%s\nto %s\n", from_sect->to_string().c_str(), to_sect->to
 	Handle link = _as->add_link(EVALUATION_LINK, _cpred,
 		_as->add_link(LIST_LINK, linkty, from_point, to_point));
 
-	Handle from_seq = from_sect->getOutgoingAtom(1);
-	Handle to_seq = to_sect->getOutgoingAtom(1);
-
-	make_link(from_point, from_seq, from_con, link);
-	make_link(to_point, to_seq, to_con, link);
+	make_link(from_point, from_sect, from_con, link);
+	make_link(to_point, to_sect, to_con, link);
 }
 
 /// Create a link.
-void Aggregate::make_link(const Handle& point, const Handle& seq,
+/// `point` should be the first atom of a section (the point)
+/// `sect` should be the section to connect
+/// `con` should be the connector to connect
+/// `link` should be the connecting link.
+void Aggregate::make_link(const Handle& point, const Handle& sect,
                           const Handle& con, const Handle& link)
 {
+	bool is_open = false;
 	HandleSeq oset;
+	Handle seq = sect->getOutgoingAtom(1);
 	for (const Handle& fc: seq->getOutgoingSet())
 	{
 		// If it's not the relevant connector, then just copy.
 		if (fc != con)
+		{
 			oset.push_back(fc);
+			if (CONNECTOR == fc->get_type()) is_open = true;
+		}
 		else
 			oset.push_back(link);
 	}
 
-	_as->add_link(SECTION, point,
-		_as->add_link(CONNECTOR_SEQ, std::move(oset)));
+	Handle linking =
+		_as->add_link(SECTION, point,
+			_as->add_link(CONNECTOR_SEQ, std::move(oset)));
+
+	// Remove the section from the opn set.
+	_open_sections.erase(sect);
+
+	// If it has remaining unconnected connectors, then
+	// add it to the unfinished set. Else we are done with it.
+	if (is_open)
+		_open_sections.insert(linking);
+	else
+		_linkage.insert(linking);
 }
