@@ -1,5 +1,5 @@
 ;
-; Test dictionary of basic data.
+; Basic test: dictionary that allows one sentence: "Hello world".
 ;
 (use-modules (srfi srfi-1))
 (use-modules (opencog) (opencog exec))

@@ -23,6 +23,7 @@ class AggregationUTest: public CxxTest::TestSuite
 private:
 	AtomSpace* as;
 	SchemeEval* eval;
+	Aggregate* ag;
 
 public:
 	AggregationUTest();
@@ -31,7 +32,8 @@ public:
 	void setUp();
 	void tearDown();
 
-	void test_basic();
+	void test_hello();
+	void test_tree();
 };
 
 AggregationUTest::AggregationUTest()
@@ -60,21 +62,23 @@ void AggregationUTest::setUp()
 	as = new AtomSpace();
 	eval = new SchemeEval(as);
 	eval->eval("(add-to-load-path \"" PROJECT_SOURCE_DIR "\")");
-	eval->eval("(load-from-path \"tests/generate/simple-disjuncts.scm\")");
+	ag = new Aggregate(as);
 }
 
 void AggregationUTest::tearDown()
 {
+	delete ag;
 	delete eval;
 	delete as;
 }
 
-void AggregationUTest::test_basic()
+// Single generation: "Hello world"
+void AggregationUTest::test_hello()
 {
 	logger().debug("BEGIN TEST: %s", __FUNCTION__);
 
+	eval->eval("(load-from-path \"tests/generate/helloworld-disjuncts.scm\")");
 	Handle wall = eval->eval_h("left-wall");
-	Aggregate* ag = new Aggregate(as);
 
 	// The directions to connect.
 	Handle plus = an(CONNECTOR_DIR_NODE, "+");
@@ -95,7 +99,39 @@ void AggregationUTest::test_basic()
 
 	// We expect the soultion to be LEFT_WALL --W--> Hello --OH--> world
 
-	delete ag;
+	logger().debug("END TEST: %s", __FUNCTION__);
+}
+
+// Four generations: "John/Sue saw a bird/cat".
+void AggregationUTest::test_tree()
+{
+	logger().debug("BEGIN TEST: %s", __FUNCTION__);
+
+	eval->eval("(load-from-path \"tests/generate/tree-disjuncts.scm\")");
+	Handle wall = eval->eval_h("left-wall");
+
+	// The directions to connect.
+	Handle plus = an(CONNECTOR_DIR_NODE, "+");
+	Handle minus = an(CONNECTOR_DIR_NODE, "-");
+	HandlePairSeq pole_pairs;
+	pole_pairs.push_back({minus, plus});
+	pole_pairs.push_back({plus, minus});
+
+	Handle result = ag->aggregate({wall}, pole_pairs);
+
+	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
+
+	printf("basic result is  %s\n", result->to_string().c_str());
+	TSM_ASSERT("Bad result set!", result->get_arity() == 4);
+	Handle soln = result->getOutgoingAtom(0);
+
+	TSM_ASSERT("Bad section!", soln->get_arity() == 4);
+
+	// We expect the soultion to be loop-free (acyclic)
+	//                    +----O-----+
+	//    +--->W---+---S--+    +--D--+
+	//    |        |      |    |     |
+	// LEFT-WALL John    saw   a    cat
 
 	logger().debug("END TEST: %s", __FUNCTION__);
 }
