@@ -126,7 +126,7 @@ logger().set_level(Logger::FINE);
 	TSM_ASSERT("Bad result set!", result->get_arity() == 4);
 	Handle soln = result->getOutgoingAtom(0);
 
-	TSM_ASSERT("Bad section!", soln->get_arity() == 4);
+	TSM_ASSERT("Bad section!", soln->get_arity() == 5);
 
 	// We expect the soultion to be loop-free (acyclic)
 	//                    +----O-----+
