@@ -34,6 +34,7 @@ public:
 
 	void test_hello();
 	void test_tree();
+	void test_loop();
 };
 
 AggregationUTest::AggregationUTest()
@@ -77,7 +78,7 @@ void AggregationUTest::test_hello()
 {
 	logger().debug("BEGIN TEST: %s", __FUNCTION__);
 
-	eval->eval("(load-from-path \"tests/generate/helloworld-disjuncts.scm\")");
+	eval->eval("(load-from-path \"tests/generate/dict-helloworld.scm\")");
 	Handle wall = eval->eval_h("left-wall");
 
 	// The directions to connect.
@@ -91,7 +92,7 @@ void AggregationUTest::test_hello()
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
 
-	printf("basic result is  %s\n", result->to_string().c_str());
+	printf("Hello-world result is  %s\n", result->to_string().c_str());
 	TSM_ASSERT("Bad result set!", result->get_arity() == 1);
 	Handle soln = result->getOutgoingAtom(0);
 
@@ -102,12 +103,46 @@ void AggregationUTest::test_hello()
 	logger().debug("END TEST: %s", __FUNCTION__);
 }
 
-// Four generations: "John/Sue saw a bird/cat".
+// Four generations: "John/Sue saw a bird/cat", as an acyclic tree.
 void AggregationUTest::test_tree()
 {
 	logger().debug("BEGIN TEST: %s", __FUNCTION__);
 
-	eval->eval("(load-from-path \"tests/generate/tree-disjuncts.scm\")");
+	eval->eval("(load-from-path \"tests/generate/dict-tree.scm\")");
+	Handle wall = eval->eval_h("left-wall");
+
+	// The directions to connect.
+	Handle plus = an(CONNECTOR_DIR_NODE, "+");
+	Handle minus = an(CONNECTOR_DIR_NODE, "-");
+	HandlePairSeq pole_pairs;
+	pole_pairs.push_back({minus, plus});
+	pole_pairs.push_back({plus, minus});
+
+	Handle result = ag->aggregate({wall}, pole_pairs);
+
+	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
+
+	printf("Tree result is  %s\n", result->to_string().c_str());
+	TSM_ASSERT("Bad result set!", result->get_arity() == 4);
+	Handle soln = result->getOutgoingAtom(0);
+
+	TSM_ASSERT("Bad section!", soln->get_arity() == 5);
+
+	// We expect the soultion to be loop-free (acyclic)
+	//                    +----O-----+
+	//    +--->W---+---S--+    +--D--+
+	//    |        |      |    |     |
+	// LEFT-WALL John    saw   a    cat
+
+	logger().debug("END TEST: %s", __FUNCTION__);
+}
+
+// Four generations: "John/Sue saw a bird/cat", as graph w/ cycles.
+void AggregationUTest::test_loop()
+{
+	logger().debug("BEGIN TEST: %s", __FUNCTION__);
+
+	eval->eval("(load-from-path \"tests/generate/dict-loop.scm\")");
 	Handle wall = eval->eval_h("left-wall");
 
 logger().set_level(Logger::FINE);
@@ -122,14 +157,14 @@ logger().set_level(Logger::FINE);
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
 
-	printf("basic result is  %s\n", result->to_string().c_str());
+	printf("Loop result is  %s\n", result->to_string().c_str());
 	TSM_ASSERT("Bad result set!", result->get_arity() == 4);
 	Handle soln = result->getOutgoingAtom(0);
 
 	TSM_ASSERT("Bad section!", soln->get_arity() == 5);
 
 	// We expect the soultion to be loop-free (acyclic)
-	//                    +----O-----+
+	//    +-------WV------+----O-----+
 	//    +--->W---+---S--+    +--D--+
 	//    |        |      |    |     |
 	// LEFT-WALL John    saw   a    cat
