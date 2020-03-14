@@ -19,6 +19,8 @@
 
 #include <stdio.h>
 
+#include <opencog/util/Logger.h>
+
 #include <opencog/atoms/base/Handle.h>
 #include <opencog/atoms/base/Link.h>
 #include <opencog/atomspace/AtomSpace.h>
@@ -67,7 +69,7 @@ Handle Aggregate::aggregate(const HandleSet& nuclei,
 		pop();
 	}
 
-printf("Have %lu solutions\n", _solutions.size());
+	logger().fine("Finished; found %lu solutions\n", _solutions.size());
 	// Ugh. This is kind-of unpleasant, but for now we will use SetLink
 	// to return results. This obviously fails to scale if the section is
 	// large.
@@ -87,14 +89,14 @@ printf("Have %lu solutions\n", _solutions.size());
 // Return value of false means there's more.
 bool Aggregate::extend(void)
 {
-printf("------------------------------------\n");
-printf("Begin recursion. open-points=%lu open-sect=%lu, lkg=%lu\n",
-_open_points.size(), _open_sections.size(), _linkage.size());
+	logger().fine("------------------------------------");
+	logger().fine("Begin recursion: open-points=%lu open-sect=%lu lkg=%lu",
+		_open_points.size(), _open_sections.size(), _linkage.size());
 
 	// If there are no more sections, we are done.
 	if (0 == _open_sections.size())
 	{
-printf("Obtained solution: %s\n", oc_to_string(_linkage).c_str());
+		logger().fine("Obtained solution: %s", oc_to_string(_linkage).c_str());
 		_solutions.insert(_linkage);
 		return true;
 	}
@@ -118,19 +120,19 @@ printf("Obtained solution: %s\n", oc_to_string(_linkage).c_str());
 //// Attempt to connect every connector in a section.
 void Aggregate::extend_section(const Handle& section)
 {
-	printf("duude extend =%s\n", section->to_string().c_str());
+	logger().fine("Extend section=%s\n", section->to_string().c_str());
 
 	// Unpack the two parts of the section.
 	Handle from_point = section->getOutgoingAtom(0);
 	Handle from_seq = section->getOutgoingAtom(1);
 
-	for (const Handle& con : from_seq->getOutgoingSet())
+	for (const Handle& from_con : from_seq->getOutgoingSet())
 	{
 		// Nothing to do, if not a connector.
-		if (CONNECTOR != con->get_type()) continue;
+		if (CONNECTOR != from_con->get_type()) continue;
 
 		// For now, assume only one pole per connector.
-		Handle from_pole = con->getOutgoingAtom(1);
+		Handle from_pole = from_con->getOutgoingAtom(1);
 		Handle to_pole;
 		for (const HandlePair& popr: _pole_pairs)
 			if (from_pole == popr.first) { to_pole = popr.second; break; }
@@ -138,10 +140,8 @@ void Aggregate::extend_section(const Handle& section)
 		// A matching pole was not found.
 		if (!to_pole) continue;
 
-printf("duude connect =%s\n%s\n", to_pole->to_string().c_str(), con->to_string().c_str());
-
 		// Link type of the desired link to make...
-		Handle linkty = con->getOutgoingAtom(0);
+		Handle linkty = from_con->getOutgoingAtom(0);
 
 		// Find appropriate connector, if it exists
 		Handle matching = _as->get_atom(createLink(CONNECTOR, linkty, to_pole));
@@ -151,7 +151,9 @@ printf("duude connect =%s\n%s\n", to_pole->to_string().c_str(), con->to_string()
 		HandleSeq to_seqs = matching->getIncomingSetByType(CONNECTOR_SEQ);
 		for (const Handle& to_seq : to_seqs)
 		{
-printf("duude found seq %s\n", to_seq->to_string().c_str());
+			logger().fine("Connect from %s\nto %s",
+				from_con->to_string().c_str(), to_seq->to_string().c_str());
+
 			HandleSeq to_sects = to_seq->getIncomingSetByType(SECTION);
 			for (const Handle& to_sect : to_sects)
 			{
@@ -160,7 +162,7 @@ printf("duude found seq %s\n", to_seq->to_string().c_str());
 					_as->add_link(LIST_LINK, linkty, from_point, to_point));
 
 				push();
-				connect_section(section, con, to_sect, matching, link);
+				connect_section(section, from_con, to_sect, matching, link);
 
 				// And now, recurse...
 				extend();
@@ -179,7 +181,8 @@ void Aggregate::connect_section(const Handle& from_sect,
                                 const Handle& to_con,
                                 const Handle& link)
 {
-printf("duude connect =%s\nto %s\n", from_sect->to_string().c_str(), to_sect->to_string().c_str());
+	logger().fine("Connect =%s\nto %s",
+		from_sect->to_string().c_str(), to_sect->to_string().c_str());
 
 	make_link(from_sect, from_con, link);
 	make_link(to_sect, to_con, link);

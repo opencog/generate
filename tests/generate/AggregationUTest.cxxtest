@@ -110,6 +110,7 @@ void AggregationUTest::test_tree()
 	eval->eval("(load-from-path \"tests/generate/tree-disjuncts.scm\")");
 	Handle wall = eval->eval_h("left-wall");
 
+logger().set_level(Logger::FINE);
 	// The directions to connect.
 	Handle plus = an(CONNECTOR_DIR_NODE, "+");
 	Handle minus = an(CONNECTOR_DIR_NODE, "-");
