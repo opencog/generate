@@ -2,6 +2,7 @@
 
 ADD_LIBRARY(generate SHARED
 	Aggregate
+	DefaultCallback
 )
 
 TARGET_LINK_LIBRARIES(generate
@@ -14,5 +15,7 @@ INSTALL(TARGETS generate
 
 INSTALL(FILES
 	Aggregate.h
+	DefaultCallback.h
+	GenerateCallback.h
 	DESTINATION "include/opencog/generate"
 )

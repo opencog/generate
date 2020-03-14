@@ -26,6 +26,7 @@
 #include <opencog/atomspace/AtomSpace.h>
 
 #include "Aggregate.h"
+#include "DefaultCallback.h"
 
 using namespace opencog;
 
@@ -36,11 +37,14 @@ using namespace opencog;
 Aggregate::Aggregate(AtomSpace* as)
 	: _as(as)
 {
+	// XXX FIXME callback should be passed in from outside.
+	_cb = new DefaultCallback(as);
 	_cpred = _as->add_node(PREDICATE_NODE, "connection");
 }
 
 Aggregate::~Aggregate()
 {
+	delete _cb;
 }
 
 /// The nuclei are the nucleation points: points that must
@@ -188,6 +192,8 @@ logger().fine("found_internal = %d", found_internal);
 
 			for (const Handle& to_sect : to_sects)
 			{
+				if (_open_sections.end() != _open_sections.find(to_sect)) continue;
+
 				Handle to_point = to_sect->getOutgoingAtom(0);
 				Handle link = _as->add_link(EVALUATION_LINK, _cpred,
 					_as->add_link(LIST_LINK, linkty, from_point, to_point));
@@ -275,6 +281,7 @@ bool Aggregate::make_link(const Handle& sect,
 
 void Aggregate::push(void)
 {
+	_cb->push();
 	_point_stack.push(_open_points);
 	_open_stack.push(_open_sections);
 	_link_stack.push(_linkage);
@@ -282,6 +289,7 @@ void Aggregate::push(void)
 
 void Aggregate::pop(void)
 {
+	_cb->pop();
 	_open_points = _point_stack.top(); _point_stack.pop();
 	_open_sections = _open_stack.top(); _open_stack.pop();
 	_linkage = _link_stack.top(); _link_stack.pop();
