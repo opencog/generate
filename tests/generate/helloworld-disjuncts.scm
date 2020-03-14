@@ -10,23 +10,15 @@
 (Section
 	(Concept "LEFT-WALL")
 	(ConnectorSeq
-		(Connector
-			(Concept "W")
-			(ConnectorDir "+"))))
+		(Connector (Concept "W") (ConnectorDir "+"))))
 
 (Section
 	(Concept "hello")
 	(ConnectorSeq
-		(Connector
-			(Concept "W")
-			(ConnectorDir "-"))
-		(Connector
-			(Concept "OH")
-			(ConnectorDir "+"))))
+		(Connector (Concept "W") (ConnectorDir "-"))
+		(Connector (Concept "OH") (ConnectorDir "+"))))
 
 (Section
 	(Concept "world")
 	(ConnectorSeq
-		(Connector
-			(Concept "OH")
-			(ConnectorDir "-"))))
+		(Connector (Concept "OH") (ConnectorDir "-"))))
