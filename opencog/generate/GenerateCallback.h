@@ -30,6 +30,15 @@ namespace opencog
  *  @{
  */
 
+/// Executive decision-making callbacks
+///
+/// At every branch-point in the traversal algorithm, a list of
+/// branches to traverse must be obtained. Likwise, a priority-order
+/// for these branches must be given. At any point, there must be
+/// a decision to termnate, or to continue traversal. All of these
+/// executive decisions are made via the callback interface defined
+/// in this class.
+/// 
 class GenerateCallback
 {
 public:
