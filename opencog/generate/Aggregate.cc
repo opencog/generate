@@ -155,6 +155,26 @@ void Aggregate::extend_section(const Handle& section)
 				from_con->to_string().c_str(), to_seq->to_string().c_str());
 
 			HandleSeq to_sects = to_seq->getIncomingSetByType(SECTION);
+
+			bool found_internal = false;
+			for (const Handle& to_sect : to_sects)
+			{
+				if (_open_sections.end() == _open_sections.find(to_sect)) continue;
+				found_internal = true;
+
+				Handle to_point = to_sect->getOutgoingAtom(0);
+				Handle link = _as->add_link(EVALUATION_LINK, _cpred,
+					_as->add_link(LIST_LINK, linkty, from_point, to_point));
+
+				push();
+				connect_section(section, from_con, to_sect, matching, link);
+
+				// And now, recurse...
+				extend();
+				pop();
+			}
+
+			if (found_internal) continue;
 			for (const Handle& to_sect : to_sects)
 			{
 				Handle to_point = to_sect->getOutgoingAtom(0);
