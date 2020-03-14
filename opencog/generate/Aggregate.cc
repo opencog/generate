@@ -149,6 +149,7 @@ void Aggregate::extend_section(const Handle& section)
 
 		// Find all ConnectorSeq with the matching connector in it.
 		HandleSeq to_seqs = matching->getIncomingSetByType(CONNECTOR_SEQ);
+		bool found_internal = false;
 		for (const Handle& to_seq : to_seqs)
 		{
 			logger().fine("Connect from %s\nto %s",
@@ -156,7 +157,6 @@ void Aggregate::extend_section(const Handle& section)
 
 			HandleSeq to_sects = to_seq->getIncomingSetByType(SECTION);
 
-			bool found_internal = false;
 			for (const Handle& to_sect : to_sects)
 			{
 				if (_open_sections.end() == _open_sections.find(to_sect)) continue;
@@ -173,8 +173,19 @@ void Aggregate::extend_section(const Handle& section)
 				extend();
 				pop();
 			}
+		}
 
-			if (found_internal) continue;
+logger().fine("found_internal = %d", found_internal);
+		if (found_internal) continue;
+
+		// Hack-alicious
+		for (const Handle& to_seq : to_seqs)
+		{
+			logger().fine("Connect from %s\nto %s",
+				from_con->to_string().c_str(), to_seq->to_string().c_str());
+
+			HandleSeq to_sects = to_seq->getIncomingSetByType(SECTION);
+
 			for (const Handle& to_sect : to_sects)
 			{
 				Handle to_point = to_sect->getOutgoingAtom(0);
@@ -201,7 +212,7 @@ void Aggregate::connect_section(const Handle& from_sect,
                                 const Handle& to_con,
                                 const Handle& link)
 {
-	logger().fine("Connect =%s\nto %s",
+	logger().fine("Connect %s\nto %s",
 		from_sect->to_string().c_str(), to_sect->to_string().c_str());
 
 	make_link(from_sect, from_con, link);
