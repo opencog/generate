@@ -56,19 +56,19 @@ Aggregate::~Aggregate()
 Handle Aggregate::aggregate(const HandleSet& nuclei,
                             const HandlePairSeq& pole_pairs)
 {
-	_open_points = nuclei;
+	_frame._open_points = nuclei;
 	_pole_pairs = pole_pairs;
 
 	// Pick a point, any point.
 	// XXX TODO replace this by a heuristic of some kind.
-	Handle nucleus = *_open_points.begin();
+	Handle nucleus = *_frame._open_points.begin();
 
 	HandleSeq sections = nucleus->getIncomingSetByType(SECTION);
 
 	for (const Handle& sect : sections)
 	{
 		push();
-		_open_sections.insert(sect);
+		_frame._open_sections.insert(sect);
 		extend();
 		pop();
 	}
@@ -95,19 +95,22 @@ bool Aggregate::extend(void)
 {
 	logger().fine("------------------------------------");
 	logger().fine("Begin recursion: open-points=%lu open-sect=%lu lkg=%lu",
-		_open_points.size(), _open_sections.size(), _linkage.size());
+		_frame._open_points.size(), _frame._open_sections.size(), 
+		_frame._linkage.size());
 
 	// If there are no more sections, we are done.
-	if (0 == _open_sections.size())
+	if (0 == _frame._open_sections.size())
 	{
-		logger().fine("Obtained solution: %s", oc_to_string(_linkage).c_str());
-		_solutions.insert(_linkage);
+		logger().fine("====================================");
+		logger().fine("Obtained solution: %s", oc_to_string(_frame._linkage).c_str());
+		logger().fine("====================================");
+		_solutions.insert(_frame._linkage);
 		return true;
 	}
 
 	// Each section is a branch point that has to be explored on
 	// it's own.
-	HandleSet sects = _open_sections;
+	HandleSet sects = _frame._open_sections;
 	for (const Handle& sect : sects)
 	{
 		push();
@@ -163,7 +166,7 @@ void Aggregate::extend_section(const Handle& section)
 
 			for (const Handle& to_sect : to_sects)
 			{
-				if (_open_sections.end() == _open_sections.find(to_sect)) continue;
+				if (_frame._open_sections.end() == _frame._open_sections.find(to_sect)) continue;
 				found_internal = true;
 
 				Handle to_point = to_sect->getOutgoingAtom(0);
@@ -192,7 +195,7 @@ logger().fine("found_internal = %d", found_internal);
 
 			for (const Handle& to_sect : to_sects)
 			{
-				if (_open_sections.end() != _open_sections.find(to_sect)) continue;
+				if (_frame._open_sections.end() != _frame._open_sections.find(to_sect)) continue;
 
 				Handle to_point = to_sect->getOutgoingAtom(0);
 				Handle link = _as->add_link(EVALUATION_LINK, _cpred,
@@ -261,19 +264,19 @@ bool Aggregate::make_link(const Handle& sect,
 			_as->add_link(CONNECTOR_SEQ, std::move(oset)));
 
 	// Remove the section from the opn set.
-	_open_sections.erase(sect);
+	_frame._open_sections.erase(sect);
 
 	// If it has remaining unconnected connectors, then
 	// add it to the unfinished set. Else we are done with it.
 	if (is_open)
 	{
-		_open_sections.insert(linking);
-		_open_points.insert(point);
+		_frame._open_sections.insert(linking);
+		_frame._open_points.insert(point);
 	}
 	else
 	{
-		_linkage.insert(linking);
-		_open_points.erase(point);
+		_frame._linkage.insert(linking);
+		_frame._open_points.erase(point);
 	}
 
 	return is_open;
@@ -282,15 +285,15 @@ bool Aggregate::make_link(const Handle& sect,
 void Aggregate::push(void)
 {
 	_cb->push();
-	_point_stack.push(_open_points);
-	_open_stack.push(_open_sections);
-	_link_stack.push(_linkage);
+	_point_stack.push(_frame._open_points);
+	_open_stack.push(_frame._open_sections);
+	_link_stack.push(_frame._linkage);
 }
 
 void Aggregate::pop(void)
 {
 	_cb->pop();
-	_open_points = _point_stack.top(); _point_stack.pop();
-	_open_sections = _open_stack.top(); _open_stack.pop();
-	_linkage = _link_stack.top(); _link_stack.pop();
+	_frame._open_points = _point_stack.top(); _point_stack.pop();
+	_frame._open_sections = _open_stack.top(); _open_stack.pop();
+	_frame._linkage = _link_stack.top(); _link_stack.pop();
 }

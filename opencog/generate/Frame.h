@@ -1,5 +1,5 @@
 /*
- * opencog/generate/Aggregate.h
+ * opencog/generate/Frame.h
  *
  * Copyright (C) 2020 Linas Vepstas <linasvepstas@gmail.com>
  *
@@ -19,14 +19,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _OPENCOG_AGGREGATE_H
-#define _OPENCOG_AGGREGATE_H
-
-#include <set>
+#ifndef _OPENCOG_FRAME_H
+#define _OPENCOG_FRAME_H
 
 #include <opencog/atomspace/AtomSpace.h>
-#include <opencog/generate/Frame.h>
-#include <opencog/generate/GenerateCallback.h>
 
 namespace opencog
 {
@@ -34,45 +30,20 @@ namespace opencog
  *  @{
  */
 
-class Aggregate
+// Current state
+struct Frame
 {
-private:
-	AtomSpace* _as;
-	Handle _cpred;
-	HandlePairSeq _pole_pairs;
+	// points that are unconnected
+	HandleSet _open_points;
+	
+	// Sections with unconnected connectors.
+	HandleSet _open_sections;
 
-	// Decision-maker
-	GenerateCallback* _cb;
-
-	// Current state
-	Frame _frame;
-
-	std::stack<HandleSet> _point_stack;
-	std::stack<HandleSet> _open_stack;
-	std::stack<HandleSet> _link_stack;
-	void push();
-	void pop();
-
-	std::set<HandleSet> _solutions;
-
-	bool extend(void);
-	void extend_section(const Handle&);
-	void connect_section(const Handle&, const Handle&,
-	                     const Handle&, const Handle&,
-	                     const Handle&);
-	bool make_link(const Handle&, const Handle&,
-	               const Handle&);
-
-public:
-	Aggregate(AtomSpace*);
-	~Aggregate();
-
-	Handle aggregate(const HandleSet&, const HandlePairSeq&);
-
+	// Completed links.
+	HandleSet _linkage;
 };
-
 
 /** @}*/
 }  // namespace opencog
 
-#endif // _OPENCOG_AGGREGATE_H
+#endif // _OPENCOG_FRAME_H
