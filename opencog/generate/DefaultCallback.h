@@ -36,8 +36,8 @@ public:
 	DefaultCallback(AtomSpace*);
 	virtual ~DefaultCallback();
 
-	virtual void push() {}
-	virtual void pop() {}
+	virtual void push(const Frame&) {}
+	virtual void pop(const Frame&) {}
 
 };
 

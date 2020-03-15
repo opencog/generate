@@ -284,7 +284,7 @@ bool Aggregate::make_link(const Handle& sect,
 
 void Aggregate::push(void)
 {
-	_cb->push();
+	_cb->push(_frame);
 	_point_stack.push(_frame._open_points);
 	_open_stack.push(_frame._open_sections);
 	_link_stack.push(_frame._linkage);
@@ -292,7 +292,7 @@ void Aggregate::push(void)
 
 void Aggregate::pop(void)
 {
-	_cb->pop();
+	_cb->pop(_frame);
 	_frame._open_points = _point_stack.top(); _point_stack.pop();
 	_frame._open_sections = _open_stack.top(); _open_stack.pop();
 	_frame._linkage = _link_stack.top(); _link_stack.pop();

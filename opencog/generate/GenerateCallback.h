@@ -23,6 +23,7 @@
 #define _OPENCOG_GENERATE_CALLBACK_H
 
 #include <opencog/atomspace/AtomSpace.h>
+#include <opencog/generate/Frame.h>
 
 namespace opencog
 {
@@ -45,8 +46,8 @@ public:
 	GenerateCallback(AtomSpace* as) {}
 	virtual ~GenerateCallback() {}
 
-	virtual void push() {}
-	virtual void pop() {}
+	virtual void push(const Frame&) {}
+	virtual void pop(const Frame&) {}
 
 };
 
