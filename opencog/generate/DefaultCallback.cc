@@ -19,14 +19,42 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <opencog/atoms/base/Link.h>
+
 #include "DefaultCallback.h"
 
 using namespace opencog;
 
 DefaultCallback::DefaultCallback(AtomSpace* as, const HandlePairSeq& pp)
-	: GenerateCallback(as)
+	: GenerateCallback(as), _as(as), _pole_pairs(pp)
 {
-	_pole_pairs = pp;
 }
 
 DefaultCallback::~DefaultCallback() {}
+
+HandleSeq DefaultCallback::joints(const Handle & from_con)
+{
+	HandleSeq phs;
+
+	// Nothing to do, if not a connector.
+	if (CONNECTOR != from_con->get_type()) return phs;
+
+	// Assume only one pole per connector.
+	Handle from_pole = from_con->getOutgoingAtom(1);
+	Handle to_pole;
+	for (const HandlePair& popr: _pole_pairs)
+		if (from_pole == popr.first) { to_pole = popr.second; break; }
+
+	// A matching pole was not found.
+	if (!to_pole) return phs;
+
+	// Link type of the desired link to make...
+	Handle linkty = from_con->getOutgoingAtom(0);
+
+	// Find appropriate connector, if it exists.
+	Handle matching = _as->get_atom(createLink(CONNECTOR, linkty, to_pole));
+	if (matching)
+		phs.push_back(matching);
+
+	return phs;
+}

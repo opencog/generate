@@ -134,24 +134,14 @@ void Aggregate::extend_section(const Handle& section)
 
 	for (const Handle& from_con : from_seq->getOutgoingSet())
 	{
-		// Nothing to do, if not a connector.
-		if (CONNECTOR != from_con->get_type()) continue;
-
-		// For now, assume only one pole per connector.
-		Handle from_pole = from_con->getOutgoingAtom(1);
-		Handle to_pole;
-		for (const HandlePair& popr: _pole_pairs)
-			if (from_pole == popr.first) { to_pole = popr.second; break; }
-
-		// A matching pole was not found.
-		if (!to_pole) continue;
+		HandleSeq to_cons = _cb->joints(from_con);
+		if (0 == to_cons.size()) continue;
 
 		// Link type of the desired link to make...
 		Handle linkty = from_con->getOutgoingAtom(0);
 
-		// Find appropriate connector, if it exists
-		Handle matching = _as->get_atom(createLink(CONNECTOR, linkty, to_pole));
-		if (!matching) continue;
+		// XXX assume one matching connector. XXX this needs to be a loop.
+		Handle matching = to_cons[0];
 
 		// Find all ConnectorSeq with the matching connector in it.
 		HandleSeq to_seqs = matching->getIncomingSetByType(CONNECTOR_SEQ);

@@ -46,9 +46,13 @@ public:
 	GenerateCallback(AtomSpace* as) {}
 	virtual ~GenerateCallback() {}
 
+	/// Given a connector, return a set of matching connectors
+	/// that this particular connector could connect to. This
+	/// set may be empty, or may contain more than one match.
+	virtual HandleSeq joints(const Handle&) = 0;
+
 	virtual void push(const Frame&) {}
 	virtual void pop(const Frame&) {}
-
 };
 
 
