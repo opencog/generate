@@ -37,14 +37,12 @@ using namespace opencog;
 Aggregate::Aggregate(AtomSpace* as)
 	: _as(as)
 {
-	// XXX FIXME callback should be passed in from outside.
-	_cb = new DefaultCallback(as);
+	_cb = nullptr;
 	_cpred = _as->add_node(PREDICATE_NODE, "connection");
 }
 
 Aggregate::~Aggregate()
 {
-	delete _cb;
 }
 
 /// The nuclei are the nucleation points: points that must
@@ -54,10 +52,11 @@ Aggregate::~Aggregate()
 /// match pairs of ConnectorDir pairs (from, to) which
 /// are to be connected.
 Handle Aggregate::aggregate(const HandleSet& nuclei,
-                            const HandlePairSeq& pole_pairs)
+                            GenerateCallback& cb)
 {
+	_cb = &cb;
+
 	_frame._open_points = nuclei;
-	_pole_pairs = pole_pairs;
 
 	// Pick a point, any point.
 	// XXX TODO replace this by a heuristic of some kind.
@@ -288,6 +287,8 @@ void Aggregate::push(void)
 	_point_stack.push(_frame._open_points);
 	_open_stack.push(_frame._open_sections);
 	_link_stack.push(_frame._linkage);
+
+	logger().fine("---- Push: Stack depth now %lu", _link_stack.size());
 }
 
 void Aggregate::pop(void)
@@ -296,4 +297,6 @@ void Aggregate::pop(void)
 	_frame._open_points = _point_stack.top(); _point_stack.pop();
 	_frame._open_sections = _open_stack.top(); _open_stack.pop();
 	_frame._linkage = _link_stack.top(); _link_stack.pop();
+
+	logger().fine("---- Pop: Stack depth now %lu", _link_stack.size());
 }

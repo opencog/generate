@@ -32,8 +32,11 @@ namespace opencog
 
 class DefaultCallback : public GenerateCallback
 {
+private:
+	HandlePairSeq _pole_pairs;
+
 public:
-	DefaultCallback(AtomSpace*);
+	DefaultCallback(AtomSpace*, const HandlePairSeq&);
 	virtual ~DefaultCallback();
 
 	virtual void push(const Frame&) {}

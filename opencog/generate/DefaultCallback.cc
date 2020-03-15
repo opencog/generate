@@ -23,9 +23,10 @@
 
 using namespace opencog;
 
-DefaultCallback::DefaultCallback(AtomSpace* as)
+DefaultCallback::DefaultCallback(AtomSpace* as, const HandlePairSeq& pp)
 	: GenerateCallback(as)
 {
+	_pole_pairs = pp;
 }
 
 DefaultCallback::~DefaultCallback() {}

@@ -39,7 +39,6 @@ class Aggregate
 private:
 	AtomSpace* _as;
 	Handle _cpred;
-	HandlePairSeq _pole_pairs;
 
 	// Decision-maker
 	GenerateCallback* _cb;
@@ -67,7 +66,7 @@ public:
 	Aggregate(AtomSpace*);
 	~Aggregate();
 
-	Handle aggregate(const HandleSet&, const HandlePairSeq&);
+	Handle aggregate(const HandleSet&, GenerateCallback&);
 
 };
 

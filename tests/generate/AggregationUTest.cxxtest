@@ -10,6 +10,7 @@
 #include <opencog/atomspace/AtomSpace.h>
 #include <opencog/guile/SchemeEval.h>
 #include <opencog/generate/Aggregate.h>
+#include <opencog/generate/DefaultCallback.h>
 
 #include <cxxtest/TestSuite.h>
 
@@ -87,8 +88,9 @@ void AggregationUTest::test_hello()
 	HandlePairSeq pole_pairs;
 	pole_pairs.push_back({minus, plus});
 	pole_pairs.push_back({plus, minus});
+	DefaultCallback cb(as, pole_pairs);
 
-	Handle result = ag->aggregate({wall}, pole_pairs);
+	Handle result = ag->aggregate({wall}, cb);
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
 
@@ -117,8 +119,9 @@ void AggregationUTest::test_tree()
 	HandlePairSeq pole_pairs;
 	pole_pairs.push_back({minus, plus});
 	pole_pairs.push_back({plus, minus});
+	DefaultCallback cb(as, pole_pairs);
 
-	Handle result = ag->aggregate({wall}, pole_pairs);
+	Handle result = ag->aggregate({wall}, cb);
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
 
@@ -152,8 +155,9 @@ logger().set_level(Logger::FINE);
 	HandlePairSeq pole_pairs;
 	pole_pairs.push_back({minus, plus});
 	pole_pairs.push_back({plus, minus});
+	DefaultCallback cb(as, pole_pairs);
 
-	Handle result = ag->aggregate({wall}, pole_pairs);
+	Handle result = ag->aggregate({wall}, cb);
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
 
