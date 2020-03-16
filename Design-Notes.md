@@ -16,3 +16,11 @@ there are many nucleation points (i.e. fixed words in sentence, each
 word has some number of associated sections). One can then use pruning
 to discard sections that cannot possibly match; this is a multi-pass
 algo that runs over the "global" set of sections.
+
+Problem w/recursive tree-walking is that it works efficeintly only when
+the dictionary specifies only trees. If the dictionary allows cycles,
+then tree-walking fails, in two distinct ways. First, any cycle allows
+infinite recursion; so recursion has to be blocked by depth. Second,
+the walker will walk the cycle every possible way, even when the final
+resulting graph is the same. This leads to a lot of wasted CPU time,
+rediscovering the same graph.
