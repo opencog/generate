@@ -26,7 +26,8 @@
 using namespace opencog;
 
 DefaultCallback::DefaultCallback(AtomSpace* as, const HandlePairSeq& pp)
-	: GenerateCallback(as), _stack_depth(0),
+	: GenerateCallback(as),
+	_stack_depth(0), _effort(0),
 	_as(as), _pole_pairs(pp)
 {
 }
@@ -62,8 +63,12 @@ HandleSeq DefaultCallback::joints(const Handle& from_con)
 
 bool DefaultCallback::recurse(const Frame& frm)
 {
-	// Pick 50 as an arbitrary choice. XXX FIXME - why?
-	if (_stack_depth < 50) return true;
+	_effort ++;
+	if (12123 < _effort) return false;
+
+	// Pick 20 as an arbitrary choice. XXX FIXME - why?
+	// Well, 2^20 is a big number, and 10^20 is even bigger. Ouch.
+	if (_stack_depth < 20) return true;
 
 	// Well, we could also randomly continue half the time ...!?
 	// std rand uniform distribution ...

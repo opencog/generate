@@ -34,6 +34,7 @@ class DefaultCallback : public GenerateCallback
 {
 private:
 	size_t _stack_depth;
+	size_t _effort;
 	AtomSpace* _as;
 	HandlePairSeq _pole_pairs;
 
