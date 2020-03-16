@@ -35,7 +35,7 @@ public:
 
 	void test_hello();
 	void test_tree();
-	void xtest_loop();
+	void test_loop();
 };
 
 AggregationUTest::AggregationUTest()
@@ -142,14 +142,14 @@ void AggregationUTest::test_tree()
 
 // Four generations: "John/Sue saw a bird/cat", as graph w/ cycles.
 // Currently failig due to inf recursion.
-void AggregationUTest::xtest_loop()
+void AggregationUTest::test_loop()
 {
 	logger().debug("BEGIN TEST: %s", __FUNCTION__);
 
 	eval->eval("(load-from-path \"tests/generate/dict-loop.scm\")");
 	Handle wall = eval->eval_h("left-wall");
 
-logger().set_level(Logger::FINE);
+// logger().set_level(Logger::FINE);
 	// The directions to connect.
 	Handle plus = an(CONNECTOR_DIR_NODE, "+");
 	Handle minus = an(CONNECTOR_DIR_NODE, "-");
@@ -162,10 +162,12 @@ logger().set_level(Logger::FINE);
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
 
-	printf("Loop result is  %s\n", result->to_string().c_str());
+	// printf("Loop result is  %s\n", result->to_string().c_str());
+	printf("Loop result size is  %lu\n", result->get_arity());
 	TSM_ASSERT("Bad result set!", result->get_arity() == 4);
 	Handle soln = result->getOutgoingAtom(0);
 
+	printf("Loop section size is  %lu\n", soln->get_arity());
 	TSM_ASSERT("Bad section!", soln->get_arity() == 5);
 
 	// We expect the soultion to be have a loop
