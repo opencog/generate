@@ -33,6 +33,7 @@ namespace opencog
 class DefaultCallback : public GenerateCallback
 {
 private:
+	size_t _stack_depth;
 	AtomSpace* _as;
 	HandlePairSeq _pole_pairs;
 
@@ -40,10 +41,11 @@ public:
 	DefaultCallback(AtomSpace*, const HandlePairSeq&);
 	virtual ~DefaultCallback();
 
-	HandleSeq joints(const Handle&);
+	virtual HandleSeq joints(const Handle&);
 
-	virtual void push(const Frame&) {}
-	virtual void pop(const Frame&) {}
+	virtual void push(const Frame&) { _stack_depth++; }
+	virtual void pop(const Frame&) { _stack_depth--; }
+	virtual bool recurse(const Frame&);
 };
 
 

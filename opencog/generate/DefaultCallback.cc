@@ -26,13 +26,14 @@
 using namespace opencog;
 
 DefaultCallback::DefaultCallback(AtomSpace* as, const HandlePairSeq& pp)
-	: GenerateCallback(as), _as(as), _pole_pairs(pp)
+	: GenerateCallback(as), _stack_depth(0),
+	_as(as), _pole_pairs(pp)
 {
 }
 
 DefaultCallback::~DefaultCallback() {}
 
-HandleSeq DefaultCallback::joints(const Handle & from_con)
+HandleSeq DefaultCallback::joints(const Handle& from_con)
 {
 	HandleSeq phs;
 
@@ -57,4 +58,14 @@ HandleSeq DefaultCallback::joints(const Handle & from_con)
 		phs.push_back(matching);
 
 	return phs;
+}
+
+bool DefaultCallback::recurse(const Frame& frm)
+{
+	// Pick 50 as an arbitrary choice. XXX FIXME - why?
+	if (_stack_depth < 50) return true;
+
+	// Well, we could also randomly continue half the time ...!?
+	// std rand uniform distribution ...
+	return false;
 }

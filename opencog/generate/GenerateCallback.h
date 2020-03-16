@@ -53,6 +53,11 @@ public:
 
 	virtual void push(const Frame&) {}
 	virtual void pop(const Frame&) {}
+
+	/// Called before the next tree-walking recursive step is taken.
+	/// Should return `true` to continue recursion, else false.
+	/// The default below allows infinite recursion.
+	virtual bool recurse(const Frame&) { return true; }
 };
 
 

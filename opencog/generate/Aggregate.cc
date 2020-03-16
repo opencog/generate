@@ -93,6 +93,13 @@ Handle Aggregate::aggregate(const HandleSet& nuclei,
 bool Aggregate::extend(void)
 {
 	logger().fine("------------------------------------");
+	if (not _cb->recurse(_frame))
+	{
+		logger().fine("recursion halted at depth %lu",
+			_link_stack.size());
+		return true;
+	}
+
 	logger().fine("Begin recursion: open-points=%lu open-sect=%lu lkg=%lu",
 		_frame._open_points.size(), _frame._open_sections.size(), 
 		_frame._linkage.size());
@@ -123,7 +130,7 @@ bool Aggregate::extend(void)
 #define al _as->add_link
 #define an _as->add_node
 
-//// Attempt to connect every connector in a section.
+/// Attempt to connect every connector in a section.
 void Aggregate::extend_section(const Handle& section)
 {
 	logger().fine("Extend section=%s\n", section->to_string().c_str());
