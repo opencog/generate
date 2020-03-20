@@ -92,7 +92,7 @@ Handle Aggregate::aggregate(const HandleSet& nuclei,
 // along this path.
 bool Aggregate::extend(void)
 {
-	logger().fine("------------------------------------");
+	logger().fine("--------- Extend all open sections -------------");
 	if (not _cb->recurse(_frame))
 	{
 		logger().fine("recursion halted at depth %lu",
@@ -117,16 +117,16 @@ bool Aggregate::extend(void)
 	// Each section is a branch point that has to be explored on
 	// it's own. Halt, if the section is not extendable any more.
 	HandleSet sects = _frame._open_sections;
+	bool keep_going = true;
+	push();
 	for (const Handle& sect : sects)
 	{
-		push();
-		bool keep_going = extend_section(sect);
-		pop();
-
-		if (not keep_going) return false;
+		keep_going = extend_section(sect);
+		if (not keep_going) break;
 	}
+	pop();
 
-	return false;
+	return keep_going;
 }
 
 #define al _as->add_link
@@ -139,7 +139,8 @@ bool Aggregate::extend(void)
 /// be connected to something.)
 bool Aggregate::extend_section(const Handle& section)
 {
-	logger().fine("Extend section=%s\n", section->to_string().c_str());
+	logger().fine("---------------------");
+	logger().fine("Extend section=%s", section->to_string().c_str());
 
 	// Pull connector sequence out of the section.
 	Handle from_seq = section->getOutgoingAtom(1);
@@ -178,9 +179,6 @@ void Aggregate::join_connector(const Handle& fm_sect,
 	HandleSeq to_seqs = matching->getIncomingSetByType(CONNECTOR_SEQ);
 	for (const Handle& to_seq : to_seqs)
 	{
-		logger().fine("Connect from %s\nto %s",
-			fm_con->to_string().c_str(), to_seq->to_string().c_str());
-
 		HandleSeq to_sects = to_seq->getIncomingSetByType(SECTION);
 
 		for (const Handle& to_sect : to_sects)
@@ -279,11 +277,13 @@ bool Aggregate::make_link(const Handle& sect,
 	{
 		_frame._open_sections.insert(linking);
 		_frame._open_points.insert(point);
+		logger().fine("---- Close point %s", point->to_string().c_str());
 	}
 	else
 	{
 		_frame._linkage.insert(linking);
 		_frame._open_points.erase(point);
+		logger().fine("---- Open point %s", point->to_string().c_str());
 	}
 
 	return is_open;
