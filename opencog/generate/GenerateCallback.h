@@ -51,6 +51,15 @@ public:
 	/// set may be empty, or may contain more than one match.
 	virtual HandleSeq joints(const Handle&) = 0;
 
+	/// Given an exsiting connected section `fm_sect` and a connector
+	/// `fm_con` on that section, propose a connection to the section
+	/// `to_sect` and connector `to_con`. If this returns true, then
+	/// the connection will proceed. Otherwise, this connection will
+	/// not be made.
+	virtual bool connect(const Frame&,
+	                     const Handle& fm_sect, const Handle& fm_con,
+	                     const Handle& to_sect, const Handle& to_con) = 0;
+
 	virtual void push(const Frame&) {}
 	virtual void pop(const Frame&) {}
 

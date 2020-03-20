@@ -61,6 +61,27 @@ HandleSeq DefaultCallback::joints(const Handle& from_con)
 	return phs;
 }
 
+/// Return false if the connection should not be made.
+/// Return true if it is OK to connect these sections.
+bool DefaultCallback::connect(const Frame& frame,
+                              const Handle& fm_sect, const Handle& fm_con,
+                              const Handle& to_sect, const Handle& to_con)
+{
+	// Cycle breaking. The idea here is that any given attempted
+	// assembly of pieces will in general have cycles (loops) in
+	// them. A tree traversal means that these loops will be walked
+	// in every possible permutation, leading to vast amounts of
+	// repeated rediscoveries of previously attempted connections.
+	// There's two solutions to this: (1) don't do tree traversal.
+	// (2) do the cheap hack below. The cheap hack is that previous
+	// connection attempts will still be sitting around in the
+	// AtomSpace, so if we find that these two sections are already
+	// connected (due to some earlier attempt) just return false,
+	// and don't try again.
+
+	return true;
+}
+
 bool DefaultCallback::recurse(const Frame& frm)
 {
 	_effort ++;

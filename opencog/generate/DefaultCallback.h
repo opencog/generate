@@ -43,6 +43,8 @@ public:
 	virtual ~DefaultCallback();
 
 	virtual HandleSeq joints(const Handle&);
+	virtual bool connect(const Frame&, const Handle&, const Handle&,
+	                     const Handle&, const Handle&);
 
 	virtual void push(const Frame&) { _stack_depth++; }
 	virtual void pop(const Frame&) { _stack_depth--; }
