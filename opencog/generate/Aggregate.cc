@@ -161,9 +161,6 @@ bool Aggregate::extend_section(const Handle& section)
 		Handle linkty = from_con->getOutgoingAtom(0);
 
 		// XXX assume one matching connector. XXX this needs to be a loop.
-		// Or maybe we could ask user to wrap more complex structures
-		// in a link of some sort?  That's the job of `joints` above.
-		// This decision needs documentation....
 		Handle matching = to_cons[0];
 
 		// Find all ConnectorSeq with the matching connector in it.
