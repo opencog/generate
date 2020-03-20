@@ -33,7 +33,6 @@ namespace opencog
 class DefaultCallback : public GenerateCallback
 {
 protected:
-	Handle _cpred;
 	AtomSpace* _as;
 
 private:
