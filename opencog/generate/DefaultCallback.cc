@@ -79,6 +79,17 @@ bool DefaultCallback::connect(const Frame& frame,
 	// connected (due to some earlier attempt) just return false,
 	// and don't try again.
 
+	Handle fm_point = fm_sect->getOutgoingAtom(0);
+	Handle to_point = to_sect->getOutgoingAtom(0);
+	Handle linkty = fm_con->getOutgoingAtom(0);
+	Handle cpr = _as->get_link(LIST_LINK, linkty, fm_point, to_point);
+
+	// If above list doesn't exist, no connection has been made before.
+	if (nullptr == cpr) return true;
+
+	Handle link = _as->get_link(EVALUATION_LINK, _cpred, cpr);
+	if (nullptr == link) return false;
+
 	return true;
 }
 

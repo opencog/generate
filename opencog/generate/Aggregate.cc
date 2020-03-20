@@ -38,6 +38,8 @@ Aggregate::Aggregate(AtomSpace* as)
 	: _as(as)
 {
 	_cb = nullptr;
+
+	// Must be same as in class GenerateCallback ...
 	_cpred = _as->add_node(PREDICATE_NODE, "connection");
 }
 
@@ -179,8 +181,12 @@ bool Aggregate::extend_section(const Handle& section)
 				// we want to hook up, then there's nothing to do.
 				if (_frame._open_sections.end() == _frame._open_sections.find(to_sect)) continue;
 
-				// Have be previously connected these pieces together?
-				// if so, then don't try it again.
+				if (not _cb->connect(_frame, section, from_con,
+				                             to_sect, matching))
+				{
+					continue;
+				}
+
 				Handle to_point = to_sect->getOutgoingAtom(0);
 				Handle cpr = _as->add_link(LIST_LINK, linkty, from_point, to_point);
 				Handle link = _as->get_link(EVALUATION_LINK, _cpred, cpr);

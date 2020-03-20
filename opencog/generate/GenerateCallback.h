@@ -42,8 +42,15 @@ namespace opencog
 /// 
 class GenerateCallback
 {
+protected:
+	Handle _cpred;
+
 public:
-	GenerateCallback(AtomSpace* as) {}
+	GenerateCallback(AtomSpace* as)
+	{
+		// Must be same as in class Aggregate ...
+		_cpred = as->add_node(PREDICATE_NODE, "connection");
+	}
 	virtual ~GenerateCallback() {}
 
 	/// Given a connector, return a set of matching connectors
