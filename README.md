@@ -164,5 +164,6 @@ design choices:
   time.
 
 
-# Version 0.0.1
-There is nothing here, yet.
+# Version 0.0.2
+A low-tech prototype that passes some simple unit tests. Highly
+inefficient for non-trivial grammars.
