@@ -179,10 +179,7 @@ bool Aggregate::extend_section(const Handle& section)
 				// Have be previously connected these pieces together?
 				// if so, then don't try it again.
 				Handle to_point = to_sect->getOutgoingAtom(0);
-				Handle cpr = _as->get_link(LIST_LINK, linkty, from_point, to_point);
-				if (nullptr != cpr) continue;
-				cpr = _as->add_link(LIST_LINK, linkty, from_point, to_point);
-
+				Handle cpr = _as->add_link(LIST_LINK, linkty, from_point, to_point);
 				Handle link = _as->get_link(EVALUATION_LINK, _cpred, cpr);
 				if (nullptr != link) continue;
 
