@@ -238,7 +238,7 @@ void Aggregate::connect_section(const Handle& fm_sect,
 /// Create a link.  That is, replace a connector `con` by `link` in
 /// the section `sect`. Then update the aggregation state. The section
 /// is removed from the set of open sections. If the new linked section
-/// has no (unconnected) connector in it, then the new section is added
+/// has no (unconnected) connectors in it, then the new section is added
 /// to the linkage; the point is removed from the set of open points.
 ///
 /// `point` should be the first atom of a section (the point)
@@ -270,11 +270,11 @@ bool Aggregate::make_link(const Handle& sect,
 		_as->add_link(SECTION, point,
 			_as->add_link(CONNECTOR_SEQ, std::move(oset)));
 
-	// Remove the section from the opn set.
+	// Remove the section from the open set.
 	_frame._open_sections.erase(sect);
 
-	// If it has remaining unconnected connectors, then
-	// add it to the unfinished set. Else we are done with it.
+	// If the connected section has remaining unconnected connectors,
+	// then add it to the unfinished set. Else we are done with it.
 	if (is_open)
 	{
 		_frame._open_sections.insert(linking);
