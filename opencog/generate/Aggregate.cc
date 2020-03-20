@@ -88,7 +88,7 @@ Handle Aggregate::aggregate(const HandleSet& nuclei,
 	return createLink(std::move(solns), SET_LINK);
 }
 
-// Return value of true means that the extension worked, and theres
+// Return value of true means that the extension worked, and there's
 // more to explore. False means halt, no more solutions possible
 // along this path.
 bool Aggregate::extend(void)
@@ -116,13 +116,15 @@ bool Aggregate::extend(void)
 	}
 
 	// Each section is a branch point that has to be explored on
-	// it's own.
+	// it's own. Halt, if the section is not extendable any more.
 	HandleSet sects = _frame._open_sections;
 	for (const Handle& sect : sects)
 	{
 		push();
-		extend_section(sect);
+		bool keep_going = extend_section(sect);
 		pop();
+
+		if (not keep_going) return false;
 	}
 
 	return false;
@@ -146,8 +148,12 @@ bool Aggregate::extend_section(const Handle& section)
 
 	for (const Handle& from_con : from_seq->getOutgoingSet())
 	{
+		// There may be fully connected links in th sequence.
+		// Ignore those. We want unconnected connectors only.
+		if (CONNECTOR != from_con->get_type()) continue;
+
 		// Get a list of connectors that can be connected to.
-		// If none, then tis connector can never be closed.
+		// If none, then this connector can never be closed.
 		HandleSeq to_cons = _cb->joints(from_con);
 		if (0 == to_cons.size()) return false;
 
@@ -208,8 +214,10 @@ logger().fine("found_internal = %d", found_internal);
 
 			for (const Handle& to_sect : to_sects)
 			{
+				// Just like above, but the opposite sense.
 				if (_frame._open_sections.end() != _frame._open_sections.find(to_sect)) continue;
 
+// XXX All this needs to be refactored to match the above.
 				Handle to_point = to_sect->getOutgoingAtom(0);
 				Handle link = _as->add_link(EVALUATION_LINK, _cpred,
 					_as->add_link(LIST_LINK, linkty, from_point, to_point));
