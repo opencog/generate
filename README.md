@@ -1,16 +1,31 @@
 # Network Generation
-Generate graphical networks (sheaf sections) from graph germs.
-This is a form of search through problem space. Unlike traditional
-search-space exploration through chaining, which looks for a path from
-a single initial state to a single final state, the theory/algorithms
-here focus on transformative changes, from a complex of intial states,
-to a constrained complex of desirable final state, via a large set of
-constraining transformative moves or rules.
+Graphical networks are generic: natural language parse trees are graphs.
+So are the chains of axioms and logical dedcutions in a mathematical
+proof. So are plans for movement and motion through 3D space, as well
+as plans for accomplishing some more abstract action: planning a party
+or planning a coordinated disaster releif effort. Biological reaction
+pathways, involving genes, proteins and other molecules, are graphical
+networks as well. What these all have in common is an underlying set
+of allowed (or preferred) moves, changes or state transitions, as
+well as hard and soft constraints on what moves are possible.
+
+The goal of the code in this repo is to generate such networks, given
+a (weighted) collection of constraints and/or transition rules and/or
+a syntactical (grammatical) description of the system. More precisely,
+it is to effect a transformation from a complex of initial states into
+a complex of final states, with the inital and final complexes possibly
+being of fundamentally different types. In between the start and end
+is a networked web of interconnected moves, transitions, constraints.
+In essence, this is as a constraint satisfaction solver which allows
+probabilistic weighting and guiding, and allows the general problem
+to be described as a collection of syntactical rules or moves (aka
+rules of inference, axioms, judgements).
 
 Currently focused on natural language generation; however, the theory
 is generic, and is intended for use on any deduction or induction
 problem.
 
+==Sheaves, germs and syntax
 Knowledge, including sentences in natural language, can be represented
 as graphs. Such graphs can be generated from grammars (syntax rules).
 One interesting way of representing rules is as "germs": a (labeled,
