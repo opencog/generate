@@ -148,6 +148,9 @@ void Aggregate::extend_section(const Handle& section)
 		Handle linkty = from_con->getOutgoingAtom(0);
 
 		// XXX assume one matching connector. XXX this needs to be a loop.
+		// Or maybe we could ask user to wrap more complex structures
+		// in a link of some sort?  That's the job of `joints` above.
+		// This decision needs documentation....
 		Handle matching = to_cons[0];
 
 		// Find all ConnectorSeq with the matching connector in it.
@@ -162,13 +165,23 @@ void Aggregate::extend_section(const Handle& section)
 
 			for (const Handle& to_sect : to_sects)
 			{
+				// If none of the available sections are something
+				// we want to hook up, then there's nothing to do.
 				if (_frame._open_sections.end() == _frame._open_sections.find(to_sect)) continue;
-				found_internal = true;
 
+				// Have be previously connected these pieces together?
+				// if so, then don't try it again.
 				Handle to_point = to_sect->getOutgoingAtom(0);
-				Handle link = _as->add_link(EVALUATION_LINK, _cpred,
-					_as->add_link(LIST_LINK, linkty, from_point, to_point));
+				Handle cpr = _as->get_link(LIST_LINK, linkty, from_point, to_point);
+				if (nullptr != cpr) continue;
+				cpr = _as->add_link(LIST_LINK, linkty, from_point, to_point);
 
+				Handle link = _as->get_link(EVALUATION_LINK, _cpred, cpr);
+				if (nullptr != link) continue;
+
+				link = _as->add_link(EVALUATION_LINK, _cpred, cpr);
+
+				found_internal = true;
 				push();
 				connect_section(section, from_con, to_sect, matching, link);
 
