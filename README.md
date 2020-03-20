@@ -26,37 +26,66 @@ is generic, and is intended for use on any deduction or induction
 problem.
 
 ==Sheaves, germs and syntax
-Knowledge, including sentences in natural language, can be represented
-as graphs. Such graphs can be generated from grammars (syntax rules).
-One interesting way of representing rules is as "germs": a (labeled,
-typed) vertex, with associated (labeled, typed) "half-edges" or
-"connectors". These can be visualized as jigsaw-puzzle pieces, which
-can only be assembled into larger sections (sheaf sections) when the
-connectors can be mated. They occur naturally in theories of natural
-language, such as the
-[Link Grammar](https://www.abisource.com/projects/link-grammar/)
-natural language parser, where they are explicitly referred to as
-jigsaw-puzzle pieces in the foundational papers.
+To accomplish the above, snapshots or instances of the interacting
+system are assumed to be describable as a graph (a generic directed,
+labelled, typed, weighted graph, possibly containing loops). Such
+generic graphs can be decomposed into pieces, which can be roughly
+envisioned as jigsaw-puzzle pieces, having mating connectors.  In
+the typical case, each vertex in the graph corresponds to a jigsaw
+puzzle-piece, with "half-edges" or connectors connecting it to it's
+nearest neighbors. The pieces may be all alike, or all different,
+limited or unlimited in number, having connectors of only a few,
+or of many different types. In general, the pieces are NOT 2D, but
+of arbitrary dimension (that is, there may or may not be constraints
+on the crossing of links).
 
-Germs are extremely generic: key examples are tensors, where the
-half-edges or connectors are the tensor indexes. Tensors are deeply
-related to Cartesian categories, or any categories with a tensor
-product. Examples of such categories include the Lambda Calculus,
-and are thus tied to computing, in general. For example, in
-computing (in functional programming languages) one has the concept of
-"beta-reduction": plugging values into an expression with variables
-in it, replacing each variable with a value. The corresponding notion
-for germs is mating two connectors together, plugging one into the
-other. Unlike the variable/value distinction, thinking in terms of
-connectors makes beta-reduction more obviously symmetric. That is,
-one usually thinks of "variables" as being completely unlike "values",
-living in a conceptually different world.  Thinking of them as a place
-to plug something in, and something to plug into it emphasizes the
-duality between the two. Connectors provide a simpler, more natural
-representation for joining typed classes of things together.
-To summarize: the concept of joining together connectors underpins
-the Curry-Howard correspondence, and the extremely broad generalizations
-thereof that have been discovered in modern times.
+This vertex plus half-edge description of a graph is so general that
+it encodes a very large collection of concepts from mathematics and
+the sciences. The graphical interpretation allows concepts from
+cellular homology to be applied, most importantly, those of sheaf
+theory. In effect, the rules for assembling jigsaw puzzle pieces are
+precisely the sheaf gluing axioms.  The pairing together of connectors
+resembles the contraction of raised/lowered indexes in a tensor algebra.
+That is, individual jigsaw-puzzle pieces are instances of tensors.
+Since a partially-assembled jigsaw looks like a particularly
+complicated single piece, this description applies to any
+category-theoretic category with a tensor product.
+
+One particularly notable analogy to mating together a pair of connectors
+is that of beta-reduction (in lambda calculus and functional programming
+languages).  The pair is of typed-variable to value!  That is, one of
+the connectors can be taken as a variable (in a function or lambda
+expression) and the other connector is any "value" that can be
+substituted in for that variable. The "shapes" of the connectors enforce
+the requirement that the type of the value must correspond to the type
+of the variable. Unlike the variable/value distinction, thinking in
+terms of connectors makes beta-reduction more obviously symmetric.
+One can either apply a function to some values, or one can insert some
+values into a function: these are effectively the same, and there is
+no longer any particular neccessity to distinguish between these two
+operations.
+
+The puzzle-piece analogy is sufficeint to capture and encode the concept
+of syntax, in all of it's fullness. For example, the Backus-Nauer Form
+(BNF) of (context-free) syntax rules are readily encoded as
+jigsaw-shapes: the production arrow is the piece itself; the expression
+on the left is just a connector; the term or expression on the right
+is just a conjunction of one or more connectors. A disjunction of terms
+on the right correspond to a disjunction of jigsaw-pieces: for a given
+connector tab on the left, one chooses one-and-only-one on the right.
+(This is consistent with the sheaf-glueing axioms, and resembles the
+rules of linear logic: viz. the no-cloning and the no-deleting theorems
+of dagger-compact categories.)
+
+The grammar of natural language can also be encoded as jigsaw pieces;
+the foundational papers of the
+[Link Grammar](https://www.abisource.com/projects/link-grammar/)
+theory of natural language explicitly present parsing as the
+joining-together of jigsaw pieces.
+
+In light of all of this, one can roughly say that the jigsaw piece
+analogy is the natural setting for the extension of Curry-Howard
+correspondence to a broad range of settings.
 
 Graph generation via syntax rules can be understood as a search of a
 problem space. However, unlike tradional path search, where the start
