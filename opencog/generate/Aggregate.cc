@@ -144,8 +144,7 @@ bool Aggregate::extend_section(const Handle& section)
 {
 	logger().fine("Extend section=%s\n", section->to_string().c_str());
 
-	// Unpack the section; the point and the sequence of connectors.
-	Handle from_point = section->getOutgoingAtom(0);
+	// Pull connector sequence out of the section.
 	Handle from_seq = section->getOutgoingAtom(1);
 
 	for (const Handle& from_con : from_seq->getOutgoingSet())
@@ -158,9 +157,6 @@ bool Aggregate::extend_section(const Handle& section)
 		// If none, then this connector can never be closed.
 		HandleSeq to_cons = _cb->joints(from_con);
 		if (0 == to_cons.size()) return false;
-
-		// Link type of the desired link to make...
-		Handle linkty = from_con->getOutgoingAtom(0);
 
 		// XXX assume one matching connector. XXX this needs to be a loop.
 		Handle matching = to_cons[0];
@@ -177,26 +173,19 @@ bool Aggregate::extend_section(const Handle& section)
 
 			for (const Handle& to_sect : to_sects)
 			{
-				// If none of the available sections are something
-				// we want to hook up, then there's nothing to do.
-				if (_frame._open_sections.end() == _frame._open_sections.find(to_sect)) continue;
-
-				if (not _cb->connect(_frame, section, from_con,
-				                             to_sect, matching))
+				if (not _cb->connect(_frame,
+				                     section, from_con, to_sect, matching))
 				{
 					continue;
 				}
 
-				Handle to_point = to_sect->getOutgoingAtom(0);
-				Handle cpr = _as->add_link(LIST_LINK, linkty, from_point, to_point);
-				Handle link = _as->get_link(EVALUATION_LINK, _cpred, cpr);
-				if (nullptr != link) continue;
-
-				link = _as->add_link(EVALUATION_LINK, _cpred, cpr);
+				// If none of the available sections are something
+				// we want to hook up, then there's nothing to do.
+				if (_frame._open_sections.end() == _frame._open_sections.find(to_sect)) continue;
 
 				found_internal = true;
 				push();
-				connect_section(section, from_con, to_sect, matching, link);
+				connect_section(section, from_con, to_sect, matching);
 
 				// And now, recurse...
 				extend();
@@ -207,7 +196,7 @@ bool Aggregate::extend_section(const Handle& section)
 logger().fine("found_internal = %d", found_internal);
 		if (found_internal) continue;
 
-		// Hack-alicious
+		// Hack-alicious XXX fix me, kill this.
 		for (const Handle& to_seq : to_seqs)
 		{
 			logger().fine("Connect from %s\nto %s",
@@ -217,16 +206,18 @@ logger().fine("found_internal = %d", found_internal);
 
 			for (const Handle& to_sect : to_sects)
 			{
+				if (not _cb->connect(_frame,
+				                     section, from_con, to_sect, matching))
+				{
+					continue;
+				}
+
+// XXX All this needs to be refactored.
 				// Just like above, but the opposite sense.
 				if (_frame._open_sections.end() != _frame._open_sections.find(to_sect)) continue;
 
-// XXX All this needs to be refactored to match the above.
-				Handle to_point = to_sect->getOutgoingAtom(0);
-				Handle link = _as->add_link(EVALUATION_LINK, _cpred,
-					_as->add_link(LIST_LINK, linkty, from_point, to_point));
-
 				push();
-				connect_section(section, from_con, to_sect, matching, link);
+				connect_section(section, from_con, to_sect, matching);
 
 				// And now, recurse...
 				extend();
@@ -240,16 +231,24 @@ logger().fine("found_internal = %d", found_internal);
 /// Connect a pair of sections together, by connecting two matched
 /// connectors. Two new sections will be created, with the connector
 // in each section replaced by the link.
-void Aggregate::connect_section(const Handle& from_sect,
-                                const Handle& from_con,
+void Aggregate::connect_section(const Handle& fm_sect,
+                                const Handle& fm_con,
                                 const Handle& to_sect,
-                                const Handle& to_con,
-                                const Handle& link)
+                                const Handle& to_con)
 {
 	logger().fine("Connect %s\nto %s",
-		from_sect->to_string().c_str(), to_sect->to_string().c_str());
+		fm_sect->to_string().c_str(), to_sect->to_string().c_str());
 
-	make_link(from_sect, from_con, link);
+	Handle fm_point = fm_sect->getOutgoingAtom(0);
+	Handle to_point = to_sect->getOutgoingAtom(0);
+
+	// Link type of the desired link to make...
+	Handle linkty = fm_con->getOutgoingAtom(0);
+
+	Handle link = _as->add_link(EVALUATION_LINK, _cpred,
+		_as->add_link(LIST_LINK, linkty, fm_point, to_point));
+
+	make_link(fm_sect, fm_con, link);
 	make_link(to_sect, to_con, link);
 }
 
