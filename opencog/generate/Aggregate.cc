@@ -88,8 +88,9 @@ Handle Aggregate::aggregate(const HandleSet& nuclei,
 	return createLink(std::move(solns), SET_LINK);
 }
 
-// Return value of true means halt, no more solutions possible.
-// Return value of false means there's more.
+// Return value of true means that the extension worked, and theres
+// more to explore. False means halt, no more solutions possible
+// along this path.
 bool Aggregate::extend(void)
 {
 	logger().fine("------------------------------------");
@@ -97,7 +98,7 @@ bool Aggregate::extend(void)
 	{
 		logger().fine("recursion halted at depth %lu",
 			_link_stack.size());
-		return true;
+		return false;
 	}
 
 	logger().fine("Begin recursion: open-points=%lu open-sect=%lu lkg=%lu",
@@ -111,7 +112,7 @@ bool Aggregate::extend(void)
 		logger().fine("Obtained solution: %s", oc_to_string(_frame._linkage).c_str());
 		logger().fine("====================================");
 		_solutions.insert(_frame._linkage);
-		return true;
+		return false;
 	}
 
 	// Each section is a branch point that has to be explored on
@@ -124,7 +125,7 @@ bool Aggregate::extend(void)
 		pop();
 	}
 
-	return true;
+	return false;
 }
 
 #define al _as->add_link
