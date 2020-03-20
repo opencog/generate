@@ -158,74 +158,59 @@ bool Aggregate::extend_section(const Handle& section)
 		HandleSeq to_cons = _cb->joints(from_con);
 		if (0 == to_cons.size()) return false;
 
-		// XXX assume one matching connector. XXX this needs to be a loop.
-		Handle matching = to_cons[0];
-
-		// Find all ConnectorSeq with the matching connector in it.
-		HandleSeq to_seqs = matching->getIncomingSetByType(CONNECTOR_SEQ);
-		bool found_internal = false;
-		for (const Handle& to_seq : to_seqs)
+		for (const Handle& matching: to_cons)
 		{
-			logger().fine("Connect from %s\nto %s",
-				from_con->to_string().c_str(), to_seq->to_string().c_str());
-
-			HandleSeq to_sects = to_seq->getIncomingSetByType(SECTION);
-
-			for (const Handle& to_sect : to_sects)
-			{
-				if (not _cb->connect(_frame,
-				                     section, from_con, to_sect, matching))
-				{
-					continue;
-				}
-
-				// If none of the available sections are something
-				// we want to hook up, then there's nothing to do.
-				if (_frame._open_sections.end() == _frame._open_sections.find(to_sect)) continue;
-
-				found_internal = true;
-				push();
-				connect_section(section, from_con, to_sect, matching);
-
-				// And now, recurse...
-				extend();
-				pop();
-			}
-		}
-
-logger().fine("found_internal = %d", found_internal);
-		if (found_internal) continue;
-
-		// Hack-alicious XXX fix me, kill this.
-		for (const Handle& to_seq : to_seqs)
-		{
-			logger().fine("Connect from %s\nto %s",
-				from_con->to_string().c_str(), to_seq->to_string().c_str());
-
-			HandleSeq to_sects = to_seq->getIncomingSetByType(SECTION);
-
-			for (const Handle& to_sect : to_sects)
-			{
-				if (not _cb->connect(_frame,
-				                     section, from_con, to_sect, matching))
-				{
-					continue;
-				}
-
-// XXX All this needs to be refactored.
-				// Just like above, but the opposite sense.
-				if (_frame._open_sections.end() != _frame._open_sections.find(to_sect)) continue;
-
-				push();
-				connect_section(section, from_con, to_sect, matching);
-
-				// And now, recurse...
-				extend();
-				pop();
-			}
+			join_connector(section, from_con, matching, true);
+			join_connector(section, from_con, matching, false);
 		}
 	}
 	return true;
+}
+
+void Aggregate::join_connector(const Handle& fm_sect,
+                               const Handle& fm_con,
+                               const Handle& matching,
+                               bool close_cycle)
+{
+	// Find all ConnectorSeq with the matching connector in it.
+	HandleSeq to_seqs = matching->getIncomingSetByType(CONNECTOR_SEQ);
+	for (const Handle& to_seq : to_seqs)
+	{
+		logger().fine("Connect from %s\nto %s",
+			fm_con->to_string().c_str(), to_seq->to_string().c_str());
+
+		HandleSeq to_sects = to_seq->getIncomingSetByType(SECTION);
+
+		for (const Handle& to_sect : to_sects)
+		{
+			if (not _cb->connect(_frame,
+			                     fm_sect, fm_con, to_sect, matching))
+			{
+				continue;
+			}
+
+			// If `close_cycle` is true, then attempt to connect to
+			// an existing open section (thus potentially creating a
+			// cycle or loop).
+			if (close_cycle)
+			{
+				if (_frame._open_sections.end() ==
+				     _frame._open_sections.find(to_sect)) continue;
+			}
+			else
+			{
+				if (_frame._open_sections.end() !=
+				     _frame._open_sections.find(to_sect)) continue;
+			}
+
+			push();
+			connect_section(fm_sect, fm_con, to_sect, matching);
+
+			// And now, recurse...
+			extend();
+			pop();
+		}
+	}
 }
 
 /// Connect a pair of sections together, by connecting two matched
