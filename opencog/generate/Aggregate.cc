@@ -131,18 +131,24 @@ bool Aggregate::extend(void)
 #define an _as->add_node
 
 /// Attempt to connect every connector in a section.
-void Aggregate::extend_section(const Handle& section)
+/// Return true if every every connector on the section was
+/// successfully extended. Return false if the section is not
+/// extendable (if there is at least one connector that cannot
+/// be connected to something.)
+bool Aggregate::extend_section(const Handle& section)
 {
 	logger().fine("Extend section=%s\n", section->to_string().c_str());
 
-	// Unpack the two parts of the section.
+	// Unpack the section; the point and the sequence of connectors.
 	Handle from_point = section->getOutgoingAtom(0);
 	Handle from_seq = section->getOutgoingAtom(1);
 
 	for (const Handle& from_con : from_seq->getOutgoingSet())
 	{
+		// Get a list of connectors that can be connected to.
+		// If none, then tis connector can never be closed.
 		HandleSeq to_cons = _cb->joints(from_con);
-		if (0 == to_cons.size()) continue;
+		if (0 == to_cons.size()) return false;
 
 		// Link type of the desired link to make...
 		Handle linkty = from_con->getOutgoingAtom(0);
@@ -219,6 +225,7 @@ logger().fine("found_internal = %d", found_internal);
 			}
 		}
 	}
+	return true;
 }
 
 /// Connect a pair of sections together, by connecting two matched

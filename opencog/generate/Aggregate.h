@@ -55,7 +55,7 @@ private:
 	std::set<HandleSet> _solutions;
 
 	bool extend(void);
-	void extend_section(const Handle&);
+	bool extend_section(const Handle&);
 	void connect_section(const Handle&, const Handle&,
 	                     const Handle&, const Handle&,
 	                     const Handle&);
