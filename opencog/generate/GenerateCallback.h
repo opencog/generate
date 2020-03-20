@@ -42,15 +42,8 @@ namespace opencog
 /// 
 class GenerateCallback
 {
-protected:
-	Handle _cpred;
-
 public:
-	GenerateCallback(AtomSpace* as)
-	{
-		// Must be same as in class Aggregate ...
-		_cpred = as->add_node(PREDICATE_NODE, "connection");
-	}
+	GenerateCallback(AtomSpace* as) {}
 	virtual ~GenerateCallback() {}
 
 	/// Given a connector, return a set of matching connectors
@@ -67,6 +60,11 @@ public:
 	virtual bool connect(const Frame&, bool cycle,
 	                     const Handle& fm_sect, const Handle& fm_con,
 	                     const Handle& to_sect, const Handle& to_con) = 0;
+
+	/// Create a link from connector `fm_con` to connector `to_con`,
+	/// which will connect `fm_pnt` to `to_pnt`.
+	virtual Handle make_link(const Handle& fm_con, const Handle& to_con,
+	                         const Handle& fm_pnt, const Handle& to_pnt) = 0;
 
 	virtual void push(const Frame&) {}
 	virtual void pop(const Frame&) {}

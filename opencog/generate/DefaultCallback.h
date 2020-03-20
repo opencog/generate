@@ -32,10 +32,13 @@ namespace opencog
 
 class DefaultCallback : public GenerateCallback
 {
+protected:
+	Handle _cpred;
+	AtomSpace* _as;
+
 private:
 	size_t _stack_depth;
 	size_t _effort;
-	AtomSpace* _as;
 	HandlePairSeq _pole_pairs;
 
 public:
@@ -47,6 +50,8 @@ public:
 	                     const Handle&, const Handle&,
 	                     const Handle&, const Handle&);
 
+	virtual Handle make_link(const Handle&, const Handle&,
+	                         const Handle&, const Handle&);
 	virtual void push(const Frame&) { _stack_depth++; }
 	virtual void pop(const Frame&) { _stack_depth--; }
 	virtual bool recurse(const Frame&);

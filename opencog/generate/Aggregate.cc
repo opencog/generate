@@ -38,9 +38,6 @@ Aggregate::Aggregate(AtomSpace* as)
 	: _as(as)
 {
 	_cb = nullptr;
-
-	// Must be same as in class GenerateCallback ...
-	_cpred = _as->add_node(PREDICATE_NODE, "connection");
 }
 
 Aggregate::~Aggregate()
@@ -232,11 +229,7 @@ void Aggregate::connect_section(const Handle& fm_sect,
 	Handle fm_point = fm_sect->getOutgoingAtom(0);
 	Handle to_point = to_sect->getOutgoingAtom(0);
 
-	// Link type of the desired link to make...
-	Handle linkty = fm_con->getOutgoingAtom(0);
-
-	Handle link = _as->add_link(EVALUATION_LINK, _cpred,
-		_as->add_link(LIST_LINK, linkty, fm_point, to_point));
+	Handle link = _cb->make_link(fm_con, to_con, fm_point, to_point);
 
 	make_link(fm_sect, fm_con, link);
 	make_link(to_sect, to_con, link);

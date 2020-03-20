@@ -26,10 +26,11 @@
 using namespace opencog;
 
 DefaultCallback::DefaultCallback(AtomSpace* as, const HandlePairSeq& pp)
-	: GenerateCallback(as),
+	: GenerateCallback(as), _as(as),
 	_stack_depth(0), _effort(0),
-	_as(as), _pole_pairs(pp)
+	_pole_pairs(pp)
 {
+	_cpred = _as->add_node(PREDICATE_NODE, "connection");
 }
 
 DefaultCallback::~DefaultCallback() {}
@@ -91,6 +92,17 @@ bool DefaultCallback::connect(const Frame& frame, bool close,
 	if (nullptr == link) return false;
 
 	return true;
+}
+
+Handle DefaultCallback::make_link(const Handle& fm_con,
+                                  const Handle& to_con,
+                                  const Handle& fm_pnt,
+                                  const Handle& to_pnt)
+{
+	Handle linkty = fm_con->getOutgoingAtom(0);
+	Handle lst = _as->add_link(LIST_LINK, linkty, fm_pnt, to_pnt);
+	Handle lnk = _as->add_link(EVALUATION_LINK, _cpred, lst);
+	return lnk;
 }
 
 bool DefaultCallback::recurse(const Frame& frm)

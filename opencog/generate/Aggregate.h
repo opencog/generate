@@ -38,7 +38,6 @@ class Aggregate
 {
 private:
 	AtomSpace* _as;
-	Handle _cpred;
 
 	// Decision-maker
 	GenerateCallback* _cb;
