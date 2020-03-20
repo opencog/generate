@@ -94,13 +94,12 @@ void AggregationUTest::test_hello()
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
 
-	printf("Hello-world result is  %s\n", result->to_string().c_str());
+	// We expect the soultion to be LEFT_WALL --W--> Hello --OH--> world
+	// printf("Hello-world result is  %s\n", result->to_string().c_str());
 	TSM_ASSERT("Bad result set!", result->get_arity() == 1);
 	Handle soln = result->getOutgoingAtom(0);
 
 	TSM_ASSERT("Bad section!", soln->get_arity() == 3);
-
-	// We expect the soultion to be LEFT_WALL --W--> Hello --OH--> world
 
 	logger().debug("END TEST: %s", __FUNCTION__);
 }
@@ -125,17 +124,22 @@ void AggregationUTest::test_tree()
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
 
-	printf("Tree result is  %s\n", result->to_string().c_str());
-	TSM_ASSERT("Bad result set!", result->get_arity() == 4);
-	Handle soln = result->getOutgoingAtom(0);
-
-	TSM_ASSERT("Bad section!", soln->get_arity() == 5);
-
 	// We expect the soultion to be loop-free (acyclic)
 	//                    +----O-----+
 	//    +--->W---+---S--+    +--D--+
 	//    |        |      |    |     |
 	// LEFT-WALL John    saw   a    cat
+	//
+	// printf("Tree result is  %s\n", result->to_string().c_str());
+
+	TSM_ASSERT("Bad result set!", result->get_arity() == 4);
+
+	// All of the solutions should be the same size, substituting
+	// only John/Mary and dog/cat in the parse tree.
+	for (const Handle& soln: result->getOutgoingSet())
+	{
+		TSM_ASSERT("Bad section!", soln->get_arity() == 5);
+	}
 
 	logger().debug("END TEST: %s", __FUNCTION__);
 }
@@ -162,19 +166,20 @@ void AggregationUTest::test_loop()
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
 
-	// printf("Loop result is %s\n", result->to_string().c_str());
-	printf("Loop result size is %lu expecting 4\n", result->get_arity());
-	TSM_ASSERT("Bad loop result set!", result->get_arity() == 4);
-	Handle soln = result->getOutgoingAtom(0);
-
-	printf("Loop section size is %lu expecting 5\n", soln->get_arity());
-	TSM_ASSERT("Bad section!", soln->get_arity() == 5);
-
 	// We expect the soultion to be have a loop
 	//    +-------WV------+----O-----+
 	//    +--->W---+---S--+    +--D--+
 	//    |        |      |    |     |
 	// LEFT-WALL John    saw   a    cat
+	//
+	// printf("Loop result is %s\n", result->to_string().c_str());
+	printf("Loop result size is %lu expecting 4\n", result->get_arity());
+	TSM_ASSERT("Bad loop result set!", result->get_arity() == 4);
+	Handle soln = result->getOutgoingAtom(0);
+
+	printf("Loop section %s", soln->to_string().c_str());
+	printf("Loop section size is %lu expecting 5\n", soln->get_arity());
+	TSM_ASSERT("Bad section!", soln->get_arity() == 5);
 
 	logger().debug("END TEST: %s", __FUNCTION__);
 }

@@ -24,7 +24,7 @@
 		(Connector (Concept "S") (ConnectorDir "+"))))
 
 (Section
-	(Concept "Sue")
+	(Concept "Mary")
 	(ConnectorSeq
 		(Connector (Concept "W") (ConnectorDir "-"))
 		(Connector (Concept "S") (ConnectorDir "+"))))
