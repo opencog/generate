@@ -63,7 +63,7 @@ HandleSeq DefaultCallback::joints(const Handle& from_con)
 
 /// Return false if the connection should not be made.
 /// Return true if it is OK to connect these sections.
-bool DefaultCallback::connect(const Frame& frame,
+bool DefaultCallback::connect(const Frame& frame, bool close,
                               const Handle& fm_sect, const Handle& fm_con,
                               const Handle& to_sect, const Handle& to_con)
 {

@@ -167,6 +167,11 @@ bool Aggregate::extend_section(const Handle& section)
 	return true;
 }
 
+/// Given a section and a connector in that section, and a matching
+/// connector that connects to it, search for sections that can hook up,
+/// and hook them up, if the callback allows it. If the `close_cycle`
+/// flag is true, then consider only currently connecte sections, in
+/// an attempt to create a cycle. If false, avoid creating a cycle.
 void Aggregate::join_connector(const Handle& fm_sect,
                                const Handle& fm_con,
                                const Handle& matching,
@@ -183,7 +188,7 @@ void Aggregate::join_connector(const Handle& fm_sect,
 
 		for (const Handle& to_sect : to_sects)
 		{
-			if (not _cb->connect(_frame,
+			if (not _cb->connect(_frame, close_cycle,
 			                     fm_sect, fm_con, to_sect, matching))
 			{
 				continue;
