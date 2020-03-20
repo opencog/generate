@@ -162,12 +162,12 @@ void AggregationUTest::test_loop()
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
 
-	// printf("Loop result is  %s\n", result->to_string().c_str());
-	printf("Loop result size is  %lu\n", result->get_arity());
-	TSM_ASSERT("Bad result set!", result->get_arity() == 4);
+	// printf("Loop result is %s\n", result->to_string().c_str());
+	printf("Loop result size is %lu expecting 4\n", result->get_arity());
+	TSM_ASSERT("Bad loop result set!", result->get_arity() == 4);
 	Handle soln = result->getOutgoingAtom(0);
 
-	printf("Loop section size is  %lu\n", soln->get_arity());
+	printf("Loop section size is %lu expecting 5\n", soln->get_arity());
 	TSM_ASSERT("Bad section!", soln->get_arity() == 5);
 
 	// We expect the soultion to be have a loop
