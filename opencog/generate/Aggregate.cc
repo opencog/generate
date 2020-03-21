@@ -118,13 +118,11 @@ bool Aggregate::extend(void)
 	// it's own. Halt, if the section is not extendable any more.
 	HandleSet sects = _frame._open_sections;
 	bool keep_going = true;
-	push();
 	for (const Handle& sect : sects)
 	{
 		keep_going = extend_section(sect);
 		if (not keep_going) break;
 	}
-	pop();
 
 	return keep_going;
 }
