@@ -147,17 +147,45 @@ tackle the problem at hand.  Although the jigsaw connectors can have a
 polarity (and thus connections can be directed), there is no presumed
 constraint that the resulting graph is acyclic.
 
-## Strategic Development Plan
+# Strategic Development Plan
+The above provides an very abstract description of the project, and
+emphasizes just how daunting it is. The abstract goals are not
+acheivable in a handful of programmer-years; it is potentially
+some dozens if not hundreds of scientist-years of research effort.
+Thus, a narrower, righter focus is needed.
 
-The current narrower focus of this project.
-Algorithms that learn network structure, that learn grammars, need to be
-evaluated for accuracy. One way to do this is to generate random
-grammars, use them to generate a corpus of "sentences" (graphs) and
-see how well the learned grammar corresponds to the input grammar.
-This promises to be a much better strategy than evaluating against
-a curated corpus, e.g. of English-language sentences, as one can more
-finely control and measure different grammatical behaviors.
+## Characterizing learning systems
+This project is motivated by a need to characterize and evaluate
+unsupervised learning systems, specifically, learning systems for
+natural language. The normal course for such projects is to obtain
+a natural language corpus, usually in English, that has been annotated
+by professional linguists (or rather, thier undergrad and
+graudate-student workforce) and then evaluate any given system against
+this corpus. Practice has shown that this is a poor way of evaluating
+the quality of natural-language parsing, understanding, inference,
+question-answering and generation. Considerable confusion and ambiguity
+abounds.
 
+In place of this, it seems best to evaluate such systems against
+artificial languages; ideally, random languages where various aspects
+can be tightly controlled. For example: the size of the vocabulary.
+The relative distribution of nouns, verbs, adjectives. The number of
+meanings of words (viz, words that happen to have the same spelling,
+but have different syntactic behaviors, from which one infers different
+meanings). One might also vary the number of synonymous words: words
+that behave the same way, syntactically, but have different spellings.
+Or even synonymous phrases. The Zipfian distribution of natural language
+is a confounding factor: rare words simply don't offer enough examples
+to allow easy learning. Thus, one wishes to evaluate learning algorithms
+for different distributions.
+
+Thus, the immediate goal of this project is to generate a corpus of
+"sentences" from a randomly-generated, constrained artificial grammar.
+One then asks of the grammar learner can learn the known grammar from
+this corpus of sentences. In can then evaluate the learner in much the
+same way that one evaluates audio amplifiers, looking for high-fidelity.
+
+## Generating natural language
 Generation is also a cornerstone to algorithms that can express
 themselves, i.e. to move from deep syntax to surface structure. For
 example, given the abstract concepts "Ben", "pizza" and "to eat", and
