@@ -277,13 +277,13 @@ bool Aggregate::make_link(const Handle& sect,
 	{
 		_frame._open_sections.insert(linking);
 		_frame._open_points.insert(point);
-		logger().fine("---- Close point %s", point->to_string().c_str());
+		logger().fine("---- Open point %s", point->to_string().c_str());
 	}
 	else
 	{
 		_frame._linkage.insert(linking);
 		_frame._open_points.erase(point);
-		logger().fine("---- Open point %s", point->to_string().c_str());
+		logger().fine("---- Close point %s", point->to_string().c_str());
 	}
 
 	return is_open;
