@@ -185,37 +185,41 @@ One then asks of the grammar learner can learn the known grammar from
 this corpus of sentences. In can then evaluate the learner in much the
 same way that one evaluates audio amplifiers, looking for high-fidelity.
 
-## Generating natural language
-Generation is also a cornerstone to algorithms that can express
-themselves, i.e. to move from deep syntax to surface structure. For
-example, given the abstract concepts "Ben", "pizza" and "to eat", and
-the grammar for the English language, a key task is generating a
-grammatically valid sentence with those three concepts embedded in it.
+Specificially, this is for the OpenCog
+[language learning subsystem](https://github.com/opencog/learn).
 
-The goal of the code here is to work with grammars, expressed as "germs"
-(or as link-grammar-style "disjuncts"), and generate graphs, usually
-sequential sentences of words. It is hoped that the design will be
-generic enough that the system can also be used to generate proofs
-given either Hilbert-style axioms or given natural deduction; i.e. that
-the system will be broad enough to be a proof system. In particular,
-it is hoped that the system will be sufficiently general to host
-uncertain inference, thus providing an alternative implementation for
+## Generating natural language
+If instead one starts with a fixed grammar, e.g. that of English,
+and specifies a handful of words, then generation is useful for
+converting a bag of concepts into a sequence of spoken sentences.
+That is, to move from semantic networks to surface structure.
+For example, given the abstract concepts "Ben", "pizza" and "to eat",
+and the grammar for the English language, one wishes to generate
+any plausible sentence that embeds these concepts. Idealy, the sentence
+is short and not too flowery, and perhaps has a constraint on tense,
+number, and other linguistic features.
+
+The plan is to tackle this after basic generation sort-of-works-ish.
+
+## Abstract generation
+As sketched above, logic, reasoning, inference, and deduction can
+all be characterized as the assembly of jigsaw pieces. It is hoped
+that the above system will be general enough to "easily" provide
+an alternative implementation for several existing OpenCog systems,
+spcifically, for
 [PLN](https://github.com/opencog/pln) (Probabilistic Logic Networks),
 the [URE](https://github.com/opencog/ure) (Unified Rule Engine) and
 the OpenPsi rule scheduling system.
 
-In the short term, it is expected that the generative abilities will
-be used to evaluated the accuracy of the learning algorithms in the
-OpenCog [language learning subsystem](https://github.com/opencog/learn).
-
 # Architecture
 In what follows, the terms "section", "germ" and "disjunct" will be
 used somewhat interchangeably. The differences are as follows:
-* A "germ" is just one item, with a list of connectors on it.
-* Commonly, an object will have several germs associated with it;
-  these are disjoined from one-another, and are thus called "disjuncts".
-  The disjoin is in the sense of a menu-entry: you can pick one,
-  but only one.
+* A "germ" is just one item (a "point"), with a list of connectors
+  on it.
+* Commonly, an object (a "point") will have several germs associated
+  with it these are disjoined from one-another, and are thus called
+  "disjuncts".  The disjoin is in the sense of a menu-entry: you can
+  pick one, but only one.
 * A "section" is a collection of multiple germs, connected to
   one-another. Such a collection will typically have unconnected
   connectors, and thus behaves much like one giant-sized germ.
@@ -273,7 +277,7 @@ mandated by the system.
 There is an inherent combinatorial explosion, which will certainly be
 CPU-intensive, and require considerable algorithmic sophistication,
 e.g. pruning, to make things run fast. Thus, in anticipation of this,
-the prototype implementation will be in C++.  There were/are two other
+the prototype implementation will be in C++.  There were/are three other
 design choices:
 
 * Use the Link-Grammar internal code. This code is now extremely fast,
@@ -285,6 +289,11 @@ design choices:
 * Write everything in scheme (or even python), and use the pattern
   matcher for all heavy lifting. This does not seem tenable at this
   time.
+
+* Locate some existing system that meets many of the requirements, and
+  modify it to fit. I don't know of any system that even comes close to
+  meeting any of the requirements.  If you do, **please let me know**!
+  I have no desire to reinvent any wheels, here.
 
 
 # Version 0.0.2
