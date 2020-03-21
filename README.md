@@ -297,5 +297,7 @@ design choices:
 
 
 # Version 0.0.2
-A low-tech prototype that passes some simple unit tests. Highly
-inefficient for non-trivial grammars.
+The current code implements an extremely naive, unsophisticated
+tree-walking algorithm that badly suffers from combinatorial explosion.
+There is no attempt whatsoever to be sophisticated in any way.
+The code passes a handful of basic unit tests, and nothing more.
