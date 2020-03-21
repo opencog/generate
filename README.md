@@ -25,7 +25,7 @@ Currently focused on natural language generation; however, the theory
 is generic, and is intended for use on any deduction or induction
 problem.
 
-==Sheaves, germs and syntax
+## Sheaves, germs and syntax
 To accomplish the above, snapshots or instances of the interacting
 system are assumed to be describable as a graph (a generic directed,
 labelled, typed, weighted graph, possibly containing loops). Such
@@ -87,18 +87,69 @@ In light of all of this, one can roughly say that the jigsaw piece
 analogy is the natural setting for the extension of Curry-Howard
 correspondence to a broad range of settings.
 
+## Parsing and generation
 Graph generation via syntax rules can be understood as a search of a
 problem space. However, unlike tradional path search, where the start
 and end-points are of the same general kind (e.g. travelling salesman)
-here, path is transformative: for example, from an unordered bag of
-semantic concepts to a grammatically correct sequence of words. There
-is no single path; rather, there is a network that bridges from one
-side to the other. Not only does it extend from the bag (the starting
-point) to the sentence (the end-point) but it specifically constructs
-a network interconnecting each of the concepts in the bag to each of
-the words in the sentence.
+here, path is transformative, and the start and endpoints might be of
+entirely different classes. For example, in (natural language) parsing,
+noe starts with a linear sequence of words, and concludes with a parse
+tree.  In natural language generation, one begins with a bag of semantic
+concepts, and generates a word-sequence capturing that semantics. The
+act of parsing or generation bridges between these two representations.
+The bridge itself is not a single ordered path or chain, but is also
+a network of connections and constraints that must be satisfied.
 
-## Overview
+Parsing and generation can be thought of as a special case of the more
+general act of theorem-proving. In theorem-proving, one has a collection
+of axioms and inference rules (represented as jigsaw pieces!) together
+with a hypothesis (a collection of unconnected connectors), with the
+goal of a proof being to arrive at an appropriate assembly culminating
+in a "boundary" of "true" (all remaining unconnected onnectors can
+be joined to a "true" jigsaw-piece, or rather, being all-true connectors).
+Unlike parsing, in theorem-proving, the jigsaw pieces can be freely
+chosen (as long as they fit together). In parsing, the jigsaw pieces
+must correspond to the words in a sentences, and the word-order must
+be preserved.
+
+## Markov logic and Bayesian blankets
+Theorem proving (and generally, constraint-satisfaction) are known hard
+problems, and so, defacto this is what this project is aiming at. All
+the pitfalls apply, including combinatoric explosion, algorithmic
+heuristics, etc. On top of all of this, a very explicit aim is that
+each of the jigsaw pieces and connectors are weighted, so that certain
+kinds of assemblies are prefered over others. Were it not for this
+weighting, one might consider using existing constraint satisfaction
+sovlers. For example, Answer-Set Programming (ASP) is a particularly
+convenient way of specifying discrete, crisp-logic constraints. More
+generally, one might even consider SAT solvers, or even Satisfifibility
+Modules Theories (SMT) solvers.  Once on throws in weightings, none
+of the existing SMT solvers appear to be adequate for the job.  Thus,
+this project.
+
+The goal of saying "weighting" is to avoid saying "probability". In
+reality (based on long experience) the weights do resemble
+log-probabilities, in that it is very convenient to assign a single
+preference score that is a sum of weights. There are some strong
+theoretical arguments that the correct weighting is the Boltzmann
+distribution, and thus, the assembled jigsaw pieces form a Markov
+blanket. Insofar as the jigsaw pieces can encode logic, the resulting
+blankets can be taken to be Markov Logic blankets. Again, the formation,
+discovery and data-mining of such blankets is a know-hard problem,
+filled to the brim with combinatoric explosions, and eminantly lacking
+in general tractable algorithms. C'est la vie.
+
+Unlike Markov logic, there is no presumption here that the jigsaw pieces
+are logical expressions. In particular, there is no constraint that the
+network be directed and acyclic. Thus, again, MLN solvers and Bayesian
+nweork solvers (belief networks, decision networks) are insufficient to
+tackle the problem at hand.  Although the jigsaw connectors can have a
+polarity (and thus connections can be directed), there is no presumed
+constraint that the resulting graph is acyclic.
+
+## Strategic Development Plan
+
+The current narrower focus of this project.
 Algorithms that learn network structure, that learn grammars, need to be
 evaluated for accuracy. One way to do this is to generate random
 grammars, use them to generate a corpus of "sentences" (graphs) and
