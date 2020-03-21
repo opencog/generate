@@ -95,7 +95,7 @@ bool Aggregate::extend(void)
 	logger().fine("--------- Extend all open sections -------------");
 	if (not _cb->recurse(_frame))
 	{
-		logger().fine("recursion halted at depth %lu",
+		logger().fine("Recursion halted at depth %lu",
 			_link_stack.size());
 		return false;
 	}
@@ -306,7 +306,9 @@ void Aggregate::push(void)
 	_open_stack.push(_frame._open_sections);
 	_link_stack.push(_frame._linkage);
 
-	logger().fine("---- Push: Stack depth now %lu", _link_stack.size());
+	logger().fine("---- Push: Stack depth now %lu npts=%lu open=%lu lkg=%lu",
+	     _link_stack.size(), _frame._open_points.size(),
+	     _frame._open_sections.size(), _frame._linkage.size());
 }
 
 void Aggregate::pop(void)
@@ -316,5 +318,7 @@ void Aggregate::pop(void)
 	_frame._open_sections = _open_stack.top(); _open_stack.pop();
 	_frame._linkage = _link_stack.top(); _link_stack.pop();
 
-	logger().fine("---- Pop: Stack depth now %lu", _link_stack.size());
+	logger().fine("---- Pop: Stack depth now %lu npts=%lu open=%lu lkg=%lu",
+	     _link_stack.size(), _frame._open_points.size(),
+	     _frame._open_sections.size(), _frame._linkage.size());
 }
