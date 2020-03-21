@@ -107,10 +107,22 @@ bool Aggregate::extend(void)
 	// If there are no more sections, we are done.
 	if (0 == _frame._open_sections.size())
 	{
-		logger().fine("====================================");
-		logger().fine("Obtained solution: %s", oc_to_string(_frame._linkage).c_str());
-		logger().fine("====================================");
+		size_t nsolns = _solutions.size();
 		_solutions.insert(_frame._linkage);
+		size_t news = _solutions.size();
+		logger().fine("====================================");
+		if (nsolns != news)
+		{
+			logger().fine("Obtained new solution %lu of size %lu:\n%s",
+			       news, _frame._linkage.size(),
+				    oc_to_string(_frame._linkage).c_str());
+		}
+		else
+		{
+			logger().fine("Rediscovered solution, still have %lu size=%lu",
+			        news, _frame._linkage.size());
+		}
+		logger().fine("====================================");
 		return false;
 	}
 
