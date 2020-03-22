@@ -126,17 +126,17 @@ bool Aggregate::extend(void)
 		return false;
 	}
 
-	// Each section is a branch point that has to be explored on
-	// it's own. Halt, if the section is not extendable any more.
+	// Try to extend each open connector on each section.
+	// If this fails, then we're done.
 	HandleSet sects = _frame._open_sections;
-	bool keep_going = true;
 	for (const Handle& sect : sects)
 	{
-		keep_going = extend_section(sect);
-		if (not keep_going) break;
+		bool keep_going = extend_section(sect);
+		if (not keep_going) return false;
 	}
 
-	return keep_going;
+	// Is there more? If so, recurse.
+	return extend();
 }
 
 #define al _as->add_link
@@ -168,7 +168,8 @@ bool Aggregate::extend_section(const Handle& section)
 
 		for (const Handle& matching: to_cons)
 		{
-			join_connector(section, from_con, matching);
+			bool did_connect = join_connector(section, from_con, matching);
+			if (not did_connect) return false;
 		}
 	}
 	return true;
@@ -176,39 +177,18 @@ bool Aggregate::extend_section(const Handle& section)
 
 /// Given a section and a connector in that section, and a matching
 /// connector that connects to it, search for sections that can hook up,
-/// and hook them up, if the callback allows it.
-void Aggregate::join_connector(const Handle& fm_sect,
+/// and hook them up, if the callback allows it. Return true if a
+/// successful connection was made. Return false if a connection is
+/// not possible (and thus the connector remains unconnected).
+bool Aggregate::join_connector(const Handle& fm_sect,
                                const Handle& fm_con,
                                const Handle& to_con)
 {
 	Handle to_sect = _cb->select(_frame, fm_sect, fm_con, to_con);
-	while (nullptr != to_sect)
-	{
-#if 0
-			// If `close_cycle` is true, then attempt to connect to
-			// an existing open section (thus potentially creating a
-			// cycle or loop).
-			if (close_cycle)
-			{
-				if (_frame._open_sections.end() ==
-				     _frame._open_sections.find(to_sect)) continue;
-			}
-			else
-			{
-				if (_frame._open_sections.end() !=
-				     _frame._open_sections.find(to_sect)) continue;
-			}
-#endif
+	if (nullptr == to_sect) return false;
 
-		push();
-		connect_section(fm_sect, fm_con, to_sect, to_con);
-
-		// And now, recurse...
-		extend();
-		pop();
-
-		to_sect = _cb->select(_frame, fm_sect, fm_con, to_con);
-	}
+	connect_section(fm_sect, fm_con, to_sect, to_con);
+	return true;
 }
 
 /// Connect a pair of sections together, by connecting two matched

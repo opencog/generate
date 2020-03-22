@@ -44,11 +44,26 @@ static inline Handle uniform_choice(const HandleSeq& lst)
 	return lst[sno];
 }
 
-/// Return section containing `to_con`.
+/// Return a section containing `to_con`.
 Handle DefaultCallback::select(const Frame& frame,
                                const Handle& fm_sect, const Handle& fm_con,
                                const Handle& to_con)
 {
+#if 0
+	// If `close_cycle` is true, then attempt to connect to
+	// an existing open section (thus potentially creating a
+	// cycle or loop).
+	if (close_cycle)
+	{
+		if (_frame._open_sections.end() ==
+		    _frame._open_sections.find(to_sect)) continue;
+	}
+	else
+	{
+		if (_frame._open_sections.end() !=
+		    _frame._open_sections.find(to_sect)) continue;
+	}
+#endif
 
 	const auto& curit = _lexlit.find(to_con);
 	if (curit != _lexlit.end())
