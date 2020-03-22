@@ -59,12 +59,14 @@ public:
 
 	void add_pole_pair(const Handle&, const Handle&);
 
-	HandleSeq joints(const Handle&);
+	HandleSeq joints(const Handle&) const;
 
 	void add_to_lexis(const Handle&);
 	void add_to_lexis(const HandleSet& lex) {
 		for (const Handle& h: lex) add_to_lexis(h);
 	}
+
+	const HandleSeq& sections(const Handle&) const;
 };
 
 

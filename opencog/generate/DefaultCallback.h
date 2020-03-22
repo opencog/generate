@@ -42,12 +42,6 @@ private:
 	size_t _stack_depth;
 	size_t _effort;
 
-	// Map from Connectors to Sections that hold that connector.
-	// This map is set up at the start, before iteration begins.
-	//
-	typedef std::map<Handle, HandleSeq> HandleSeqMap;
-	HandleSeqMap _lexis;
-
 	typedef std::map<Handle, HandleSeq::const_iterator> HandleSeqCiterMap;
 	HandleSeqCiterMap _lexlit;
 

@@ -55,7 +55,7 @@ Handle DefaultCallback::select(const Frame& frame,
 	{
 		// The iterator is point somewhere into _lexis[to_con]
 		HandleSeq::const_iterator toit = curit->second;
-		if (toit != _lexis[to_con].end())
+		if (toit != _dict.sections(to_con).end())
 		{
 			// Increment and save.
 			Handle to_sect = *toit;
@@ -71,11 +71,11 @@ Handle DefaultCallback::select(const Frame& frame,
 		}
 	}
 
-	const auto& its = _lexis.find(to_con);
-	if (its == _lexis.end()) return Handle::UNDEFINED;
+	const HandleSeq& to_sects = _dict.sections(to_con);
+	if (0 == to_sects.size()) return Handle::UNDEFINED;
 
 	// Start iterating over the sections that contain to_con.
-	HandleSeq::const_iterator toit = its->second.begin();
+	HandleSeq::const_iterator toit = to_sects.begin();
 
 	// Increment and save.
 	Handle to_sect = *toit;
