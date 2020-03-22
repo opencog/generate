@@ -40,7 +40,13 @@ private:
 	size_t _effort;
 	HandlePairSeq _pole_pairs;
 
+	// Map from Connectors to Sections that hold that connector.
 	std::map<Handle, HandleSeq> _lexis;
+
+	std::map<Handle, HandleSeq::const_iterator> _lexlit;
+
+	// Stack of iterators into the
+	// std::stack<
 
 public:
 	DefaultCallback(AtomSpace*, const HandlePairSeq&);

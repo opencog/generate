@@ -109,17 +109,48 @@ Handle DefaultCallback::select(const Frame& frame,
                                const Handle& fm_sect, const Handle& fm_con,
                                const Handle& to_con)
 {
-	// OK, a bunch of temp hackery here.  First, we are going to randomly
-	// draw elibible sections. Two reasons: (1) the long term strategy
-	// is to use some guided, weighted random draw anyway. (2) we don't
-	// have any way of maintaining state, because there is no hook to
-	// maintain our private state in class Frame. XXX FIXME.
+
+	const auto& curit = _lexlit.find(to_con);
+	if (curit != _lexlit.end())
+	{
+		// The iterator is point somewhere into _lexis[to_con]
+		HandleSeq::const_iterator toit = curit->second;
+		if (toit != _lexis[to_con].end())
+		{
+			// Increment and save.
+			Handle to_sect = *toit;
+			toit++;
+			_lexlit[to_con] = toit;
+			return to_sect;
+		}
+		else
+		{
+			// We've iterated to the end; we're done.
+			_lexlit.erase(to_con);
+			return Handle::UNDEFINED;
+		}
+	}
 
 	const auto& its = _lexis.find(to_con);
 	if (its == _lexis.end()) return Handle::UNDEFINED;
-	Handle to_sect = uniform_choice(its->second);
+
+	// Start iterating over the sections that contain to_con.
+	HandleSeq::const_iterator toit = its->second.begin();
+
+	// Increment and save.
+	Handle to_sect = *toit;
+	toit++;
+	_lexlit[to_con] = toit;
+	return to_sect;
 
 #if 0
+	// Randomly draw elegible sections. The long term strategy
+	// is to use some guided, weighted random draw anyway.
+	Handle to_sect = uniform_choice(its->second);
+#endif
+
+#if 0
+	// Avoid retrying previously-tried connections...
 	Handle fm_point = fm_sect->getOutgoingAtom(0);
 	Handle to_point = to_sect->getOutgoingAtom(0);
 	Handle cpr = _as->get_link(SET_LINK, fm_point, to_point);
@@ -131,8 +162,6 @@ Handle DefaultCallback::select(const Frame& frame,
 	Handle link = _as->get_link(EVALUATION_LINK, linkty, cpr);
 	if (nullptr == link) return false;
 #endif
-
-	return to_sect;
 }
 
 /// Create an undirected edge connecting the two points `fm_pnt` and
