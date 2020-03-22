@@ -36,6 +36,38 @@ DefaultCallback::DefaultCallback(AtomSpace* as, const HandlePairSeq& pp)
 
 DefaultCallback::~DefaultCallback() {}
 
+/// add_to_lexis() - Declare a section as valid for use in assembly.
+/// Basically, only those sections that have been declared to be a part
+/// of the lexis will be used during assembly/aggregation.
+///
+void DefaultCallback::add_to_lexis(const Handle& sect)
+{
+	// We are storing lexical entries in a specialized struct in this
+	// class.  This is arguably a deasign failure ... we should be
+	// storing the lexical entries  in the AtomSpace, as EvaluationLinks
+	// with Predicate "lexis", and then using the AtomSpace API to
+	// access... Just sayin...
+	//
+	// Anyway, this is a lookup table: given a connector, we can lookup
+	// a list of sections that have that connector in it. We're using
+	// a sequence, not a set, for two reasons: (1) fast random lookup,
+	// the sequence can be ordered in priority order (e.g. Zipfian)
+	// which is not done here, but could be. XXX FIXME.
+	//
+	Handle con_seq = sect->getOutgoingAtom(1);
+	for (const Handle& con : con_seq->getOutgoingSet())
+	{
+		HandleSeq sect_list = _lexis[con];
+		sect_list.push_back(con);
+		_lexis[con] = sect_list;
+	}
+}
+
+// We are storing pole_pairs in a specialized struct in this class.
+// This is arguably a deasign failure ... we should be storing the
+// pole pairs in the AtomSpace, as EvaluationLinks with Predicate
+// "pole_pair", and then using the AtomSpace API to access...
+// Just sayin...
 HandleSeq DefaultCallback::joints(const Handle& from_con)
 {
 	HandleSeq phs;

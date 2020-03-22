@@ -40,9 +40,13 @@ private:
 	size_t _effort;
 	HandlePairSeq _pole_pairs;
 
+	std::map<Handle, HandleSeq> _lexis;
+
 public:
 	DefaultCallback(AtomSpace*, const HandlePairSeq&);
 	virtual ~DefaultCallback();
+
+	void add_to_lexis(const Handle&);
 
 	virtual HandleSeq joints(const Handle&);
 	virtual Handle select(const Frame&,
