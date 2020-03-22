@@ -19,6 +19,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <random>
+
 #include <opencog/atoms/base/Link.h>
 
 #include "DefaultCallback.h"
@@ -61,24 +63,35 @@ HandleSeq DefaultCallback::joints(const Handle& from_con)
 	return phs;
 }
 
-/// Return false if the connection should not be made.
-/// Return true if it is OK to connect these sections.
-bool DefaultCallback::connect(const Frame& frame, bool close,
-                              const Handle& fm_sect, const Handle& fm_con,
-                              const Handle& to_sect, const Handle& to_con)
+static inline Handle uniform_choice(const HandleSeq& lst)
 {
-	// Cycle breaking. The idea here is that any given attempted
-	// assembly of pieces will in general have cycles (loops) in
-	// them. A tree traversal means that these loops will be walked
-	// in every possible permutation, leading to vast amounts of
-	// repeated rediscoveries of previously attempted connections.
-	// There's two solutions to this: (1) don't do tree traversal.
-	// (2) do the cheap hack below. The cheap hack is that previous
-	// connection attempts will still be sitting around in the
-	// AtomSpace, so if we find that these two sections are already
-	// connected (due to some earlier attempt) just return false,
-	// and don't try again.
+	static std::random_device seed;
+	static std::mt19937 rangen(seed());
+	std::uniform_int_distribution<> dist(0, lst.size()-1);
+	int sno = dist(rangen);
+	return lst[sno];
+}
 
+/// Return section containing `to_con`.
+Handle DefaultCallback::select(const Frame& frame,
+                               const Handle& fm_sect, const Handle& fm_con,
+                               const Handle& to_con)
+{
+	// OK, a bunch of temp hackery here.  First, we are going to randomly
+	// draw elibible sections. Two reasons: (1) the long term strategy
+	// is to use some guided, weighted random draw anyway. (2) we don't
+	// have any way of maintaining state, because there is no hook to
+	// maintain our private state in class Frame. XXX FIXME.
+
+	HandleSeq to_seqs = to_con->getIncomingSetByType(CONNECTOR_SEQ);
+	if (0 == to_seqs.size()) return Handle::UNDEFINED;
+
+	Handle to_seq = uniform_choice(to_seqs);
+	HandleSeq to_sects = to_seq->getIncomingSetByType(SECTION);
+	if (0 == to_sects.size()) return Handle::UNDEFINED;
+	Handle to_sect = uniform_choice(to_sects);
+
+#if 0
 	Handle fm_point = fm_sect->getOutgoingAtom(0);
 	Handle to_point = to_sect->getOutgoingAtom(0);
 	Handle cpr = _as->get_link(SET_LINK, fm_point, to_point);
@@ -89,8 +102,9 @@ bool DefaultCallback::connect(const Frame& frame, bool close,
 	Handle linkty = fm_con->getOutgoingAtom(0);
 	Handle link = _as->get_link(EVALUATION_LINK, linkty, cpr);
 	if (nullptr == link) return false;
+#endif
 
-	return true;
+	return to_sect;
 }
 
 /// Create an undirected edge connecting the two points `fm_pnt` and

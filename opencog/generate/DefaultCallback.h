@@ -45,9 +45,9 @@ public:
 	virtual ~DefaultCallback();
 
 	virtual HandleSeq joints(const Handle&);
-	virtual bool connect(const Frame&, bool,
-	                     const Handle&, const Handle&,
-	                     const Handle&, const Handle&);
+	virtual Handle select(const Frame&,
+	                      const Handle&, const Handle&,
+	                      const Handle&);
 
 	virtual Handle make_link(const Handle&, const Handle&,
 	                         const Handle&, const Handle&);

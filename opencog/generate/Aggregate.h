@@ -55,8 +55,7 @@ private:
 
 	bool extend(void);
 	bool extend_section(const Handle&);
-	void join_connector(const Handle&, const Handle&,
-	                    const Handle&, bool);
+	void join_connector(const Handle&, const Handle&, const Handle&);
 	void connect_section(const Handle&, const Handle&,
 	                     const Handle&, const Handle&);
 	bool make_link(const Handle&, const Handle&,
