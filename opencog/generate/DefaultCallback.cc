@@ -58,7 +58,7 @@ void DefaultCallback::add_to_lexis(const Handle& sect)
 	for (const Handle& con : con_seq->getOutgoingSet())
 	{
 		HandleSeq sect_list = _lexis[con];
-		sect_list.push_back(con);
+		sect_list.push_back(sect);
 		_lexis[con] = sect_list;
 	}
 }
