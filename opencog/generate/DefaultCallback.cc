@@ -115,13 +115,9 @@ Handle DefaultCallback::select(const Frame& frame,
 	// have any way of maintaining state, because there is no hook to
 	// maintain our private state in class Frame. XXX FIXME.
 
-	HandleSeq to_seqs = to_con->getIncomingSetByType(CONNECTOR_SEQ);
-	if (0 == to_seqs.size()) return Handle::UNDEFINED;
-
-	Handle to_seq = uniform_choice(to_seqs);
-	HandleSeq to_sects = to_seq->getIncomingSetByType(SECTION);
-	if (0 == to_sects.size()) return Handle::UNDEFINED;
-	Handle to_sect = uniform_choice(to_sects);
+	const auto& its = _lexis.find(to_con);
+	if (its == _lexis.end()) return Handle::UNDEFINED;
+	Handle to_sect = uniform_choice(its->second);
 
 #if 0
 	Handle fm_point = fm_sect->getOutgoingAtom(0);
