@@ -1,5 +1,5 @@
 /*
- * opencog/generate/DefaultCallback.h
+ * opencog/generate/Dictionary.h
  *
  * Copyright (C) 2020 Linas Vepstas <linasvepstas@gmail.com>
  *
@@ -19,8 +19,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _OPENCOG_DEFAULT_CALLBACK_H
-#define _OPENCOG_DEFAULT_CALLBACK_H
+#ifndef _OPENCOG_DICTIONARY_H
+#define _OPENCOG_DICTIONARY_H
 
 #include <opencog/generate/GenerateCallback.h>
 
@@ -30,14 +30,20 @@ namespace opencog
  *  @{
  */
 
-class DefaultCallback : public GenerateCallback
+/// Dictionary (Lexis) of sections that can connect to one-another.
+/// This provides several convenience data structures. These include:
+///
+/// * A set of pairs of connectors that can attach to one-another.
+///
+/// * A map from Connectors to the Sections that contain them.
+///
+/// Attention: In principle, these maps should not be stored in a
+/// C++ struct such as this, but should instead be pulled directly
+/// from the AtomSpace. However, at this time, it just seems more
+/// convenient to use this struct. This may change!
+struct Dictionary
 {
-protected:
-	AtomSpace* _as;
-
-private:
-	size_t _stack_depth;
-	size_t _effort;
+	/// Pairings of connectors that can joint to one-another.
 	HandlePairSeq _pole_pairs;
 
 	// Map from Connectors to Sections that hold that connector.
@@ -46,32 +52,11 @@ private:
 	typedef std::map<Handle, HandleSeq> HandleSeqMap;
 	HandleSeqMap _lexis;
 
-	typedef std::map<Handle, HandleSeq::const_iterator> HandleSeqCiterMap;
-	HandleSeqCiterMap _lexlit;
-
-	// Stack of iterators into the lists of sections. Ugh.
-	// std::stack<HandleSeqCiterMap> _lexlit_stack;
-
-public:
-	DefaultCallback(AtomSpace*, const HandlePairSeq&);
-	virtual ~DefaultCallback();
-
 	void add_to_lexis(const Handle&);
-
-	virtual HandleSeq joints(const Handle&);
-	virtual Handle select(const Frame&,
-	                      const Handle&, const Handle&,
-	                      const Handle&);
-
-	virtual Handle make_link(const Handle&, const Handle&,
-	                         const Handle&, const Handle&);
-	virtual void push(const Frame&) { _stack_depth++; }
-	virtual void pop(const Frame&) { _stack_depth--; }
-	virtual bool recurse(const Frame&);
 };
 
 
 /** @}*/
 }  // namespace opencog
 
-#endif // _OPENCOG_DEFAULT_CALLBACK_H
+#endif // _OPENCOG_DICTIONARY_H

@@ -16,6 +16,7 @@ INSTALL(TARGETS generate
 INSTALL(FILES
 	Aggregate.h
 	DefaultCallback.h
+	Dictionary.h
 	Frame.h
 	GenerateCallback.h
 	DESTINATION "include/opencog/generate"
