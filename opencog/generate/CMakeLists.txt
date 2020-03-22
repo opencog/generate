@@ -3,6 +3,7 @@
 ADD_LIBRARY(generate SHARED
 	Aggregate
 	DefaultCallback
+	Dictionary
 )
 
 TARGET_LINK_LIBRARIES(generate

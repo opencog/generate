@@ -22,7 +22,7 @@
 #ifndef _OPENCOG_DICTIONARY_H
 #define _OPENCOG_DICTIONARY_H
 
-#include <opencog/generate/GenerateCallback.h>
+#include <opencog/atomspace/AtomSpace.h>
 
 namespace opencog
 {
@@ -41,8 +41,10 @@ namespace opencog
 /// C++ struct such as this, but should instead be pulled directly
 /// from the AtomSpace. However, at this time, it just seems more
 /// convenient to use this struct. This may change!
-struct Dictionary
+class Dictionary
 {
+	AtomSpace* _as;
+
 	/// Pairings of connectors that can joint to one-another.
 	HandlePairSeq _pole_pairs;
 
@@ -52,7 +54,17 @@ struct Dictionary
 	typedef std::map<Handle, HandleSeq> HandleSeqMap;
 	HandleSeqMap _lexis;
 
+public:
+	Dictionary(AtomSpace*);
+
+	void add_pole_pair(const Handle&, const Handle&);
+
+	HandleSeq joints(const Handle&);
+
 	void add_to_lexis(const Handle&);
+	void add_to_lexis(const HandleSet& lex) {
+		for (const Handle& h: lex) add_to_lexis(h);
+	}
 };
 
 

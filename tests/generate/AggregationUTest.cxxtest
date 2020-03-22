@@ -25,6 +25,7 @@ private:
 	AtomSpace* as;
 	SchemeEval* eval;
 	Aggregate* ag;
+	Dictionary* dict;
 
 public:
 	AggregationUTest();
@@ -32,6 +33,8 @@ public:
 
 	void setUp();
 	void tearDown();
+
+	void setup_dict();
 
 	void test_hello();
 	void test_tree();
@@ -74,6 +77,22 @@ void AggregationUTest::tearDown()
 	delete as;
 }
 
+void AggregationUTest::setup_dict()
+{
+	dict = new Dictionary(as);
+
+	// The directions to connect.
+	Handle plus = an(CONNECTOR_DIR_NODE, "+");
+	Handle minus = an(CONNECTOR_DIR_NODE, "-");
+	dict->add_pole_pair(plus, minus);
+	dict->add_pole_pair(minus, plus);
+
+	// The lexis to use
+	HandleSet lex;
+	as->get_handleset_by_type(lex, SECTION);
+	dict->add_to_lexis(lex);
+}
+
 // Single generation: "Hello world"
 void AggregationUTest::test_hello()
 {
@@ -82,19 +101,8 @@ void AggregationUTest::test_hello()
 	eval->eval("(load-from-path \"tests/generate/dict-helloworld.scm\")");
 	Handle wall = eval->eval_h("left-wall");
 
-	// The directions to connect.
-	Handle plus = an(CONNECTOR_DIR_NODE, "+");
-	Handle minus = an(CONNECTOR_DIR_NODE, "-");
-	HandlePairSeq pole_pairs;
-	pole_pairs.push_back({minus, plus});
-	pole_pairs.push_back({plus, minus});
-	DefaultCallback cb(as, pole_pairs);
-
-	// The lexis to use
-	HandleSet lex;
-	as->get_handleset_by_type(lex, SECTION);
-	for (const Handle& h: lex) cb.add_to_lexis(h);
-
+	setup_dict();
+	DefaultCallback cb(as, *dict);
 	Handle result = ag->aggregate({wall}, cb);
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
@@ -117,18 +125,8 @@ void AggregationUTest::test_tree()
 	eval->eval("(load-from-path \"tests/generate/dict-tree.scm\")");
 	Handle wall = eval->eval_h("left-wall");
 
-	// The directions to connect.
-	Handle plus = an(CONNECTOR_DIR_NODE, "+");
-	Handle minus = an(CONNECTOR_DIR_NODE, "-");
-	HandlePairSeq pole_pairs;
-	pole_pairs.push_back({minus, plus});
-	pole_pairs.push_back({plus, minus});
-	DefaultCallback cb(as, pole_pairs);
-
-	// The lexis to use
-	HandleSet lex;
-	as->get_handleset_by_type(lex, SECTION);
-	for (const Handle& h: lex) cb.add_to_lexis(h);
+	setup_dict();
+	DefaultCallback cb(as, *dict);
 
 	Handle result = ag->aggregate({wall}, cb);
 
@@ -164,18 +162,8 @@ void AggregationUTest::test_loop()
 	Handle wall = eval->eval_h("left-wall");
 
 // logger().set_level(Logger::FINE);
-	// The directions to connect.
-	Handle plus = an(CONNECTOR_DIR_NODE, "+");
-	Handle minus = an(CONNECTOR_DIR_NODE, "-");
-	HandlePairSeq pole_pairs;
-	pole_pairs.push_back({minus, plus});
-	pole_pairs.push_back({plus, minus});
-	DefaultCallback cb(as, pole_pairs);
-
-	// The lexis to use
-	HandleSet lex;
-	as->get_handleset_by_type(lex, SECTION);
-	for (const Handle& h: lex) cb.add_to_lexis(h);
+	setup_dict();
+	DefaultCallback cb(as, *dict);
 
 	Handle result = ag->aggregate({wall}, cb);
 

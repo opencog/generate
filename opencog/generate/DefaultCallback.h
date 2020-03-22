@@ -22,6 +22,7 @@
 #ifndef _OPENCOG_DEFAULT_CALLBACK_H
 #define _OPENCOG_DEFAULT_CALLBACK_H
 
+#include <opencog/generate/Dictionary.h>
 #include <opencog/generate/GenerateCallback.h>
 
 namespace opencog
@@ -36,9 +37,10 @@ protected:
 	AtomSpace* _as;
 
 private:
+	Dictionary _dict;
+
 	size_t _stack_depth;
 	size_t _effort;
-	HandlePairSeq _pole_pairs;
 
 	// Map from Connectors to Sections that hold that connector.
 	// This map is set up at the start, before iteration begins.
@@ -53,12 +55,12 @@ private:
 	// std::stack<HandleSeqCiterMap> _lexlit_stack;
 
 public:
-	DefaultCallback(AtomSpace*, const HandlePairSeq&);
+	DefaultCallback(AtomSpace*, const Dictionary&);
 	virtual ~DefaultCallback();
 
-	void add_to_lexis(const Handle&);
-
-	virtual HandleSeq joints(const Handle&);
+	virtual HandleSeq joints(const Handle& con) {
+		return _dict.joints(con);
+	}
 	virtual Handle select(const Frame&,
 	                      const Handle&, const Handle&,
 	                      const Handle&);
