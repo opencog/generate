@@ -52,14 +52,14 @@ public:
 	virtual HandleSeq joints(const Handle&) = 0;
 
 	/// Given an exsiting connected section `fm_sect` and a connector
-	/// `fm_con` on that section, propose a connection to the section
-	/// `to_sect` and connector `to_con`. If this returns true, then
-	/// the connection will proceed. Otherwise, this connection will
-	/// not be made. The flag `cycle` is true if creating this
-	/// connection would result in the formation of a cycle.
-	virtual bool connect(const Frame&, bool cycle,
-	                     const Handle& fm_sect, const Handle& fm_con,
-	                     const Handle& to_sect, const Handle& to_con) = 0;
+	/// `fm_con` on that section, as well as a mating `to_con`, return
+	/// a section that could be attached. This allows the callback to
+	/// chose sections in such a way that the highest-priority or most
+	/// preferable sections are mated first.  Return null handle to
+	/// discontinue mating.
+	virtual Handle select(const Frame&,
+	                      const Handle& fm_sect, const Handle& fm_con,
+	                      const Handle& to_sect) = 0;
 
 	/// Create a link from connector `fm_con` to connector `to_con`,
 	/// which will connect `fm_pnt` to `to_pnt`.

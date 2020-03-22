@@ -19,6 +19,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <random>
+
 #include <opencog/atoms/base/Link.h>
 
 #include "DefaultCallback.h"
@@ -34,6 +36,38 @@ DefaultCallback::DefaultCallback(AtomSpace* as, const HandlePairSeq& pp)
 
 DefaultCallback::~DefaultCallback() {}
 
+/// add_to_lexis() - Declare a section as valid for use in assembly.
+/// Basically, only those sections that have been declared to be a part
+/// of the lexis will be used during assembly/aggregation.
+///
+void DefaultCallback::add_to_lexis(const Handle& sect)
+{
+	// We are storing lexical entries in a specialized struct in this
+	// class.  This is arguably a deasign failure ... we should be
+	// storing the lexical entries  in the AtomSpace, as EvaluationLinks
+	// with Predicate "lexis", and then using the AtomSpace API to
+	// access... Just sayin...
+	//
+	// Anyway, this is a lookup table: given a connector, we can lookup
+	// a list of sections that have that connector in it. We're using
+	// a sequence, not a set, for two reasons: (1) fast random lookup,
+	// the sequence can be ordered in priority order (e.g. Zipfian)
+	// which is not done here, but could be. XXX FIXME.
+	//
+	Handle con_seq = sect->getOutgoingAtom(1);
+	for (const Handle& con : con_seq->getOutgoingSet())
+	{
+		HandleSeq sect_list = _lexis[con];
+		sect_list.push_back(sect);
+		_lexis[con] = sect_list;
+	}
+}
+
+// We are storing pole_pairs in a specialized struct in this class.
+// This is arguably a deasign failure ... we should be storing the
+// pole pairs in the AtomSpace, as EvaluationLinks with Predicate
+// "pole_pair", and then using the AtomSpace API to access...
+// Just sayin...
 HandleSeq DefaultCallback::joints(const Handle& from_con)
 {
 	HandleSeq phs;
@@ -61,24 +95,62 @@ HandleSeq DefaultCallback::joints(const Handle& from_con)
 	return phs;
 }
 
-/// Return false if the connection should not be made.
-/// Return true if it is OK to connect these sections.
-bool DefaultCallback::connect(const Frame& frame, bool close,
-                              const Handle& fm_sect, const Handle& fm_con,
-                              const Handle& to_sect, const Handle& to_con)
+static inline Handle uniform_choice(const HandleSeq& lst)
 {
-	// Cycle breaking. The idea here is that any given attempted
-	// assembly of pieces will in general have cycles (loops) in
-	// them. A tree traversal means that these loops will be walked
-	// in every possible permutation, leading to vast amounts of
-	// repeated rediscoveries of previously attempted connections.
-	// There's two solutions to this: (1) don't do tree traversal.
-	// (2) do the cheap hack below. The cheap hack is that previous
-	// connection attempts will still be sitting around in the
-	// AtomSpace, so if we find that these two sections are already
-	// connected (due to some earlier attempt) just return false,
-	// and don't try again.
+	static std::random_device seed;
+	static std::mt19937 rangen(seed());
+	std::uniform_int_distribution<> dist(0, lst.size()-1);
+	int sno = dist(rangen);
+	return lst[sno];
+}
 
+/// Return section containing `to_con`.
+Handle DefaultCallback::select(const Frame& frame,
+                               const Handle& fm_sect, const Handle& fm_con,
+                               const Handle& to_con)
+{
+
+	const auto& curit = _lexlit.find(to_con);
+	if (curit != _lexlit.end())
+	{
+		// The iterator is point somewhere into _lexis[to_con]
+		HandleSeq::const_iterator toit = curit->second;
+		if (toit != _lexis[to_con].end())
+		{
+			// Increment and save.
+			Handle to_sect = *toit;
+			toit++;
+			_lexlit[to_con] = toit;
+			return to_sect;
+		}
+		else
+		{
+			// We've iterated to the end; we're done.
+			_lexlit.erase(to_con);
+			return Handle::UNDEFINED;
+		}
+	}
+
+	const auto& its = _lexis.find(to_con);
+	if (its == _lexis.end()) return Handle::UNDEFINED;
+
+	// Start iterating over the sections that contain to_con.
+	HandleSeq::const_iterator toit = its->second.begin();
+
+	// Increment and save.
+	Handle to_sect = *toit;
+	toit++;
+	_lexlit[to_con] = toit;
+	return to_sect;
+
+#if 0
+	// Randomly draw elegible sections. The long term strategy
+	// is to use some guided, weighted random draw anyway.
+	Handle to_sect = uniform_choice(its->second);
+#endif
+
+#if 0
+	// Avoid retrying previously-tried connections...
 	Handle fm_point = fm_sect->getOutgoingAtom(0);
 	Handle to_point = to_sect->getOutgoingAtom(0);
 	Handle cpr = _as->get_link(SET_LINK, fm_point, to_point);
@@ -89,8 +161,7 @@ bool DefaultCallback::connect(const Frame& frame, bool close,
 	Handle linkty = fm_con->getOutgoingAtom(0);
 	Handle link = _as->get_link(EVALUATION_LINK, linkty, cpr);
 	if (nullptr == link) return false;
-
-	return true;
+#endif
 }
 
 /// Create an undirected edge connecting the two points `fm_pnt` and

@@ -101,7 +101,7 @@ bool Aggregate::extend(void)
 	}
 
 	logger().fine("Begin recursion: open-points=%lu open-sect=%lu lkg=%lu",
-		_frame._open_points.size(), _frame._open_sections.size(), 
+		_frame._open_points.size(), _frame._open_sections.size(),
 		_frame._linkage.size());
 
 	// If there are no more sections, we are done.
@@ -157,7 +157,7 @@ bool Aggregate::extend_section(const Handle& section)
 
 	for (const Handle& from_con : from_seq->getOutgoingSet())
 	{
-		// There may be fully connected links in th sequence.
+		// There may be fully connected links in the sequence.
 		// Ignore those. We want unconnected connectors only.
 		if (CONNECTOR != from_con->get_type()) continue;
 
@@ -168,8 +168,7 @@ bool Aggregate::extend_section(const Handle& section)
 
 		for (const Handle& matching: to_cons)
 		{
-			join_connector(section, from_con, matching, true);
-			join_connector(section, from_con, matching, false);
+			join_connector(section, from_con, matching);
 		}
 	}
 	return true;
@@ -177,28 +176,15 @@ bool Aggregate::extend_section(const Handle& section)
 
 /// Given a section and a connector in that section, and a matching
 /// connector that connects to it, search for sections that can hook up,
-/// and hook them up, if the callback allows it. If the `close_cycle`
-/// flag is true, then consider only currently connecte sections, in
-/// an attempt to create a cycle. If false, avoid creating a cycle.
+/// and hook them up, if the callback allows it.
 void Aggregate::join_connector(const Handle& fm_sect,
                                const Handle& fm_con,
-                               const Handle& matching,
-                               bool close_cycle)
+                               const Handle& to_con)
 {
-	// Find all ConnectorSeq with the matching connector in it.
-	HandleSeq to_seqs = matching->getIncomingSetByType(CONNECTOR_SEQ);
-	for (const Handle& to_seq : to_seqs)
+	Handle to_sect = _cb->select(_frame, fm_sect, fm_con, to_con);
+	while (nullptr != to_sect)
 	{
-		HandleSeq to_sects = to_seq->getIncomingSetByType(SECTION);
-
-		for (const Handle& to_sect : to_sects)
-		{
-			if (not _cb->connect(_frame, close_cycle,
-			                     fm_sect, fm_con, to_sect, matching))
-			{
-				continue;
-			}
-
+#if 0
 			// If `close_cycle` is true, then attempt to connect to
 			// an existing open section (thus potentially creating a
 			// cycle or loop).
@@ -212,14 +198,16 @@ void Aggregate::join_connector(const Handle& fm_sect,
 				if (_frame._open_sections.end() !=
 				     _frame._open_sections.find(to_sect)) continue;
 			}
+#endif
 
-			push();
-			connect_section(fm_sect, fm_con, to_sect, matching);
+		push();
+		connect_section(fm_sect, fm_con, to_sect, to_con);
 
-			// And now, recurse...
-			extend();
-			pop();
-		}
+		// And now, recurse...
+		extend();
+		pop();
+
+		to_sect = _cb->select(_frame, fm_sect, fm_con, to_con);
 	}
 }
 

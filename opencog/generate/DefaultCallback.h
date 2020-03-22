@@ -40,14 +40,24 @@ private:
 	size_t _effort;
 	HandlePairSeq _pole_pairs;
 
+	// Map from Connectors to Sections that hold that connector.
+	std::map<Handle, HandleSeq> _lexis;
+
+	std::map<Handle, HandleSeq::const_iterator> _lexlit;
+
+	// Stack of iterators into the
+	// std::stack<
+
 public:
 	DefaultCallback(AtomSpace*, const HandlePairSeq&);
 	virtual ~DefaultCallback();
 
+	void add_to_lexis(const Handle&);
+
 	virtual HandleSeq joints(const Handle&);
-	virtual bool connect(const Frame&, bool,
-	                     const Handle&, const Handle&,
-	                     const Handle&, const Handle&);
+	virtual Handle select(const Frame&,
+	                      const Handle&, const Handle&,
+	                      const Handle&);
 
 	virtual Handle make_link(const Handle&, const Handle&,
 	                         const Handle&, const Handle&);

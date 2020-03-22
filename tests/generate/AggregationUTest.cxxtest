@@ -90,6 +90,11 @@ void AggregationUTest::test_hello()
 	pole_pairs.push_back({plus, minus});
 	DefaultCallback cb(as, pole_pairs);
 
+	// The lexis to use
+	HandleSet lex;
+	as->get_handleset_by_type(lex, SECTION);
+	for (const Handle& h: lex) cb.add_to_lexis(h);
+
 	Handle result = ag->aggregate({wall}, cb);
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
@@ -119,6 +124,11 @@ void AggregationUTest::test_tree()
 	pole_pairs.push_back({minus, plus});
 	pole_pairs.push_back({plus, minus});
 	DefaultCallback cb(as, pole_pairs);
+
+	// The lexis to use
+	HandleSet lex;
+	as->get_handleset_by_type(lex, SECTION);
+	for (const Handle& h: lex) cb.add_to_lexis(h);
 
 	Handle result = ag->aggregate({wall}, cb);
 
@@ -161,6 +171,11 @@ void AggregationUTest::test_loop()
 	pole_pairs.push_back({minus, plus});
 	pole_pairs.push_back({plus, minus});
 	DefaultCallback cb(as, pole_pairs);
+
+	// The lexis to use
+	HandleSet lex;
+	as->get_handleset_by_type(lex, SECTION);
+	for (const Handle& h: lex) cb.add_to_lexis(h);
 
 	Handle result = ag->aggregate({wall}, cb);
 
