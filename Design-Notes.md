@@ -15,25 +15,57 @@ resulting combinatorial explosion is obvious.
 Problem w/recursive tree-walking is that it works efficiently only when
 the dictionary specifies only trees. If the dictionary allows cycles,
 then tree-walking fails, in two distinct ways. First, any cycle allows
-infinite recursion; so recursion has to be blocked by depth. Second,
+infinite recursion; so recursion has to be blocked some way, either by
+depth or by cycle-detection. Second, even when made finite in this way,
 the walker will walk the cycle every possible way, even when the final
 resulting graph is the same. This leads to a lot of wasted CPU time,
 rediscovering the same graph.
 
+Depth-first recursion can be visualized as follows. Imagine a small
+tree or even a single point. A branch-tip is selected - just one -
+and it is grown by aggregation, until conclusion. Here "aggregation"
+means joining new puzzle-pieces to existing unconnected connectors.
+In depth-first aggregation, if the original seed has a second connector,
+it is completely ignored until all growths from the first have been
+fully explored.  This is why breadth-first aggregation is intiutively
+more appealing: in breadth-first aggregation, all growing tips are
+explored in parallel.
+
+The last working version of depth-recursive tree-walking is located at
+```
+   git commit 88b63ec3a7406929ed5ed2dd77400452c8e51596
+   Sat Mar 21 13:37:17 2020 -0500
+```
+Although this "works" for simple cases, its a toy; important features
+have been added since then.
+
 === Breadth-first aggregation
-The root issue is here that recursion is a depth-first aggregation.
-Just one selected branch-tip is grown at a time, until conclusion. If
-the original seed had a second connector, it is completely ignored
-until all growths from the first have been explored. Intuitively
-speaking, this seems unbalanced, and a "parallel", breadth-first
-aggregation order seems more natural. That is, each initial connector
-on the initial seed gains one attached piece only, creating a new
-"boundary" - collection of open connectors - which is then expanded in
-one step. So its like a wave propagating outwards; all points on
-boundaries are explored simultaneously.
+Breadth-first aggregation is done in "parallel", with all open
+connectors being extended just one step, per time-step. Visually,
+this can be imagined as a wave or a boundary that is expanding at
+constant velocity: one attachement per connector per time step.
+Its like a wave propagating outwards; all points on boundaries are
+explored simultaneously.
 
 Managing choices for breadth-first search is harder, and more memory
 intensive.
+
+Continuing with the visualization: in general, the length of the
+boundary increases exponentially, and so, if visualized as a surface,
+that surface is hyperbolic. Back-tracking requires undoing each boundary
+step by one, before other possible connections can be explored. As a
+result, the inner-most connectors, close to the seed, are effectively
+frozen into place, as very deep backtracking would be required to
+explore alternative connections for those connectors. If a poor choice
+is made for the first few sections connecting to a seed, it can be a
+very long time before there is enough back-tracking to where those
+"deep alternatives" can be explored.
+
+These last thoughts suggest that a better, more balanced sampling of
+the search space is to maintain a population of extensions grown from
+a seed, and explore each one distinctly, thus allowing "deep
+alternatives" to be fully sampled, even as getting boggged down at
+the edges of each growth.
 
 === Pruning
 Its hard to imagine how to improve on the above when there is a single
