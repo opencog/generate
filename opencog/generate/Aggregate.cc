@@ -65,10 +65,10 @@ Handle Aggregate::aggregate(const HandleSet& nuclei,
 
 	for (const Handle& sect : sections)
 	{
-		push();
+		push_frame();
 		_frame._open_sections.insert(sect);
 		extend();
-		pop();
+		pop_frame();
 	}
 
 	logger().fine("Finished; found %lu solutions\n", _solutions.size());
@@ -96,7 +96,7 @@ bool Aggregate::extend(void)
 	if (not _cb->recurse(_frame))
 	{
 		logger().fine("Recursion halted at depth %lu",
-			_link_stack.size());
+			_frame_stack.size());
 		return false;
 	}
 
@@ -267,26 +267,38 @@ bool Aggregate::make_link(const Handle& sect,
 	return is_open;
 }
 
-void Aggregate::push(void)
+void Aggregate::push_frame(void)
 {
 	_cb->push(_frame);
-	_point_stack.push(_frame._open_points);
-	_open_stack.push(_frame._open_sections);
-	_link_stack.push(_frame._linkage);
+	_frame_stack.push(_frame);
 
-	logger().fine("---- Push: Stack depth now %lu npts=%lu open=%lu lkg=%lu",
-	     _link_stack.size(), _frame._open_points.size(),
+	logger().fine("---- Push: Frame stack depth now %lu npts=%lu open=%lu lkg=%lu",
+	     _frame_stack.size(), _frame._open_points.size(),
 	     _frame._open_sections.size(), _frame._linkage.size());
 }
 
-void Aggregate::pop(void)
+void Aggregate::pop_frame(void)
 {
 	_cb->pop(_frame);
-	_frame._open_points = _point_stack.top(); _point_stack.pop();
-	_frame._open_sections = _open_stack.top(); _open_stack.pop();
-	_frame._linkage = _link_stack.top(); _link_stack.pop();
+	_frame = _frame_stack.top(); _frame_stack.pop();
 
-	logger().fine("---- Pop: Stack depth now %lu npts=%lu open=%lu lkg=%lu",
-	     _link_stack.size(), _frame._open_points.size(),
+	logger().fine("---- Pop: Frame stack depth now %lu npts=%lu open=%lu lkg=%lu",
+	     _frame_stack.size(), _frame._open_points.size(),
 	     _frame._open_sections.size(), _frame._linkage.size());
+}
+
+void Aggregate::push_odo(void)
+{
+	_odo_stack.push(_odo);
+
+	logger().fine("---- Push: Odo stack depth now %lu",
+	     _odo_stack.size());
+}
+
+void Aggregate::pop_odo(void)
+{
+	_odo = _odo_stack.top(); _odo_stack.pop();
+
+	logger().fine("---- Pop: Odo stack depth now %lu",
+	     _odo_stack.size());
 }

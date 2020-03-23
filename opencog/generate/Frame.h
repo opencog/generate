@@ -41,7 +41,7 @@ struct Odometer
 
 	/// Ordered list of odometer state.
 	/// True == take-a-step; False == do not step;
-	std::vector<boolean> _stepper;
+	std::vector<bool> _stepper;
 };
 
 /// Current traversal state
