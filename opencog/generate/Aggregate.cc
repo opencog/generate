@@ -67,7 +67,12 @@ Handle Aggregate::aggregate(const HandleSet& nuclei,
 	{
 		push_frame();
 		_frame._open_sections.insert(sect);
-		init_odometer();
+		bool more = init_odometer();
+		while (more)
+		{
+			push_odo();
+			more = init_odometer();
+		}
 		pop_frame();
 	}
 
