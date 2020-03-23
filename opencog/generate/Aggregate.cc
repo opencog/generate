@@ -67,11 +67,12 @@ Handle Aggregate::aggregate(const HandleSet& nuclei,
 	{
 		push_frame();
 		_frame._open_sections.insert(sect);
-		extend();
+		init_odometer();
 		pop_frame();
 	}
 
 	logger().fine("Finished; found %lu solutions\n", _solutions.size());
+
 	// Ugh. This is kind-of unpleasant, but for now we will use SetLink
 	// to return results. This obviously fails to scale if the section is
 	// large.
@@ -126,13 +127,25 @@ bool Aggregate::init_odometer(void)
 	}
 
 	size_t num_open = _odo._to_connectors.size();
-	logger().fine("Initialize odometer: found open-conns=%lu",
+	_odo._stepper[num_open-1] = true;
+	logger().fine("Initialize odometer: found open-cons=%lu",
 	              num_open);
 
 	// Take the first step.
 	for (size_t ic = 0; ic < num_open; ic++)
 	{
+		push_frame();
+		const Handle& fm_sect = _odo._sections[ic];
+		const Handle& fm_con = _odo._from_connectors[ic];
+		const Handle& to_con = _odo._from_connectors[ic];
+
+		Handle to_sect = _cb->select(_frame, fm_sect, fm_con, to_con);
+		if (nullptr == to_sect) return false;
+
+		connect_section(fm_sect, fm_con, to_sect, to_con);
 	}
+
+	check_for_solution();
 
 	return true;
 }
@@ -142,20 +155,18 @@ bool Aggregate::step_odometer(void)
 	return true;
 }
 
-// Return value of true means that the extension worked, and there's
-// more to explore. False means halt, no more solutions possible
-// along this path.
-bool Aggregate::extend(void)
+// False means halt, no more solutions possible along this path.
+bool Aggregate::check_for_solution(void)
 {
-	logger().fine("--------- Extend all open sections -------------");
+	logger().fine("--------- Check for solution -------------");
 	if (not _cb->recurse(_frame))
 	{
-		logger().fine("Recursion halted at depth %lu",
+		logger().fine("Solution seeking halted at depth %lu",
 			_frame_stack.size());
 		return false;
 	}
 
-	logger().fine("Begin recursion: open-points=%lu open-sect=%lu lkg=%lu",
+	logger().fine("Current state:: open-points=%lu open-sect=%lu lkg=%lu",
 		_frame._open_points.size(), _frame._open_sections.size(),
 		_frame._linkage.size());
 
@@ -180,71 +191,11 @@ bool Aggregate::extend(void)
 		logger().fine("====================================");
 		return false;
 	}
-
-	// Try to extend each open connector on each section.
-	// If this fails, then we're done.
-	HandleSet sects = _frame._open_sections;
-	for (const Handle& sect : sects)
-	{
-		bool keep_going = extend_section(sect);
-		if (not keep_going) return false;
-	}
-
-	// Is there more? If so, recurse.
-	return extend();
+	return true;
 }
 
 #define al _as->add_link
 #define an _as->add_node
-
-/// Attempt to connect every connector in a section.
-/// Return true if every every connector on the section was
-/// successfully extended. Return false if the section is not
-/// extendable (if there is at least one connector that cannot
-/// be connected to something.)
-bool Aggregate::extend_section(const Handle& section)
-{
-	logger().fine("---------------------");
-	logger().fine("Extend section=%s", section->to_string().c_str());
-
-	// Pull connector sequence out of the section.
-	Handle from_seq = section->getOutgoingAtom(1);
-
-	for (const Handle& from_con : from_seq->getOutgoingSet())
-	{
-		// There may be fully connected links in the sequence.
-		// Ignore those. We want unconnected connectors only.
-		if (CONNECTOR != from_con->get_type()) continue;
-
-		// Get a list of connectors that can be connected to.
-		// If none, then this connector can never be closed.
-		HandleSeq to_cons = _cb->joints(from_con);
-		if (0 == to_cons.size()) return false;
-
-		for (const Handle& matching: to_cons)
-		{
-			bool did_connect = join_connector(section, from_con, matching);
-			if (not did_connect) return false;
-		}
-	}
-	return true;
-}
-
-/// Given a section and a connector in that section, and a matching
-/// connector that connects to it, search for sections that can hook up,
-/// and hook them up, if the callback allows it. Return true if a
-/// successful connection was made. Return false if a connection is
-/// not possible (and thus the connector remains unconnected).
-bool Aggregate::join_connector(const Handle& fm_sect,
-                               const Handle& fm_con,
-                               const Handle& to_con)
-{
-	Handle to_sect = _cb->select(_frame, fm_sect, fm_con, to_con);
-	if (nullptr == to_sect) return false;
-
-	connect_section(fm_sect, fm_con, to_sect, to_con);
-	return true;
-}
 
 /// Connect a pair of sections together, by connecting two matched
 /// connectors. Two new sections will be created, with the connector

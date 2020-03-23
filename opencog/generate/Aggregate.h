@@ -60,9 +60,8 @@ private:
 	bool init_odometer(void);
 	bool step_odometer(void);
 
-	bool extend(void);
-	bool extend_section(const Handle&);
-	bool join_connector(const Handle&, const Handle&, const Handle&);
+	bool check_for_solution(void);
+
 	void connect_section(const Handle&, const Handle&,
 	                     const Handle&, const Handle&);
 	bool make_link(const Handle&, const Handle&,
