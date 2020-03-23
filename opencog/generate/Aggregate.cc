@@ -137,7 +137,7 @@ bool Aggregate::init_odometer(void)
 		push_frame();
 		const Handle& fm_sect = _odo._sections[ic];
 		const Handle& fm_con = _odo._from_connectors[ic];
-		const Handle& to_con = _odo._from_connectors[ic];
+		const Handle& to_con = _odo._to_connectors[ic];
 
 		Handle to_sect = _cb->select(_frame, fm_sect, fm_con, to_con);
 		if (nullptr == to_sect) return false;
