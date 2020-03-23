@@ -72,6 +72,10 @@ Handle Aggregate::aggregate(const HandleSet& nuclei,
 		{
 			push_odo();
 			more = init_odometer();
+			while (more)
+			{
+				more = step_odometer();
+			}
 		}
 		pop_frame();
 	}
@@ -133,8 +137,7 @@ bool Aggregate::init_odometer(void)
 	if (0 == _odo._size) return false;
 	_odo._step = _odo._size-1;
 
-	logger().fine("Initialize odometer: found open-cons=%lu",
-	              _odo._size);
+	logger().fine("Initialize odometer of length %lu", _odo._size);
 
 	// Take the first step.
 	return do_step(0);
@@ -142,6 +145,9 @@ bool Aggregate::init_odometer(void)
 
 bool Aggregate::do_step(size_t wheel)
 {
+	logger().fine("Step odometer wheel %lu of %lu at depth %lu",
+	               wheel, _odo._size, _odo_stack.size());
+
 	// Take a step.
 	for (size_t ic = wheel; ic < _odo._size; ic++)
 	{
@@ -151,7 +157,14 @@ bool Aggregate::do_step(size_t wheel)
 		const Handle& to_con = _odo._to_connectors[ic];
 
 		Handle to_sect = _cb->select(_frame, fm_sect, fm_con, to_con);
-		if (nullptr == to_sect) return false;
+		if (nullptr == to_sect)
+		{
+			// If we are here, then this wheel has rolled over.
+			// That mens that its time for the next wheel to take
+			// a step. Mark that wheel.
+			_odo._step = ic - 1;
+			return false;
+		}
 
 		connect_section(fm_sect, fm_con, to_sect, to_con);
 	}
@@ -163,11 +176,14 @@ bool Aggregate::do_step(size_t wheel)
 
 bool Aggregate::step_odometer(void)
 {
+	// total rollover
+	if (_odo._size < _odo._step) return false;
+
 	// Take a step.
 	size_t pops = _odo._size - _odo._step;
 	for (size_t i=0; i< pops; i++) pop_frame();
 
-	return do_step(pops);
+	return do_step(_odo._step);
 }
 
 // False means halt, no more solutions possible along this path.
