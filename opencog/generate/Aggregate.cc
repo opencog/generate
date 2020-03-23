@@ -87,6 +87,61 @@ Handle Aggregate::aggregate(const HandleSet& nuclei,
 	return createLink(std::move(solns), SET_LINK);
 }
 
+/// Initialize the odometer state. This creates an ordered list of
+/// all as-yet unconnected connectors in the open state.
+/// Returns false if initialization failed, i.e. if the current
+/// open-connector state is not extendable.
+bool Aggregate::init_odometer(void)
+{
+	// Should be empty already, but just in case...
+	_odo._from_connectors.clear();
+	_odo._to_connectors.clear();
+	_odo._sections.clear();
+	_odo._stepper.clear();
+
+	// Loop over all open connectors
+	for (const Handle& sect: _frame._open_sections)
+	{
+		Handle disj = sect->getOutgoingAtom(1);
+		const HandleSeq& conseq = disj->getOutgoingSet();
+		for (const Handle& from_con: conseq)
+		{
+			// There may be fully connected links in the sequence.
+			// Ignore those. We want unconnected connectors only.
+			if (CONNECTOR != from_con->get_type()) continue;
+
+			// Get a list of connectors that can be connected to.
+			// If none, then this connector can never be closed.
+			HandleSeq to_cons = _cb->joints(from_con);
+			if (0 == to_cons.size()) return false;
+
+			for (const Handle& to_con: to_cons)
+			{
+				_odo._from_connectors.push_back(from_con);
+				_odo._to_connectors.push_back(to_con);
+				_odo._sections.push_back(sect);
+				_odo._stepper.push_back(false);
+			}
+		}
+	}
+
+	size_t num_open = _odo._to_connectors.size();
+	logger().fine("Initialize odometer: found open-conns=%lu",
+	              num_open);
+
+	// Take the first step.
+	for (size_t ic = 0; ic < num_open; ic++)
+	{
+	}
+
+	return true;
+}
+
+bool Aggregate::step_odometer(void)
+{
+	return true;
+}
+
 // Return value of true means that the extension worked, and there's
 // more to explore. False means halt, no more solutions possible
 // along this path.

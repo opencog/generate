@@ -57,6 +57,9 @@ private:
 	/// Accumulated set of fully-grounded solutions.
 	std::set<HandleSet> _solutions;
 
+	bool init_odometer(void);
+	bool step_odometer(void);
+
 	bool extend(void);
 	bool extend_section(const Handle&);
 	bool join_connector(const Handle&, const Handle&, const Handle&);
