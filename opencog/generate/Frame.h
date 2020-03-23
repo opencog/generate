@@ -30,16 +30,30 @@ namespace opencog
  *  @{
  */
 
-// Current state
+/// Odometer for breath-wise aggregation
+struct Odometer
+{
+	/// Ordered list of open connectors.
+	HandleSeq _connectors;
+
+	/// Ordered list of sections from which above list was taken.
+	HandleSeq _sections;
+
+	/// Ordered list of odometer state.
+	/// True == take-a-step; False == do not step;
+	std::vector<boolean> _stepper;
+};
+
+/// Current traversal state
 struct Frame
 {
-	// points that are unconnected
+	/// Points that are unconnected
 	HandleSet _open_points;
 	
-	// Sections with unconnected connectors.
+	/// Sections with unconnected connectors.
 	HandleSet _open_sections;
 
-	// Completed links.
+	/// Completed links.
 	HandleSet _linkage;
 };
 

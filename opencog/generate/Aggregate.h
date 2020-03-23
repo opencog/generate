@@ -44,6 +44,7 @@ private:
 
 	// Current state
 	Frame _frame;
+	Odometer _odo;
 
 	std::stack<HandleSet> _point_stack;
 	std::stack<HandleSet> _open_stack;
