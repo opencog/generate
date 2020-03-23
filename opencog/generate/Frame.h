@@ -33,9 +33,13 @@ namespace opencog
 /// Odometer for breadth-wise aggregation
 struct Odometer
 {
+	/// Size of odometer. All vectors below are of this size.
+	size_t _size;
+
 	/// Ordered list of open connectors. Each from-connector is a
 	/// connector on an open section.  Each to-connector is a
 	/// connector that can be legally joined to a from-connector.
+	/// There can be multiple to-connectors for each from-connector.
 	HandleSeq _from_connectors;
 	HandleSeq _to_connectors;
 
@@ -43,10 +47,8 @@ struct Odometer
 	/// These are the "from-sections".
 	HandleSeq _sections;
 
-	/// Ordered list of odometer state.
-	/// True == take-a-step; False == do not step;
-	/// Each bit corresponds to each to-connector.
-	std::vector<bool> _stepper;
+	/// The next wheel to be stepped.
+	size_t _step;
 };
 
 /// Current traversal state

@@ -59,6 +59,7 @@ private:
 
 	bool init_odometer(void);
 	bool step_odometer(void);
+	bool do_step(size_t);
 
 	bool check_for_solution(void);
 

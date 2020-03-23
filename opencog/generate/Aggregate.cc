@@ -98,7 +98,6 @@ bool Aggregate::init_odometer(void)
 	_odo._from_connectors.clear();
 	_odo._to_connectors.clear();
 	_odo._sections.clear();
-	_odo._stepper.clear();
 
 	// Loop over all open connectors
 	for (const Handle& sect: _frame._open_sections)
@@ -121,18 +120,25 @@ bool Aggregate::init_odometer(void)
 				_odo._from_connectors.push_back(from_con);
 				_odo._to_connectors.push_back(to_con);
 				_odo._sections.push_back(sect);
-				_odo._stepper.push_back(false);
 			}
 		}
 	}
 
-	size_t num_open = _odo._to_connectors.size();
-	_odo._stepper[num_open-1] = true;
+	_odo._size = _odo._to_connectors.size();
+	if (0 == _odo._size) return false;
+	_odo._step = _odo._size-1;
+
 	logger().fine("Initialize odometer: found open-cons=%lu",
-	              num_open);
+	              _odo._size);
 
 	// Take the first step.
-	for (size_t ic = 0; ic < num_open; ic++)
+	return do_step(0);
+}
+
+bool Aggregate::do_step(size_t wheel)
+{
+	// Take a step.
+	for (size_t ic = wheel; ic < _odo._size; ic++)
 	{
 		push_frame();
 		const Handle& fm_sect = _odo._sections[ic];
@@ -152,7 +158,11 @@ bool Aggregate::init_odometer(void)
 
 bool Aggregate::step_odometer(void)
 {
-	return true;
+	// Take a step.
+	size_t pops = _odo._size - _odo._step;
+	for (size_t i=0; i< pops; i++) pop_frame();
+
+	return do_step(pops);
 }
 
 // False means halt, no more solutions possible along this path.
