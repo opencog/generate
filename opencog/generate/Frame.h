@@ -30,16 +30,37 @@ namespace opencog
  *  @{
  */
 
-// Current state
+/// Odometer for breadth-wise aggregation
+struct Odometer
+{
+	/// Size of odometer. All vectors below are of this size.
+	size_t _size;
+
+	/// Ordered list of open connectors. Each from-connector is a
+	/// connector on an open section.  Each to-connector is a
+	/// connector that can be legally joined to a from-connector.
+	/// There can be multiple to-connectors for each from-connector.
+	HandleSeq _from_connectors;
+	HandleSeq _to_connectors;
+
+	/// Ordered list of sections which hold the above from-connectors.
+	/// These are the "from-sections".
+	HandleSeq _sections;
+
+	/// The next wheel to be stepped.
+	size_t _step;
+};
+
+/// Current traversal state
 struct Frame
 {
-	// points that are unconnected
+	/// Points that are unconnected
 	HandleSet _open_points;
 	
-	// Sections with unconnected connectors.
+	/// Sections with unconnected connectors.
 	HandleSet _open_sections;
 
-	// Completed links.
+	/// Completed links.
 	HandleSet _linkage;
 };
 

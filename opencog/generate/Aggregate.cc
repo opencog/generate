@@ -65,13 +65,14 @@ Handle Aggregate::aggregate(const HandleSet& nuclei,
 
 	for (const Handle& sect : sections)
 	{
-		push();
+		push_frame();
 		_frame._open_sections.insert(sect);
-		extend();
-		pop();
+		recurse();
+		pop_frame();
 	}
 
 	logger().fine("Finished; found %lu solutions\n", _solutions.size());
+
 	// Ugh. This is kind-of unpleasant, but for now we will use SetLink
 	// to return results. This obviously fails to scale if the section is
 	// large.
@@ -87,20 +88,136 @@ Handle Aggregate::aggregate(const HandleSet& nuclei,
 	return createLink(std::move(solns), SET_LINK);
 }
 
-// Return value of true means that the extension worked, and there's
-// more to explore. False means halt, no more solutions possible
-// along this path.
-bool Aggregate::extend(void)
+bool Aggregate::recurse(void)
 {
-	logger().fine("--------- Extend all open sections -------------");
+	push_odo();
+	bool more = init_odometer();
+
+	while (true)
+	{
+		// Odometer is exhausted; we are done.
+		if (not more)
+		{
+			pop_odo();
+			return false;
+		}
+
+		// If we are here, we have a valid odo state. Explore it.
+		recurse();
+
+		// Exploration is done, step to the next state.
+		more = step_odometer();
+	}
+
+	return false; // *not-reached*
+}
+
+/// Initialize the odometer state. This creates an ordered list of
+/// all as-yet unconnected connectors in the open state.
+/// Returns false if initialization failed, i.e. if the current
+/// open-connector state is not extendable.
+bool Aggregate::init_odometer(void)
+{
+	// Should be empty already, but just in case...
+	_odo._from_connectors.clear();
+	_odo._to_connectors.clear();
+	_odo._sections.clear();
+
+	// Loop over all open connectors
+	for (const Handle& sect: _frame._open_sections)
+	{
+		Handle disj = sect->getOutgoingAtom(1);
+		const HandleSeq& conseq = disj->getOutgoingSet();
+		for (const Handle& from_con: conseq)
+		{
+			// There may be fully connected links in the sequence.
+			// Ignore those. We want unconnected connectors only.
+			if (CONNECTOR != from_con->get_type()) continue;
+
+			// Get a list of connectors that can be connected to.
+			// If none, then this connector can never be closed.
+			HandleSeq to_cons = _cb->joints(from_con);
+			if (0 == to_cons.size()) return false;
+
+			for (const Handle& to_con: to_cons)
+			{
+				_odo._from_connectors.push_back(from_con);
+				_odo._to_connectors.push_back(to_con);
+				_odo._sections.push_back(sect);
+			}
+		}
+	}
+
+	_odo._size = _odo._to_connectors.size();
+	if (0 == _odo._size) return false;
+	_odo._step = _odo._size-1;
+
+	logger().fine("Initialize odometer of length %lu", _odo._size);
+
+	// Take the first step.
+	return do_step(0);
+}
+
+bool Aggregate::do_step(size_t wheel)
+{
+	logger().fine("Step odometer wheel %lu of %lu at depth %lu",
+	               wheel, _odo._size, _odo_stack.size());
+
+	// Take a step.
+	for (size_t ic = wheel; ic < _odo._size; ic++)
+	{
+		push_frame();
+		const Handle& fm_sect = _odo._sections[ic];
+		const Handle& fm_con = _odo._from_connectors[ic];
+		const Handle& to_con = _odo._to_connectors[ic];
+
+		Handle to_sect = _cb->select(_frame, fm_sect, fm_con, to_con);
+		if (nullptr == to_sect)
+		{
+			logger().fine("Rolled over wheel %lu of %lu at depth %lu",
+			               wheel, _odo._size, _odo_stack.size());
+			// If we are here, then this wheel has rolled over.
+			// That mens that its time for the next wheel to take
+			// a step. Mark that wheel.
+			_odo._step = ic - 1;
+			pop_frame();
+			return false;
+		}
+
+		connect_section(fm_sect, fm_con, to_sect, to_con);
+	}
+
+	check_for_solution();
+
+	return true;
+}
+
+bool Aggregate::step_odometer(void)
+{
+	// total rollover
+	if (_odo._size < _odo._step) return false;
+
+	// Take a step.
+	size_t pops = _odo._size - _odo._step;
+	logger().fine("Popping %lu frames to get to wheel %lu of %lu at depth %lu",
+	       pops, _odo._step, _odo._size, _odo_stack.size());
+	for (size_t i=0; i< pops; i++) pop_frame();
+
+	return do_step(_odo._step);
+}
+
+// False means halt, no more solutions possible along this path.
+bool Aggregate::check_for_solution(void)
+{
+	logger().fine("--------- Check for solution -------------");
 	if (not _cb->recurse(_frame))
 	{
-		logger().fine("Recursion halted at depth %lu",
-			_link_stack.size());
+		logger().fine("Solution seeking halted at depth %lu",
+			_frame_stack.size());
 		return false;
 	}
 
-	logger().fine("Begin recursion: open-points=%lu open-sect=%lu lkg=%lu",
+	logger().fine("Current state: open-points=%lu open-sect=%lu lkg=%lu",
 		_frame._open_points.size(), _frame._open_sections.size(),
 		_frame._linkage.size());
 
@@ -125,71 +242,11 @@ bool Aggregate::extend(void)
 		logger().fine("====================================");
 		return false;
 	}
-
-	// Try to extend each open connector on each section.
-	// If this fails, then we're done.
-	HandleSet sects = _frame._open_sections;
-	for (const Handle& sect : sects)
-	{
-		bool keep_going = extend_section(sect);
-		if (not keep_going) return false;
-	}
-
-	// Is there more? If so, recurse.
-	return extend();
+	return true;
 }
 
 #define al _as->add_link
 #define an _as->add_node
-
-/// Attempt to connect every connector in a section.
-/// Return true if every every connector on the section was
-/// successfully extended. Return false if the section is not
-/// extendable (if there is at least one connector that cannot
-/// be connected to something.)
-bool Aggregate::extend_section(const Handle& section)
-{
-	logger().fine("---------------------");
-	logger().fine("Extend section=%s", section->to_string().c_str());
-
-	// Pull connector sequence out of the section.
-	Handle from_seq = section->getOutgoingAtom(1);
-
-	for (const Handle& from_con : from_seq->getOutgoingSet())
-	{
-		// There may be fully connected links in the sequence.
-		// Ignore those. We want unconnected connectors only.
-		if (CONNECTOR != from_con->get_type()) continue;
-
-		// Get a list of connectors that can be connected to.
-		// If none, then this connector can never be closed.
-		HandleSeq to_cons = _cb->joints(from_con);
-		if (0 == to_cons.size()) return false;
-
-		for (const Handle& matching: to_cons)
-		{
-			bool did_connect = join_connector(section, from_con, matching);
-			if (not did_connect) return false;
-		}
-	}
-	return true;
-}
-
-/// Given a section and a connector in that section, and a matching
-/// connector that connects to it, search for sections that can hook up,
-/// and hook them up, if the callback allows it. Return true if a
-/// successful connection was made. Return false if a connection is
-/// not possible (and thus the connector remains unconnected).
-bool Aggregate::join_connector(const Handle& fm_sect,
-                               const Handle& fm_con,
-                               const Handle& to_con)
-{
-	Handle to_sect = _cb->select(_frame, fm_sect, fm_con, to_con);
-	if (nullptr == to_sect) return false;
-
-	connect_section(fm_sect, fm_con, to_sect, to_con);
-	return true;
-}
 
 /// Connect a pair of sections together, by connecting two matched
 /// connectors. Two new sections will be created, with the connector
@@ -267,26 +324,38 @@ bool Aggregate::make_link(const Handle& sect,
 	return is_open;
 }
 
-void Aggregate::push(void)
+void Aggregate::push_frame(void)
 {
 	_cb->push(_frame);
-	_point_stack.push(_frame._open_points);
-	_open_stack.push(_frame._open_sections);
-	_link_stack.push(_frame._linkage);
+	_frame_stack.push(_frame);
 
-	logger().fine("---- Push: Stack depth now %lu npts=%lu open=%lu lkg=%lu",
-	     _link_stack.size(), _frame._open_points.size(),
+	logger().fine("---- Push: Frame stack depth now %lu npts=%lu open=%lu lkg=%lu",
+	     _frame_stack.size(), _frame._open_points.size(),
 	     _frame._open_sections.size(), _frame._linkage.size());
 }
 
-void Aggregate::pop(void)
+void Aggregate::pop_frame(void)
 {
 	_cb->pop(_frame);
-	_frame._open_points = _point_stack.top(); _point_stack.pop();
-	_frame._open_sections = _open_stack.top(); _open_stack.pop();
-	_frame._linkage = _link_stack.top(); _link_stack.pop();
+	_frame = _frame_stack.top(); _frame_stack.pop();
 
-	logger().fine("---- Pop: Stack depth now %lu npts=%lu open=%lu lkg=%lu",
-	     _link_stack.size(), _frame._open_points.size(),
+	logger().fine("---- Pop: Frame stack depth now %lu npts=%lu open=%lu lkg=%lu",
+	     _frame_stack.size(), _frame._open_points.size(),
 	     _frame._open_sections.size(), _frame._linkage.size());
+}
+
+void Aggregate::push_odo(void)
+{
+	_odo_stack.push(_odo);
+
+	logger().fine("==== Push: Odo stack depth now %lu",
+	     _odo_stack.size());
+}
+
+void Aggregate::pop_odo(void)
+{
+	_odo = _odo_stack.top(); _odo_stack.pop();
+
+	logger().fine("==== Pop: Odo stack depth now %lu",
+	     _odo_stack.size());
 }

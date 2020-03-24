@@ -39,23 +39,32 @@ class Aggregate
 private:
 	AtomSpace* _as;
 
-	// Decision-maker
+	/// Decision-maker
 	GenerateCallback* _cb;
 
-	// Current state
+	/// Current traversal state
 	Frame _frame;
+	Odometer _odo;
 
-	std::stack<HandleSet> _point_stack;
-	std::stack<HandleSet> _open_stack;
-	std::stack<HandleSet> _link_stack;
-	void push();
-	void pop();
+	std::stack<Frame> _frame_stack;
+	void push_frame();
+	void pop_frame();
 
+	std::stack<Odometer> _odo_stack;
+	void push_odo();
+	void pop_odo();
+
+	/// Accumulated set of fully-grounded solutions.
 	std::set<HandleSet> _solutions;
 
-	bool extend(void);
-	bool extend_section(const Handle&);
-	bool join_connector(const Handle&, const Handle&, const Handle&);
+	bool init_odometer(void);
+	bool step_odometer(void);
+	bool do_step(size_t);
+
+	bool check_for_solution(void);
+
+	bool recurse(void);
+
 	void connect_section(const Handle&, const Handle&,
 	                     const Handle&, const Handle&);
 	bool make_link(const Handle&, const Handle&,
