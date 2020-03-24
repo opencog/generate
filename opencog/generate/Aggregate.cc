@@ -76,6 +76,8 @@ Handle Aggregate::aggregate(const HandleSet& nuclei,
 			{
 				more = step_odometer();
 			}
+			pop_frame();
+			pop_odo();
 		}
 		pop_frame();
 	}
@@ -163,6 +165,7 @@ bool Aggregate::do_step(size_t wheel)
 			// That mens that its time for the next wheel to take
 			// a step. Mark that wheel.
 			_odo._step = ic - 1;
+			pop_frame();
 			return false;
 		}
 
