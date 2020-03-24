@@ -45,20 +45,66 @@ static inline Handle uniform_choice(const HandleSeq& lst)
 }
 
 /// Return a section containing `to_con`.
+/// First try to attach to an existing open section.
+/// If that fails, then pick a new section from the lexis.
 Handle DefaultCallback::select(const Frame& frame,
                                const Handle& fm_sect, const Handle& fm_con,
                                const Handle& to_con)
 {
+	// Do we have an iterator (a future/promise) for the to-connector
+	// in the current frame?  If not, try to set one up. If this fails,
+	// then kick over to the dictionary.
+	const auto& fit = _frameit.find(to_con);
+	if (fit == _frameit.end())
+	{
+		HandleSeq to_sects;
+		for (const Handle& open_sect : frame._open_sections)
+		{
+			const Handle& conseq = open_sect->getOutgoingAtom(1);
+			for (const Handle& con : conseq->getOutgoingSet())
+			{
+				if (con == to_con) to_sects.push_back(open_sect);
+			}
+		}
+
+		if (0 < to_sects.size())
+		{
+			// Start iterating over the sections that contain to_con.
+			HandleSeq::const_iterator toit = to_sects.begin();
+
+			// Increment and save.
+			Handle to_sect = *toit;
+			toit++;
+			_frameit[to_con] = toit;
+			return to_sect;
+		}
+		// else fall-through here, and go to the lexis-lookup of the
+		// connector.
+	}
+	else
+	{
+		// The iterator is pointing somewhere into _lexis[to_con]
+		HandleSeq::const_iterator toit = fit->second;
 #if 0
-	// connect to
-	// an existing open section (thus potentially creating a
-	// cycle or loop).
-	if (_frame._open_sections.end() ==
-	    _frame._open_sections.find(to_sect)) continue;
+		if (toit == _dict.sections(to_con).end())
+		{
+			// We've iterated to the end; we're done.
+			_lexlit.erase(to_con);
+			return Handle::UNDEFINED;
+		}
 #endif
 
+		// Increment and save.
+		Handle to_sect = *toit;
+		toit++;
+		_frameit[to_con] = toit;
+		return to_sect;
+	}
+
 	// Do we have an iterator (a future/promise) for the to-connector?
-	// If not, then set one up. Else use the one we found.
+	// If not, then set one up. Else use the one we found.  The iterator
+	// that we are setting up here will point into the dictionary, i.e.
+	// into the pool of allowable sections that we can pick from.
 	const auto& curit = _lexlit.find(to_con);
 	if (curit == _lexlit.end())
 	{
