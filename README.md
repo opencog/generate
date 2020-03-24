@@ -296,8 +296,9 @@ design choices:
   I have no desire to reinvent any wheels, here.
 
 
-# Version 0.0.2
-The current code implements an extremely naive, unsophisticated
-tree-walking algorithm that badly suffers from combinatorial explosion.
-There is no attempt whatsoever to be sophisticated in any way.
-The code passes a handful of basic unit tests, and nothing more.
+# Version 0.0.3
+The current code implements a simple breadth-first aggregation
+algorithm. It passes a handful of basic unit tests, that's all.
+It's missing various key features, so more complex tests fail.
+So far, nothing is done to cope with combinatoric explosion.  More
+sophisticated algos are possible, but these remain uncontemplated.

@@ -146,9 +146,11 @@ void AggregationUTest::test_tree()
 
 	// All of the solutions should be the same size, substituting
 	// only John/Mary and dog/cat in the parse tree.
+	int cnt = 0;
 	for (const Handle& soln: result->getOutgoingSet())
 	{
-		logger().debug("Expecting 5 links, got %d", soln->get_arity());
+		logger().debug("   Soln %d expecting 5 links, got %d",
+			++cnt, soln->get_arity());
 		TSM_ASSERT("Bad section!", soln->get_arity() == 5);
 	}
 

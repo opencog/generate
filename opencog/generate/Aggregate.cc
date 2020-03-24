@@ -199,6 +199,8 @@ bool Aggregate::step_odometer(void)
 
 	// Take a step.
 	size_t pops = _odo._size - _odo._step;
+	logger().fine("Popping %lu frames to get to wheel %lu of %lu at depth %lu",
+	       pops, _odo._step, _odo._size, _odo_stack.size());
 	for (size_t i=0; i< pops; i++) pop_frame();
 
 	return do_step(_odo._step);
