@@ -158,8 +158,11 @@ void DefaultCallback::pop_frame(const Frame& frm)
 
 void DefaultCallback::push_odometer(const Odometer& odo)
 {
+	_lexlit_stack.push(_lexlit);
+	_lexlit.clear();
 }
 
 void DefaultCallback::pop_odometer(const Odometer& odo)
 {
+	_lexlit = _lexlit_stack.top(); _lexlit_stack.pop();
 }

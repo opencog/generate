@@ -46,7 +46,7 @@ private:
 	HandleSeqCiterMap _lexlit;
 
 	// Stack of iterators into the lists of sections. Ugh.
-	// std::stack<HandleSeqCiterMap> _lexlit_stack;
+	std::stack<HandleSeqCiterMap> _lexlit_stack;
 
 public:
 	DefaultCallback(AtomSpace*, const Dictionary&);
