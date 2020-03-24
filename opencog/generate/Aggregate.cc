@@ -67,18 +67,7 @@ Handle Aggregate::aggregate(const HandleSet& nuclei,
 	{
 		push_frame();
 		_frame._open_sections.insert(sect);
-		bool more = init_odometer();
-		while (more)
-		{
-			push_odo();
-			more = init_odometer();
-			while (more)
-			{
-				more = step_odometer();
-			}
-			pop_frame();
-			pop_odo();
-		}
+		recurse();
 		pop_frame();
 	}
 
@@ -97,6 +86,30 @@ Handle Aggregate::aggregate(const HandleSet& nuclei,
 		solns.push_back(createLink(std::move(sects), SET_LINK));
 	}
 	return createLink(std::move(solns), SET_LINK);
+}
+
+bool Aggregate::recurse(void)
+{
+	push_odo();
+	bool more = init_odometer();
+
+	while (true)
+	{
+		// Odometer is exhausted; we are done.
+		if (not more)
+		{
+			pop_odo();
+			return false;
+		}
+
+		// If we are here, we have a valid odo state. Explore it.
+		recurse();
+
+		// Exploration is done, step to the next state.
+		more = step_odometer();
+	}
+
+	return false; // *not-reached*
 }
 
 /// Initialize the odometer state. This creates an ordered list of
@@ -161,6 +174,8 @@ bool Aggregate::do_step(size_t wheel)
 		Handle to_sect = _cb->select(_frame, fm_sect, fm_con, to_con);
 		if (nullptr == to_sect)
 		{
+			logger().fine("Rolled over wheel %lu of %lu at depth %lu",
+			               wheel, _odo._size, _odo_stack.size());
 			// If we are here, then this wheel has rolled over.
 			// That mens that its time for the next wheel to take
 			// a step. Mark that wheel.
@@ -200,7 +215,7 @@ bool Aggregate::check_for_solution(void)
 		return false;
 	}
 
-	logger().fine("Current state:: open-points=%lu open-sect=%lu lkg=%lu",
+	logger().fine("Current state: open-points=%lu open-sect=%lu lkg=%lu",
 		_frame._open_points.size(), _frame._open_sections.size(),
 		_frame._linkage.size());
 
@@ -331,7 +346,7 @@ void Aggregate::push_odo(void)
 {
 	_odo_stack.push(_odo);
 
-	logger().fine("---- Push: Odo stack depth now %lu",
+	logger().fine("==== Push: Odo stack depth now %lu",
 	     _odo_stack.size());
 }
 
@@ -339,6 +354,6 @@ void Aggregate::pop_odo(void)
 {
 	_odo = _odo_stack.top(); _odo_stack.pop();
 
-	logger().fine("---- Pop: Odo stack depth now %lu",
+	logger().fine("==== Pop: Odo stack depth now %lu",
 	     _odo_stack.size());
 }

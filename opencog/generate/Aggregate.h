@@ -63,6 +63,8 @@ private:
 
 	bool check_for_solution(void);
 
+	bool recurse(void);
+
 	void connect_section(const Handle&, const Handle&,
 	                     const Handle&, const Handle&);
 	bool make_link(const Handle&, const Handle&,
