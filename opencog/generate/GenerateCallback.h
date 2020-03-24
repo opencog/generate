@@ -66,8 +66,11 @@ public:
 	virtual Handle make_link(const Handle& fm_con, const Handle& to_con,
 	                         const Handle& fm_pnt, const Handle& to_pnt) = 0;
 
-	virtual void push(const Frame&) {}
-	virtual void pop(const Frame&) {}
+	virtual void push_frame(const Frame&) {}
+	virtual void pop_frame(const Frame&) {}
+
+	virtual void push_odometer(const Odometer&) {}
+	virtual void pop_odometer(const Odometer&) {}
 
 	/// Called before the next tree-walking recursive step is taken.
 	/// Should return `true` to continue recursion, else false.

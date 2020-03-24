@@ -326,7 +326,7 @@ bool Aggregate::make_link(const Handle& sect,
 
 void Aggregate::push_frame(void)
 {
-	_cb->push(_frame);
+	_cb->push_frame(_frame);
 	_frame_stack.push(_frame);
 
 	logger().fine("---- Push: Frame stack depth now %lu npts=%lu open=%lu lkg=%lu",
@@ -336,7 +336,7 @@ void Aggregate::push_frame(void)
 
 void Aggregate::pop_frame(void)
 {
-	_cb->pop(_frame);
+	_cb->pop_frame(_frame);
 	_frame = _frame_stack.top(); _frame_stack.pop();
 
 	logger().fine("---- Pop: Frame stack depth now %lu npts=%lu open=%lu lkg=%lu",
@@ -346,6 +346,7 @@ void Aggregate::pop_frame(void)
 
 void Aggregate::push_odo(void)
 {
+	_cb->push_odometer(_odo);
 	_odo_stack.push(_odo);
 
 	logger().fine("==== Push: Odo stack depth now %lu",
@@ -354,6 +355,7 @@ void Aggregate::push_odo(void)
 
 void Aggregate::pop_odo(void)
 {
+	_cb->pop_odometer(_odo);
 	_odo = _odo_stack.top(); _odo_stack.pop();
 
 	logger().fine("==== Pop: Odo stack depth now %lu",

@@ -166,7 +166,7 @@ void AggregationUTest::test_loop()
 	eval->eval("(load-from-path \"tests/generate/dict-loop.scm\")");
 	Handle wall = eval->eval_h("left-wall");
 
-// logger().set_level(Logger::FINE);
+logger().set_level(Logger::FINE);
 	setup_dict();
 	DefaultCallback cb(as, *dict);
 

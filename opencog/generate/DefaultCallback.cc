@@ -29,7 +29,7 @@ using namespace opencog;
 
 DefaultCallback::DefaultCallback(AtomSpace* as, const Dictionary& dict)
 	: GenerateCallback(as), _as(as), _dict(dict),
-	_stack_depth(0), _effort(0)
+	_frame_stack_depth(0), _effort(0)
 {
 }
 
@@ -139,9 +139,27 @@ bool DefaultCallback::recurse(const Frame& frm)
 
 	// Pick 20 as an arbitrary choice. XXX FIXME - why?
 	// Well, 2^20 is a big number, and 10^20 is even bigger. Ouch.
-	if (_stack_depth < 20) return true;
+	if (_frame_stack_depth < 20) return true;
 
 	// Well, we could also randomly continue half the time ...!?
 	// std rand uniform distribution ...
 	return false;
+}
+
+void DefaultCallback::push_frame(const Frame& frm)
+{
+	_frame_stack_depth++;
+}
+
+void DefaultCallback::pop_frame(const Frame& frm)
+{
+	_frame_stack_depth--;
+}
+
+void DefaultCallback::push_odometer(const Odometer& odo)
+{
+}
+
+void DefaultCallback::pop_odometer(const Odometer& odo)
+{
 }
