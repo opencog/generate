@@ -50,47 +50,40 @@ Handle DefaultCallback::select(const Frame& frame,
                                const Handle& to_con)
 {
 #if 0
-	// If `close_cycle` is true, then attempt to connect to
+	// connect to
 	// an existing open section (thus potentially creating a
 	// cycle or loop).
-	if (close_cycle)
-	{
-		if (_frame._open_sections.end() ==
-		    _frame._open_sections.find(to_sect)) continue;
-	}
-	else
-	{
-		if (_frame._open_sections.end() !=
-		    _frame._open_sections.find(to_sect)) continue;
-	}
+	if (_frame._open_sections.end() ==
+	    _frame._open_sections.find(to_sect)) continue;
 #endif
 
+	// Do we have an iterator (a future/promise) for the to-connector?
+	// If not, then set one up. Else use the one we found.
 	const auto& curit = _lexlit.find(to_con);
-	if (curit != _lexlit.end())
+	if (curit == _lexlit.end())
 	{
-		// The iterator is point somewhere into _lexis[to_con]
-		HandleSeq::const_iterator toit = curit->second;
-		if (toit != _dict.sections(to_con).end())
-		{
-			// Increment and save.
-			Handle to_sect = *toit;
-			toit++;
-			_lexlit[to_con] = toit;
-			return to_sect;
-		}
-		else
-		{
-			// We've iterated to the end; we're done.
-			_lexlit.erase(to_con);
-			return Handle::UNDEFINED;
-		}
+		// Oh no, dead end!
+		const HandleSeq& to_sects = _dict.sections(to_con);
+		if (0 == to_sects.size()) return Handle::UNDEFINED;
+
+		// Start iterating over the sections that contain to_con.
+		HandleSeq::const_iterator toit = to_sects.begin();
+
+		// Increment and save.
+		Handle to_sect = *toit;
+		toit++;
+		_lexlit[to_con] = toit;
+		return to_sect;
 	}
 
-	const HandleSeq& to_sects = _dict.sections(to_con);
-	if (0 == to_sects.size()) return Handle::UNDEFINED;
-
-	// Start iterating over the sections that contain to_con.
-	HandleSeq::const_iterator toit = to_sects.begin();
+	// The iterator is pointing somewhere into _lexis[to_con]
+	HandleSeq::const_iterator toit = curit->second;
+	if (toit == _dict.sections(to_con).end())
+	{
+		// We've iterated to the end; we're done.
+		_lexlit.erase(to_con);
+		return Handle::UNDEFINED;
+	}
 
 	// Increment and save.
 	Handle to_sect = *toit;
@@ -132,6 +125,7 @@ Handle DefaultCallback::make_link(const Handle& fm_con,
 	return lnk;
 }
 
+/// 100% pure hackalicious junkola. XXX FIXME.
 bool DefaultCallback::recurse(const Frame& frm)
 {
 	_effort ++;
