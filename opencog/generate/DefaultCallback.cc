@@ -128,6 +128,7 @@ Handle DefaultCallback::select(const Frame& frame,
 		return to_sects[fit];
 	}
 
+	// Select from the dictionary...
 	return select_from_lexis(frame, fm_sect, fm_con, to_con);
 
 #if 0
@@ -183,6 +184,8 @@ void DefaultCallback::push_frame(const Frame& frm)
 {
 	_frame_stack_depth++;
 	_frmsel_stack.push(_frmsel);
+	_frmsel._framesect.clear();
+	_frmsel._frameit.clear();
 }
 
 void DefaultCallback::pop_frame(const Frame& frm)
