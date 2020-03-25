@@ -42,19 +42,17 @@ private:
 	size_t _frame_stack_depth;
 	size_t _effort;
 
-	typedef std::map<Handle, HandleSeq::const_iterator> HandleSeqCiterMap;
-
 	// Iterator, pointing from a to-connector, to a list of
 	// all sections in the dictionary that contain this to-connector.
 	// Used by `select()` to return the next attachable section.
-	HandleSeqCiterMap _lexlit;
+	HandleUCounter _lexlit;
 
 	// Stack of iterators into the lists of sections.
-	std::stack<HandleSeqCiterMap> _lexlit_stack;
+	std::stack<HandleUCounter> _lexlit_stack;
 
 	// Iterator, pointing from a to-connector, to a list of
 	// all open sections in the current frame.
-	HandleSeqCiterMap _frameit;
+	HandleUCounter _frameit;
 
 public:
 	DefaultCallback(AtomSpace*, const Dictionary&);

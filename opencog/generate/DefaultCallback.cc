@@ -54,8 +54,8 @@ Handle DefaultCallback::select(const Frame& frame,
 	// Do we have an iterator (a future/promise) for the to-connector
 	// in the current frame?  If not, try to set one up. If this fails,
 	// then kick over to the dictionary.
-	const auto& fit = _frameit.find(to_con);
-	if (fit == _frameit.end())
+	unsigned fit = _frameit.get(to_con, 0);
+	if (0 == fit)
 	{
 		HandleSeq to_sects;
 		for (const Handle& open_sect : frame._open_sections)
@@ -67,24 +67,17 @@ Handle DefaultCallback::select(const Frame& frame,
 			}
 		}
 
+		// Start iterating over the sections that contain to_con.
 		if (0 < to_sects.size())
 		{
-			// Start iterating over the sections that contain to_con.
-			HandleSeq::const_iterator toit = to_sects.begin();
-
-			// Increment and save.
-			Handle to_sect = *toit;
-			toit++;
-			_frameit[to_con] = toit;
-			return to_sect;
+			_frameit[to_con] = 1;
+			return to_sects[0];
 		}
 		// else fall-through here, and go to the lexis-lookup of the
 		// connector.
 	}
 	else
 	{
-		// The iterator is pointing somewhere into _lexis[to_con]
-		HandleSeq::const_iterator toit = fit->second;
 #if 0
 		if (toit == _dict.sections(to_con).end())
 		{
@@ -92,39 +85,33 @@ Handle DefaultCallback::select(const Frame& frame,
 			_lexlit.erase(to_con);
 			return Handle::UNDEFINED;
 		}
-#endif
 
 		// Increment and save.
 		Handle to_sect = *toit;
 		toit++;
 		_frameit[to_con] = toit;
 		return to_sect;
+#endif
 	}
+
+	const HandleSeq& to_sects = _dict.sections(to_con);
 
 	// Do we have an iterator (a future/promise) for the to-connector?
 	// If not, then set one up. Else use the one we found.  The iterator
 	// that we are setting up here will point into the dictionary, i.e.
 	// into the pool of allowable sections that we can pick from.
-	const auto& curit = _lexlit.find(to_con);
-	if (curit == _lexlit.end())
+	unsigned curit = _lexlit.get(to_con, 0);
+	if (0 == curit)
 	{
 		// Oh no, dead end!
-		const HandleSeq& to_sects = _dict.sections(to_con);
 		if (0 == to_sects.size()) return Handle::UNDEFINED;
 
-		// Start iterating over the sections that contain to_con.
-		HandleSeq::const_iterator toit = to_sects.begin();
-
-		// Increment and save.
-		Handle to_sect = *toit;
-		toit++;
-		_lexlit[to_con] = toit;
-		return to_sect;
+		// Start it up.
+		_lexlit[to_con] = 1;
+		return to_sects[0];
 	}
 
-	// The iterator is pointing somewhere into _lexis[to_con]
-	HandleSeq::const_iterator toit = curit->second;
-	if (toit == _dict.sections(to_con).end())
+	if (to_sects.size() <= curit)
 	{
 		// We've iterated to the end; we're done.
 		_lexlit.erase(to_con);
@@ -132,10 +119,8 @@ Handle DefaultCallback::select(const Frame& frame,
 	}
 
 	// Increment and save.
-	Handle to_sect = *toit;
-	toit++;
-	_lexlit[to_con] = toit;
-	return to_sect;
+	_lexlit[to_con] ++;
+	return to_sects[curit];
 
 #if 0
 	// Randomly draw elegible sections. The long term strategy
