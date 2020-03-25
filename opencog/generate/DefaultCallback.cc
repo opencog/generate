@@ -182,11 +182,13 @@ bool DefaultCallback::recurse(const Frame& frm)
 void DefaultCallback::push_frame(const Frame& frm)
 {
 	_frame_stack_depth++;
+	_frmsel_stack.push(_frmsel);
 }
 
 void DefaultCallback::pop_frame(const Frame& frm)
 {
 	_frame_stack_depth--;
+	_frmsel = _frmsel_stack.top(); _frmsel_stack.pop();
 }
 
 void DefaultCallback::push_odometer(const Odometer& odo)
