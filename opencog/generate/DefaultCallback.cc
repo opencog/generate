@@ -80,16 +80,15 @@ Handle DefaultCallback::select_from_lexis(const Frame& frame,
 }
 
 /// Return a section containing `to_con`.
-/// First try to attach to an existing open section.
-/// If that fails, then pick a new section from the lexis.
-Handle DefaultCallback::select(const Frame& frame,
+/// Try to attach to an existing open section.
+Handle DefaultCallback::select_from_open(const Frame& frame,
                                const Handle& fm_sect, const Handle& fm_con,
                                const Handle& to_con)
 {
 	// Do we have an iterator (a future/promise) for the to-connector
 	// in the current frame?  If not, try to set one up. If this fails,
 	// then kick over to the dictionary.
-	unsigned fit = _frmsel._frameit.get(to_con, 0);
+	unsigned fit = _opensel._openit.get(to_con, 0);
 	if (0 == fit)
 	{
 		HandleSeq to_sects;
@@ -105,8 +104,8 @@ Handle DefaultCallback::select(const Frame& frame,
 		// Start iterating over the sections that contain to_con.
 		if (0 < to_sects.size())
 		{
-			_frmsel._framesect[to_con] = to_sects;
-			_frmsel._frameit[to_con] = 1;
+			// _opensel._opensect[to_con] = to_sects;
+			_opensel._openit[to_con] = 1;
 			return to_sects[0];
 		}
 		// else fall-through here, and go to the lexis-lookup of the
@@ -114,19 +113,37 @@ Handle DefaultCallback::select(const Frame& frame,
 	}
 	else
 	{
-		const HandleSeq& to_sects = _frmsel._framesect[to_con];
+		const HandleSeq& to_sects = _opensel._opensect[to_con];
 		if (to_sects.size() <= fit)
 		{
 			// We've iterated to the end; we're done.
-			_frmsel._framesect.erase(to_con);
-			_frmsel._frameit.erase(to_con);
+			_opensel._opensect.erase(to_con);
+			_opensel._openit.erase(to_con);
 			return Handle::UNDEFINED;
 		}
 
 		// Increment and save.
-		_frmsel._frameit[to_con] ++;
+		_opensel._openit[to_con] ++;
 		return to_sects[fit];
 	}
+
+	return Handle::UNDEFINED;
+}
+
+/// Return a section containing `to_con`.
+/// First try to attach to an existing open section.
+/// If that fails, then pick a new section from the lexis.
+Handle DefaultCallback::select(const Frame& frame,
+                               const Handle& fm_sect, const Handle& fm_con,
+                               const Handle& to_con)
+{
+	// See if we can find other open connectors to connect to.
+	Handle open_sect = select_from_open(frame, fm_sect, fm_con, to_con);
+	if (open_sect) return open_sect;
+
+	// If this is non-empty, the the odometer rolled over.
+	if (_opensel._opensect.find(to_con) != _opensel._opensect.end())
+		return Handle::UNDEFINED;
 
 	// Select from the dictionary...
 	return select_from_lexis(frame, fm_sect, fm_con, to_con);
@@ -159,6 +176,7 @@ Handle DefaultCallback::make_link(const Handle& fm_con,
                                   const Handle& fm_pnt,
                                   const Handle& to_pnt)
 {
+	// Create the actual link to use.
 	Handle linkty = fm_con->getOutgoingAtom(0);
 	Handle edg = _as->add_link(SET_LINK, fm_pnt, to_pnt);
 	Handle lnk = _as->add_link(EVALUATION_LINK, linkty, edg);
@@ -183,15 +201,15 @@ bool DefaultCallback::recurse(const Frame& frm)
 void DefaultCallback::push_frame(const Frame& frm)
 {
 	_frame_stack_depth++;
-	_frmsel_stack.push(_frmsel);
-	_frmsel._framesect.clear();
-	_frmsel._frameit.clear();
+	_opensel_stack.push(_opensel);
+	_opensel._opensect.clear();
+	_opensel._openit.clear();
 }
 
 void DefaultCallback::pop_frame(const Frame& frm)
 {
 	_frame_stack_depth--;
-	_frmsel = _frmsel_stack.top(); _frmsel_stack.pop();
+	_opensel = _opensel_stack.top(); _opensel_stack.pop();
 }
 
 void DefaultCallback::push_odometer(const Odometer& odo)

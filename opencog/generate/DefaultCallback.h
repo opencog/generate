@@ -47,6 +47,7 @@ private:
 	virtual Handle select_from_lexis(const Frame&,
 	                                 const Handle&, const Handle&,
 	                                 const Handle&);
+
 	// Iterator, pointing from a to-connector, to a list of
 	// all sections in the dictionary that contain this to-connector.
 	// Used by `select()` to return the next attachable section.
@@ -56,18 +57,21 @@ private:
 	std::stack<HandleUCounter> _lexlit_stack;
 
 	// -------------------------------------------
-	struct FrameSelections
+	virtual Handle select_from_open(const Frame&,
+	                                const Handle&, const Handle&,
+	                                const Handle&);
+	struct OpenSelections
 	{
-		HandleSeqMap _framesect;
+		HandleSeqMap _opensect;
 
 		// Iterator, pointing from a to-connector, to a list of
 		// all open sections in the current frame.
-		HandleUCounter _frameit;
+		HandleUCounter _openit;
 	};
 
-	FrameSelections _frmsel;
-	std::stack<FrameSelections> _frmsel_stack;
-
+	OpenSelections _opensel;
+	std::stack<OpenSelections> _opensel_stack;
+	// -------------------------------------------
 
 public:
 	DefaultCallback(AtomSpace*, const Dictionary&);
