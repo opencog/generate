@@ -89,7 +89,7 @@ Handle DefaultCallback::select(const Frame& frame,
 	// Do we have an iterator (a future/promise) for the to-connector
 	// in the current frame?  If not, try to set one up. If this fails,
 	// then kick over to the dictionary.
-	unsigned fit = _frameit.get(to_con, 0);
+	unsigned fit = _frmsel._frameit.get(to_con, 0);
 	if (0 == fit)
 	{
 		HandleSeq to_sects;
@@ -105,7 +105,8 @@ Handle DefaultCallback::select(const Frame& frame,
 		// Start iterating over the sections that contain to_con.
 		if (0 < to_sects.size())
 		{
-			_frameit[to_con] = 1;
+			_frmsel._framesect[to_con] = to_sects;
+			_frmsel._frameit[to_con] = 1;
 			return to_sects[0];
 		}
 		// else fall-through here, and go to the lexis-lookup of the
@@ -113,20 +114,18 @@ Handle DefaultCallback::select(const Frame& frame,
 	}
 	else
 	{
-#if 0
-		if (toit == _dict.sections(to_con).end())
+		const HandleSeq& to_sects = _frmsel._framesect[to_con];
+		if (to_sects.size() <= fit)
 		{
 			// We've iterated to the end; we're done.
-			_lexlit.erase(to_con);
+			_frmsel._framesect.erase(to_con);
+			_frmsel._frameit.erase(to_con);
 			return Handle::UNDEFINED;
 		}
 
 		// Increment and save.
-		Handle to_sect = *toit;
-		toit++;
-		_frameit[to_con] = toit;
-		return to_sect;
-#endif
+		_frmsel._frameit[to_con] ++;
+		return to_sects[fit];
 	}
 
 	return select_from_lexis(frame, fm_sect, fm_con, to_con);

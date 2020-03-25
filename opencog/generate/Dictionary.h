@@ -30,6 +30,8 @@ namespace opencog
  *  @{
  */
 
+typedef std::map<Handle, HandleSeq> HandleSeqMap;
+
 /// Dictionary (Lexis) of sections that can connect to one-another.
 /// This provides several convenience data structures. These include:
 ///
@@ -51,7 +53,6 @@ class Dictionary
 	// Map from Connectors to Sections that hold that connector.
 	// This map is set up at the start, before iteration begins.
 	//
-	typedef std::map<Handle, HandleSeq> HandleSeqMap;
 	HandleSeqMap _lexis;
 
 public:

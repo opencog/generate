@@ -42,6 +42,8 @@ private:
 	size_t _frame_stack_depth;
 	size_t _effort;
 
+	// -------------------------------------------
+	// Lexical selection
 	virtual Handle select_from_lexis(const Frame&,
 	                                 const Handle&, const Handle&,
 	                                 const Handle&);
@@ -53,9 +55,19 @@ private:
 	// Stack of iterators into the lists of sections.
 	std::stack<HandleUCounter> _lexlit_stack;
 
-	// Iterator, pointing from a to-connector, to a list of
-	// all open sections in the current frame.
-	HandleUCounter _frameit;
+	// -------------------------------------------
+	struct FrameSelections
+	{
+		HandleSeqMap _framesect;
+
+		// Iterator, pointing from a to-connector, to a list of
+		// all open sections in the current frame.
+		HandleUCounter _frameit;
+	};
+
+	FrameSelections _frmsel;
+	std::stack<FrameSelections> _frmsel_stack;
+
 
 public:
 	DefaultCallback(AtomSpace*, const Dictionary&);
