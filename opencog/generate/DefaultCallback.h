@@ -42,6 +42,9 @@ private:
 	size_t _frame_stack_depth;
 	size_t _effort;
 
+	virtual Handle select_from_lexis(const Frame&,
+	                                 const Handle&, const Handle&,
+	                                 const Handle&);
 	// Iterator, pointing from a to-connector, to a list of
 	// all sections in the dictionary that contain this to-connector.
 	// Used by `select()` to return the next attachable section.

@@ -45,6 +45,41 @@ static inline Handle uniform_choice(const HandleSeq& lst)
 }
 
 /// Return a section containing `to_con`.
+/// Pick a new section from the lexis.
+Handle DefaultCallback::select_from_lexis(const Frame& frame,
+                               const Handle& fm_sect, const Handle& fm_con,
+                               const Handle& to_con)
+{
+	const HandleSeq& to_sects = _dict.sections(to_con);
+
+	// Do we have an iterator (a future/promise) for the to-connector?
+	// If not, then set one up. Else use the one we found.  The iterator
+	// that we are setting up here will point into the dictionary, i.e.
+	// into the pool of allowable sections that we can pick from.
+	unsigned curit = _lexlit.get(to_con, 0);
+	if (0 == curit)
+	{
+		// Oh no, dead end!
+		if (0 == to_sects.size()) return Handle::UNDEFINED;
+
+		// Start it up.
+		_lexlit[to_con] = 1;
+		return to_sects[0];
+	}
+
+	if (to_sects.size() <= curit)
+	{
+		// We've iterated to the end; we're done.
+		_lexlit.erase(to_con);
+		return Handle::UNDEFINED;
+	}
+
+	// Increment and save.
+	_lexlit[to_con] ++;
+	return to_sects[curit];
+}
+
+/// Return a section containing `to_con`.
 /// First try to attach to an existing open section.
 /// If that fails, then pick a new section from the lexis.
 Handle DefaultCallback::select(const Frame& frame,
@@ -94,33 +129,7 @@ Handle DefaultCallback::select(const Frame& frame,
 #endif
 	}
 
-	const HandleSeq& to_sects = _dict.sections(to_con);
-
-	// Do we have an iterator (a future/promise) for the to-connector?
-	// If not, then set one up. Else use the one we found.  The iterator
-	// that we are setting up here will point into the dictionary, i.e.
-	// into the pool of allowable sections that we can pick from.
-	unsigned curit = _lexlit.get(to_con, 0);
-	if (0 == curit)
-	{
-		// Oh no, dead end!
-		if (0 == to_sects.size()) return Handle::UNDEFINED;
-
-		// Start it up.
-		_lexlit[to_con] = 1;
-		return to_sects[0];
-	}
-
-	if (to_sects.size() <= curit)
-	{
-		// We've iterated to the end; we're done.
-		_lexlit.erase(to_con);
-		return Handle::UNDEFINED;
-	}
-
-	// Increment and save.
-	_lexlit[to_con] ++;
-	return to_sects[curit];
+	return select_from_lexis(frame, fm_sect, fm_con, to_con);
 
 #if 0
 	// Randomly draw elegible sections. The long term strategy
