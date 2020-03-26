@@ -171,6 +171,21 @@ bool Aggregate::do_step(size_t wheel)
 		const Handle& fm_con = _odo._from_connectors[ic];
 		const Handle& to_con = _odo._to_connectors[ic];
 
+		// It's possible that the section is no longer open,
+		// because the connector got connected to it. So check.
+		if (_frame._open_sections.find(fm_sect) ==
+		    _frame._open_sections.end()) continue;
+
+		// Section is still open, but the connector might not be.
+		bool still_open = false;
+		Handle disj = fm_sect->getOutgoingAtom(1);
+		for (const Handle& fco: disj->getOutgoingSet())
+		{
+			if (fco == fm_con) { still_open = true; break; }
+		}
+		if (not still_open) continue;
+
+		// Connector is still free. Find something to connect to it.
 		Handle to_sect = _cb->select(_frame, fm_sect, fm_con, to_con);
 		if (nullptr == to_sect)
 		{
