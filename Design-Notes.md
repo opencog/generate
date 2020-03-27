@@ -4,7 +4,7 @@ Design Notes
 Random ruminations on how to best implement this.
 
 
-=== Recursive tree-walking.
+### Recursive tree-walking.
 This is a "simple", direct, obvious choice.
 Starting with a single nucleation point, pick one section, look at it's
 endpoints, and attach sections to each endpoint. Repeat until done.
@@ -39,7 +39,7 @@ The last working version of depth-recursive tree-walking is located at
 Although this "works" for simple cases, its a toy; important features
 have been added since then.
 
-=== Breadth-first aggregation
+### Breadth-first aggregation
 Breadth-first aggregation is done in "parallel", with all open
 connectors being extended just one step, per time-step. Visually,
 this can be imagined as a wave or a boundary that is expanding at
@@ -67,7 +67,7 @@ a seed, and explore each one distinctly, thus allowing "deep
 alternatives" to be fully sampled, even as getting boggged down at
 the edges of each growth.
 
-=== Pruning
+### Pruning
 Its hard to imagine how to improve on the above when there is a single
 starter nucleation point. But LG provides the counter-example, when
 there are many nucleation points (i.e. fixed words in sentence, each
@@ -75,16 +75,16 @@ word has some number of associated sections). One can then use pruning
 to discard sections that cannot possibly match; this is a multi-pass
 algo that runs over the "global" set of sections.
 
-=== Desirable algorithmic properties
+### Desirable algorithmic properties
 Based on above, some thoughts.
 
-==== Link-type limiting features.
+#### Link-type limiting features.
 For example, for language-generation, we want to avoid having certain
 link-types appear more than once; for example, neither a subject, nor an
 object link should appear more than once in a sentence, unless that
 sentence is paraphrasing: e.g. "John said that Mary is beautiful."
 
-==== Cycle preference.
+#### Cycle preference.
 For example, for language-generation, the wall-noun, wall-verb and
 noun-verb should normally form a cycle. It's a mistake to break this
 cycle, and extend one of the links to a different vertex (e.g. have two
