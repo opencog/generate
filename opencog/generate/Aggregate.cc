@@ -90,6 +90,8 @@ Handle Aggregate::aggregate(const HandleSet& nuclei,
 
 bool Aggregate::recurse(void)
 {
+	logger().fine("Enter recurse");
+
 	// Initialize a brand-new odomter at the next recursion level.
 	push_odo(true);
 	bool more = init_odometer();
@@ -103,6 +105,7 @@ bool Aggregate::recurse(void)
 	push_odo(false);
 	more = do_step(0);
 
+	logger().fine("Recurse: After first step, have-more=%d", more);
 	while (true)
 	{
 		// Odometer is exhausted; we are done.
@@ -115,12 +118,14 @@ bool Aggregate::recurse(void)
 
 		// If we are here, we have a valid odo state. Explore it.
 		recurse();
+		logger().fine("Returned from recurse");
 
 		// Exploration is done, step to the next state.
 		// Clear out any cross-linking created before stepping.
 		pop_odo(false);
 		push_odo(false);
 		more = step_odometer();
+		logger().fine("Recurse: After next step, have-more=%d", more);
 	}
 
 	return false; // *not-reached*
@@ -167,16 +172,33 @@ bool Aggregate::init_odometer(void)
 	_odo._step = _odo._size-1;
 
 	logger().fine("Initialized odometer of length %lu", _odo._size);
+	print_odometer();
 
 	return true;
+}
+
+void Aggregate::print_odometer()
+{
+	logger().fine("Odometer State: length %lu at depth %lu",
+		_odo._size, _odo_stack.size());
+	for (size_t i=0; i<_odo._size; i++)
+	{
+		logger().fine("    %lu: %s : %s %s -> %s", i,
+			_odo._sections[i]->getOutgoingAtom(0)->get_name().c_str(),
+			_odo._from_connectors[i]->getOutgoingAtom(0)->get_name().c_str(),
+			_odo._from_connectors[i]->getOutgoingAtom(1)->get_name().c_str(),
+			_odo._to_connectors[i]->getOutgoingAtom(1)->get_name().c_str());
+	}
 }
 
 bool Aggregate::do_step(size_t wheel)
 {
 	logger().fine("Step odometer wheel %lu of %lu at depth %lu",
 	               wheel, _odo._size, _odo_stack.size());
+	print_odometer();
 
 	// Take a step.
+	bool did_step = false;
 	for (size_t ic = wheel; ic < _odo._size; ic++)
 	{
 		push_frame();
@@ -220,7 +242,11 @@ bool Aggregate::do_step(size_t wheel)
 		{
 			if (_odo._sections[in] == fm_sect) _odo._sections[in] = new_fm;
 		}
+
+		did_step = true;
 	}
+
+	if (not did_step) return false;
 
 	check_for_solution();
 
@@ -229,7 +255,6 @@ bool Aggregate::do_step(size_t wheel)
 
 bool Aggregate::step_odometer(void)
 {
-
 	// Total rollover
 	if (_odo._size < _odo._step) return false;
 
