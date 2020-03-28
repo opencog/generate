@@ -177,18 +177,21 @@ bool Aggregate::init_odometer(void)
 	return true;
 }
 
+void Aggregate::print_wheel(size_t i)
+{
+	logger().fine("    wheel %lu: %s : %s\t: %s -> %s", i,
+		_odo._sections[i]->getOutgoingAtom(0)->get_name().c_str(),
+		_odo._from_connectors[i]->getOutgoingAtom(0)->get_name().c_str(),
+		_odo._from_connectors[i]->getOutgoingAtom(1)->get_name().c_str(),
+		_odo._to_connectors[i]->getOutgoingAtom(1)->get_name().c_str());
+}
+
 void Aggregate::print_odometer()
 {
 	logger().fine("Odometer State: length %lu at depth %lu",
 		_odo._size, _odo_stack.size());
 	for (size_t i=0; i<_odo._size; i++)
-	{
-		logger().fine("    %lu: %s : %s %s -> %s", i,
-			_odo._sections[i]->getOutgoingAtom(0)->get_name().c_str(),
-			_odo._from_connectors[i]->getOutgoingAtom(0)->get_name().c_str(),
-			_odo._from_connectors[i]->getOutgoingAtom(1)->get_name().c_str(),
-			_odo._to_connectors[i]->getOutgoingAtom(1)->get_name().c_str());
-	}
+		print_wheel(i);
 }
 
 bool Aggregate::do_step(size_t wheel)
@@ -209,7 +212,13 @@ bool Aggregate::do_step(size_t wheel)
 		// It's possible that the section is no longer open,
 		// because the connector got connected to it. So check.
 		if (_frame._open_sections.find(fm_sect) ==
-		    _frame._open_sections.end()) continue;
+		    _frame._open_sections.end())
+		{
+			logger().fine("Wheel-sect not open: %lu of %lu at depth %lu",
+			               wheel, _odo._size, _odo_stack.size());
+			print_wheel(wheel);
+			continue;
+		}
 
 		// Section is still open, but the connector might not be.
 		bool still_open = false;
@@ -218,7 +227,13 @@ bool Aggregate::do_step(size_t wheel)
 		{
 			if (fco == fm_con) { still_open = true; break; }
 		}
-		if (not still_open) continue;
+		if (not still_open)
+		{
+			logger().fine("Wheel-con not open: %lu of %lu at depth %lu",
+			               wheel, _odo._size, _odo_stack.size());
+			print_wheel(wheel);
+			continue;
+		}
 
 		// Connector is still free. Find something to connect to it.
 		Handle to_sect = _cb->select(_frame, fm_sect, fm_con, to_con);
@@ -226,6 +241,8 @@ bool Aggregate::do_step(size_t wheel)
 		{
 			logger().fine("Rolled over wheel %lu of %lu at depth %lu",
 			               wheel, _odo._size, _odo_stack.size());
+			print_wheel(wheel);
+
 			// If we are here, then this wheel has rolled over.
 			// That mens that its time for the next wheel to take
 			// a step. Mark that wheel.
