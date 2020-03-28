@@ -244,9 +244,10 @@ bool Aggregate::do_step(size_t wheel)
 			print_wheel(wheel);
 
 			// If we are here, then this wheel has rolled over.
-			// That mens that its time for the next wheel to take
+			// That means that its time for the next wheel to take
 			// a step. Mark that wheel.
 			_odo._step = ic - 1;
+			if (0 == ic) _odo._step = 0;
 			pop_frame();
 			return false;
 		}
@@ -263,7 +264,13 @@ bool Aggregate::do_step(size_t wheel)
 		did_step = true;
 	}
 
-	if (not did_step) return false;
+	if (not did_step)
+	{
+		_odo._step = wheel - 1;
+		if (0 == wheel) _odo._step = 0;
+		pop_frame();
+		return false;
+	}
 
 	check_for_solution();
 
@@ -281,7 +288,19 @@ bool Aggregate::step_odometer(void)
 	       pops, _odo._step, _odo._size, _odo_stack.size());
 	for (size_t i=0; i< pops; i++) pop_frame();
 
-	return do_step(_odo._step);
+	bool did_step = do_step(_odo._step);
+	while (not did_step)
+	{
+		if (0 == _odo._step)
+		{
+			logger().fine("Exhaused the odometer at depth %lu", _odo_stack.size());
+			return false;
+		}
+		logger().fine("Failed to step, try wheel %lu", _odo._step);
+		did_step = do_step(_odo._step);
+	}
+
+	return did_step;
 }
 
 // False means halt, no more solutions possible along this path.
