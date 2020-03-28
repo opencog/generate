@@ -51,8 +51,8 @@ private:
 	void pop_frame();
 
 	std::stack<Odometer> _odo_stack;
-	void push_odo();
-	void pop_odo();
+	void push_odo(bool);
+	void pop_odo(bool);
 
 	/// Accumulated set of fully-grounded solutions.
 	std::set<HandleSet> _solutions;
@@ -65,10 +65,10 @@ private:
 
 	bool recurse(void);
 
-	void connect_section(const Handle&, const Handle&,
-	                     const Handle&, const Handle&);
-	bool make_link(const Handle&, const Handle&,
-	               const Handle&);
+	Handle connect_section(const Handle&, const Handle&,
+	                       const Handle&, const Handle&);
+	Handle make_link(const Handle&, const Handle&,
+	                 const Handle&);
 
 public:
 	Aggregate(AtomSpace*);

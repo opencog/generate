@@ -90,21 +90,33 @@ Handle Aggregate::aggregate(const HandleSet& nuclei,
 
 bool Aggregate::recurse(void)
 {
-	push_odo();
+	push_odo(true);
 	bool more = init_odometer();
+	if (not more)
+	{
+		pop_odo(true);
+		return false;
+	}
+
+	// Take the first step.
+	push_odo(false);
+	more = do_step(0);
 
 	while (true)
 	{
 		// Odometer is exhausted; we are done.
 		if (not more)
 		{
-			pop_odo();
+			pop_odo(false);
+			pop_odo(true);
 			return false;
 		}
 
 		// If we are here, we have a valid odo state. Explore it.
 		recurse();
 
+		pop_odo(false);
+		push_odo(false);
 		// Exploration is done, step to the next state.
 		more = step_odometer();
 	}
@@ -152,10 +164,9 @@ bool Aggregate::init_odometer(void)
 	if (0 == _odo._size) return false;
 	_odo._step = _odo._size-1;
 
-	logger().fine("Initialize odometer of length %lu", _odo._size);
+	logger().fine("Initialized odometer of length %lu", _odo._size);
 
-	// Take the first step.
-	return do_step(0);
+	return true;
 }
 
 bool Aggregate::do_step(size_t wheel)
@@ -167,7 +178,7 @@ bool Aggregate::do_step(size_t wheel)
 	for (size_t ic = wheel; ic < _odo._size; ic++)
 	{
 		push_frame();
-		const Handle& fm_sect = _odo._sections[ic];
+		Handle fm_sect = _odo._sections[ic];
 		const Handle& fm_con = _odo._from_connectors[ic];
 		const Handle& to_con = _odo._to_connectors[ic];
 
@@ -199,7 +210,14 @@ bool Aggregate::do_step(size_t wheel)
 			return false;
 		}
 
-		connect_section(fm_sect, fm_con, to_sect, to_con);
+		// Connect it up, and get the newly-connected section.
+		Handle new_fm = connect_section(fm_sect, fm_con, to_sect, to_con);
+
+		// Replace the from-section with the now-connected section.
+		for (size_t in = 0; in < _odo._size; in++)
+		{
+			if (_odo._sections[in] == fm_sect) _odo._sections[in] = new_fm;
+		}
 	}
 
 	check_for_solution();
@@ -209,7 +227,7 @@ bool Aggregate::do_step(size_t wheel)
 
 bool Aggregate::step_odometer(void)
 {
-	// total rollover
+	// Total rollover
 	if (_odo._size < _odo._step) return false;
 
 	// Take a step.
@@ -265,11 +283,13 @@ bool Aggregate::check_for_solution(void)
 
 /// Connect a pair of sections together, by connecting two matched
 /// connectors. Two new sections will be created, with the connector
-// in each section replaced by the link.
-void Aggregate::connect_section(const Handle& fm_sect,
-                                const Handle& fm_con,
-                                const Handle& to_sect,
-                                const Handle& to_con)
+/// in each section replaced by the link.
+///
+/// Return the newly-connected from-section.
+Handle Aggregate::connect_section(const Handle& fm_sect,
+                                  const Handle& fm_con,
+                                  const Handle& to_sect,
+                                  const Handle& to_con)
 {
 	logger().fine("Connect %s\nto %s",
 		fm_sect->to_string().c_str(), to_sect->to_string().c_str());
@@ -279,8 +299,8 @@ void Aggregate::connect_section(const Handle& fm_sect,
 
 	Handle link = _cb->make_link(fm_con, to_con, fm_point, to_point);
 
-	make_link(fm_sect, fm_con, link);
 	make_link(to_sect, to_con, link);
+	return make_link(fm_sect, fm_con, link);
 }
 
 /// Create a link.  That is, replace a connector `con` by `link` in
@@ -294,9 +314,9 @@ void Aggregate::connect_section(const Handle& fm_sect,
 /// `con` should be the connector to connect
 /// `link` should be the connecting link.
 ///
-/// Returns true if the new link is not fully connected.
-bool Aggregate::make_link(const Handle& sect,
-                          const Handle& con, const Handle& link)
+/// Returns the newly-created section.
+Handle Aggregate::make_link(const Handle& sect,
+                            const Handle& con, const Handle& link)
 {
 	bool is_open = false;
 	HandleSeq oset;
@@ -336,7 +356,7 @@ bool Aggregate::make_link(const Handle& sect,
 		logger().fine("---- Close point %s", point->to_string().c_str());
 	}
 
-	return is_open;
+	return linking;
 }
 
 void Aggregate::push_frame(void)
@@ -359,18 +379,18 @@ void Aggregate::pop_frame(void)
 	     _frame._open_sections.size(), _frame._linkage.size());
 }
 
-void Aggregate::push_odo(void)
+void Aggregate::push_odo(bool ccb)
 {
-	_cb->push_odometer(_odo);
+	if (ccb) _cb->push_odometer(_odo);
 	_odo_stack.push(_odo);
 
 	logger().fine("==== Push: Odo stack depth now %lu",
 	     _odo_stack.size());
 }
 
-void Aggregate::pop_odo(void)
+void Aggregate::pop_odo(bool ccb)
 {
-	_cb->pop_odometer(_odo);
+	if (ccb) _cb->pop_odometer(_odo);
 	_odo = _odo_stack.top(); _odo_stack.pop();
 
 	logger().fine("==== Pop: Odo stack depth now %lu",
