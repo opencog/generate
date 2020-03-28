@@ -90,6 +90,7 @@ Handle Aggregate::aggregate(const HandleSet& nuclei,
 
 bool Aggregate::recurse(void)
 {
+	// Initialize a brand-new odomter at the next recursion level.
 	push_odo(true);
 	bool more = init_odometer();
 	if (not more)
@@ -115,9 +116,10 @@ bool Aggregate::recurse(void)
 		// If we are here, we have a valid odo state. Explore it.
 		recurse();
 
+		// Exploration is done, step to the next state.
+		// Clear out any cross-linking created before stepping.
 		pop_odo(false);
 		push_odo(false);
-		// Exploration is done, step to the next state.
 		more = step_odometer();
 	}
 
@@ -227,6 +229,7 @@ bool Aggregate::do_step(size_t wheel)
 
 bool Aggregate::step_odometer(void)
 {
+
 	// Total rollover
 	if (_odo._size < _odo._step) return false;
 
@@ -379,18 +382,23 @@ void Aggregate::pop_frame(void)
 	     _frame._open_sections.size(), _frame._linkage.size());
 }
 
-void Aggregate::push_odo(bool ccb)
+/// Push the odometer state. If `lvl` is true, then a new set of
+/// odometer wheels are to be prepared. Else, if false, then this
+/// is being called to just roll the existing odo wheels. Note that
+/// while stepping, the odo state can be mangled, which is why a
+/// push-pop is needed for each step.
+void Aggregate::push_odo(bool lvl)
 {
-	if (ccb) _cb->push_odometer(_odo);
+	if (lvl) _cb->push_odometer(_odo);
 	_odo_stack.push(_odo);
 
 	logger().fine("==== Push: Odo stack depth now %lu",
 	     _odo_stack.size());
 }
 
-void Aggregate::pop_odo(bool ccb)
+void Aggregate::pop_odo(bool lvl)
 {
-	if (ccb) _cb->pop_odometer(_odo);
+	if (lvl) _cb->pop_odometer(_odo);
 	_odo = _odo_stack.top(); _odo_stack.pop();
 
 	logger().fine("==== Pop: Odo stack depth now %lu",
