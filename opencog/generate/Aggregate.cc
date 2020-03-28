@@ -179,11 +179,28 @@ bool Aggregate::init_odometer(void)
 
 void Aggregate::print_wheel(size_t i)
 {
-	logger().fine("    wheel %lu: %s : %s\t: %s -> %s", i,
+	bool sect_open = true;
+	const Handle& fm_sect = _odo._sections[i];
+	if (_frame._open_sections.find(fm_sect) == _frame._open_sections.end())
+		sect_open = false;
+
+	bool conn_open = false;
+	const Handle& fm_con = _odo._from_connectors[i];
+	Handle disj = fm_sect->getOutgoingAtom(1);
+	for (const Handle& fco: disj->getOutgoingSet())
+	{
+		if (fco == fm_con) { conn_open = true; break; }
+	}
+
+	logger().fine("    wheel %lu: %s : %s\t: %s -> %s (sect %s; conn %s)",
+		i,
 		_odo._sections[i]->getOutgoingAtom(0)->get_name().c_str(),
 		_odo._from_connectors[i]->getOutgoingAtom(0)->get_name().c_str(),
 		_odo._from_connectors[i]->getOutgoingAtom(1)->get_name().c_str(),
-		_odo._to_connectors[i]->getOutgoingAtom(1)->get_name().c_str());
+		_odo._to_connectors[i]->getOutgoingAtom(1)->get_name().c_str(),
+		sect_open ? "open" : "closed",
+		conn_open ? "open" : "closed"
+	);
 }
 
 void Aggregate::print_odometer()
