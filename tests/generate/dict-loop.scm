@@ -16,7 +16,10 @@
 ; These assemble into the above graphs. It should be obvious from
 ; inspection how these are should be assembled. ... and, if its not
 ; ... the connector ID's must match, and the conector directions must
-; be polar opposites.
+; be polar opposites. The edges connecting the vertexes are undirected
+; edges; the ConnectorDir polarities instead indicate "to the left"
+; and "to the right". In particular, all three edges in the triangle
+; are undirected.
 ;
 (use-modules (srfi srfi-1))
 (use-modules (opencog) (opencog exec))
