@@ -101,10 +101,8 @@ bool Aggregate::recurse(void)
 		return false;
 	}
 
-	size_t nframes = _frame_stack.size();
-	push_frame();
-
 	// Take the first step.
+	push_frame();
 	push_odo(false);
 	_odo._step = 0;
 	more = do_step();
@@ -117,8 +115,7 @@ bool Aggregate::recurse(void)
 		if (not more)
 		{
 			pop_odo(false);
-			size_t pops = _frame_stack.size() - nframes;
-			for (size_t i=0; i<pops; i++) pop_frame();
+			pop_frame();
 			pop_odo(true);
 			return false;
 		}
@@ -130,8 +127,8 @@ bool Aggregate::recurse(void)
 		// Exploration is done, step to the next state.
 		// Clear out any cross-linking created before stepping.
 		pop_odo(false);
-		size_t pops = _frame_stack.size() - nframes;
-		for (size_t i=0; i<pops; i++) pop_frame();
+		pop_frame();
+		push_frame();
 		push_odo(false);
 		more = step_odometer();
 		logger().fine("Recurse: After next step, have-more=%d", more);
@@ -482,7 +479,7 @@ void Aggregate::push_odo(bool lvl)
 	_odo_stack.push(_odo);
 
 	logger().fine("==== Push: Odo stack depth now %lu : %s",
-	     _odo_stack.size(), lvl ? "recursive" : "step");
+	     _odo_stack.size(), lvl ? "recursive" : "stepper");
 }
 
 void Aggregate::pop_odo(bool lvl)
@@ -491,5 +488,5 @@ void Aggregate::pop_odo(bool lvl)
 	_odo = _odo_stack.top(); _odo_stack.pop();
 
 	logger().fine("==== Pop: Odo stack depth now %lu : %s",
-	     _odo_stack.size(), lvl ? "recursive" : "step");
+	     _odo_stack.size(), lvl ? "recursive" : "stepper");
 }
