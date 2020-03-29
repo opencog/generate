@@ -102,6 +102,7 @@ bool Aggregate::recurse(void)
 	}
 
 	size_t nframes = _frame_stack.size();
+	push_frame();
 
 	// Take the first step.
 	push_odo(false);
@@ -480,8 +481,8 @@ void Aggregate::push_odo(bool lvl)
 	if (lvl) _cb->push_odometer(_odo);
 	_odo_stack.push(_odo);
 
-	logger().fine("==== Push: Odo stack depth now %lu",
-	     _odo_stack.size());
+	logger().fine("==== Push: Odo stack depth now %lu : %s",
+	     _odo_stack.size(), lvl ? "recursive" : "step");
 }
 
 void Aggregate::pop_odo(bool lvl)
@@ -489,6 +490,6 @@ void Aggregate::pop_odo(bool lvl)
 	if (lvl) _cb->pop_odometer(_odo);
 	_odo = _odo_stack.top(); _odo_stack.pop();
 
-	logger().fine("==== Pop: Odo stack depth now %lu",
-	     _odo_stack.size());
+	logger().fine("==== Pop: Odo stack depth now %lu : %s",
+	     _odo_stack.size(), lvl ? "recursive" : "step");
 }
