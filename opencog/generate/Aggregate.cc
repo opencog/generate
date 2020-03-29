@@ -101,9 +101,11 @@ bool Aggregate::recurse(void)
 		return false;
 	}
 
+	size_t nframes = _frame_stack.size();
+
 	// Take the first step.
 	push_odo(false);
-	more = do_step(0);
+	more = do_step();
 
 	logger().fine("Recurse: After first step, have-more=%d", more);
 	while (true)
@@ -112,6 +114,8 @@ bool Aggregate::recurse(void)
 		if (not more)
 		{
 			pop_odo(false);
+			size_t pops = _frame_stack.size() - nframes;
+			for (size_t i=0; i<pops; i++) pop_frame();
 			pop_odo(true);
 			return false;
 		}
@@ -123,6 +127,8 @@ bool Aggregate::recurse(void)
 		// Exploration is done, step to the next state.
 		// Clear out any cross-linking created before stepping.
 		pop_odo(false);
+		size_t pops = _frame_stack.size() - nframes;
+		for (size_t i=0; i<pops; i++) pop_frame();
 		push_odo(false);
 		more = step_odometer();
 		logger().fine("Recurse: After next step, have-more=%d", more);
@@ -211,17 +217,17 @@ void Aggregate::print_odometer()
 		print_wheel(i);
 }
 
-bool Aggregate::do_step(size_t wheel)
+bool Aggregate::do_step(void)
 {
 	logger().fine("Step odometer wheel %lu of %lu at depth %lu",
-	               wheel, _odo._size, _odo_stack.size());
+	               _odo._step, _odo._size, _odo_stack.size());
 	print_odometer();
 
-	// Take a step.
+	// Restore previous odometer state, when ic < _odo._step,
+	// Else draw a new piece via callback, and attach it.
 	bool did_step = false;
-	for (size_t ic = wheel; ic < _odo._size; ic++)
+	for (size_t ic = 0; ic < _odo._size; ic++)
 	{
-		push_frame();
 		Handle fm_sect = _odo._sections[ic];
 		const Handle& fm_con = _odo._from_connectors[ic];
 		const Handle& to_con = _odo._to_connectors[ic];
@@ -232,8 +238,8 @@ bool Aggregate::do_step(size_t wheel)
 		    _frame._open_sections.end())
 		{
 			logger().fine("Wheel-sect not open: %lu of %lu at depth %lu",
-			               wheel, _odo._size, _odo_stack.size());
-			print_wheel(wheel);
+			               ic, _odo._size, _odo_stack.size());
+			print_wheel(ic);
 			continue;
 		}
 
@@ -247,25 +253,33 @@ bool Aggregate::do_step(size_t wheel)
 		if (not still_open)
 		{
 			logger().fine("Wheel-con not open: %lu of %lu at depth %lu",
-			               wheel, _odo._size, _odo_stack.size());
-			print_wheel(wheel);
+			               ic, _odo._size, _odo_stack.size());
+			print_wheel(ic);
 			continue;
 		}
 
-		// Connector is still free. Find something to connect to it.
-		Handle to_sect = _cb->select(_frame, fm_sect, fm_con, to_con);
+		// If we made it to here, then the to-connector is still free.
+		// Find something to connect to it. Actually, restore the
+		// previous odo state, up to the stepper, and draw new state
+		// for wheels after that.
+		if (_odo._step <= ic)
+		{
+			_odo._current[ic] = _cb->select(_frame, fm_sect, fm_con, to_con);
+			did_step = true;
+		}
+		Handle to_sect = _odo._current[ic];
+
 		if (nullptr == to_sect)
 		{
 			logger().fine("Rolled over wheel %lu of %lu at depth %lu",
-			               wheel, _odo._size, _odo_stack.size());
-			print_wheel(wheel);
+			               ic, _odo._size, _odo_stack.size());
+			print_wheel(ic);
 
 			// If we are here, then this wheel has rolled over.
 			// That means that its time for the next wheel to take
 			// a step. Mark that wheel.
 			_odo._step = ic - 1;
 			if (0 == ic) _odo._step = 0;
-			pop_frame();
 			return false;
 		}
 
@@ -277,15 +291,13 @@ bool Aggregate::do_step(size_t wheel)
 		{
 			if (_odo._sections[in] == fm_sect) _odo._sections[in] = new_fm;
 		}
-
-		did_step = true;
 	}
 
 	if (not did_step)
 	{
-		_odo._step = wheel - 1;
-		if (0 == wheel) _odo._step = 0;
-		pop_frame();
+		logger().fine("Did not step wheel: %lu of %lu at depth %lu",
+			               _odo._step, _odo._size, _odo_stack.size());
+		if (0 < _odo._step) _odo._step --;
 		return false;
 	}
 
@@ -300,12 +312,7 @@ bool Aggregate::step_odometer(void)
 	if (_odo._size < _odo._step) return false;
 
 	// Take a step.
-	size_t pops = _odo._size - _odo._step;
-	logger().fine("Popping %lu frames to get to wheel %lu of %lu at depth %lu",
-	       pops, _odo._step, _odo._size, _odo_stack.size());
-	for (size_t i=0; i< pops; i++) pop_frame();
-
-	bool did_step = do_step(_odo._step);
+	bool did_step = do_step();
 	while (not did_step)
 	{
 		if (0 == _odo._step)
@@ -314,7 +321,8 @@ bool Aggregate::step_odometer(void)
 			return false;
 		}
 		logger().fine("Failed to step, try wheel %lu", _odo._step);
-		did_step = do_step(_odo._step);
+
+		did_step = do_step();
 	}
 
 	return did_step;

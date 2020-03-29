@@ -59,7 +59,7 @@ private:
 
 	bool init_odometer(void);
 	bool step_odometer(void);
-	bool do_step(size_t);
+	bool do_step(void);
 	void print_wheel(size_t);
 	void print_odometer(void);
 
