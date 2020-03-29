@@ -296,9 +296,9 @@ design choices:
   I have no desire to reinvent any wheels, here.
 
 
-# Version 0.0.3
+# Version 0.0.4
 The current code implements a simple breadth-first aggregation
 algorithm. It passes a handful of basic unit tests, that's all.
-It's missing various key features, so more complex tests fail.
+It's missing various key features; these come next in the design.
 So far, nothing is done to cope with combinatoric explosion.  More
 sophisticated algos are possible, but these remain uncontemplated.

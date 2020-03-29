@@ -166,7 +166,6 @@ void AggregationUTest::test_loop()
 	eval->eval("(load-from-path \"tests/generate/dict-loop.scm\")");
 	Handle wall = eval->eval_h("left-wall");
 
-logger().set_level(Logger::FINE);
 	setup_dict();
 	DefaultCallback cb(as, *dict);
 
@@ -183,11 +182,16 @@ logger().set_level(Logger::FINE);
 	// printf("Loop result is %s\n", result->to_string().c_str());
 	printf("Loop result size is %lu expecting 4\n", result->get_arity());
 	TSM_ASSERT("Bad loop result set!", result->get_arity() == 4);
-	Handle soln = result->getOutgoingAtom(0);
 
-	printf("Loop section %s", soln->to_string().c_str());
-	printf("Loop section size is %lu expecting 5\n", soln->get_arity());
-	TSM_ASSERT("Bad section!", soln->get_arity() == 5);
+	// All of the solutions should be the same size, substituting
+	// only John/Mary and dog/cat in the parse tree.
+	int cnt = 0;
+	for (const Handle& soln: result->getOutgoingSet())
+	{
+		logger().debug("   Soln %d expecting 5 links, got %d",
+			++cnt, soln->get_arity());
+		TSM_ASSERT("Bad section!", soln->get_arity() == 5);
+	}
 
 	logger().debug("END TEST: %s", __FUNCTION__);
 }
