@@ -306,3 +306,20 @@ cycles in it (cycles are intractable for depth-first aggregation).
 It's missing various key features; these come next in the design.
 So far, nothing is done to cope with combinatoric explosion.  More
 sophisticated algos are possible, but these remain uncontemplated.
+
+## Building, testing, using
+The code here presumes the [AtomSpace](https://github.com/opencog/atomspace)
+as a pre-requisite. The AtomSpace is a (hyper-)graph database with
+assorted advanced features not found in other graph databases; this is
+why it's used here.
+
+Building and testing works exactly the same way as the AtomSpace; build
+that, and then build the stuff here in the same way.
+
+To understand how to use this, take a look at the [tests
+directory](tests/generate) and the files `dict-helloworld.scm`, then
+`dict-tree.scm` and finally `dict-loop.scm`. This requires at least
+some basic familiarity with the AtomSpace (see the tutorial-examples
+there). Some general understanding of
+[Link Grammar](https://www.abisource.com/projects/link-grammar/)
+is also useful, as all initial examples will be of natural language.
