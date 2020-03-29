@@ -50,7 +50,7 @@ AggregationUTest::AggregationUTest()
 
 AggregationUTest::~AggregationUTest()
 {
-	logger().info("Completed running UnorderedUTest");
+	logger().info("Completed running AggregationUTest");
 
 	// erase the log file if no assertions failed
 	if (!CxxTest::TestTracker::tracker().suiteFailed())
