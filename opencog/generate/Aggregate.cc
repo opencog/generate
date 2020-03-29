@@ -105,7 +105,9 @@ bool Aggregate::recurse(void)
 
 	// Take the first step.
 	push_odo(false);
+	_odo._step = 0;
 	more = do_step();
+	_odo._step = _odo._size-1;
 
 	logger().fine("Recurse: After first step, have-more=%d", more);
 	while (true)
@@ -176,7 +178,6 @@ bool Aggregate::init_odometer(void)
 
 	_odo._size = _odo._to_connectors.size();
 	if (0 == _odo._size) return false;
-	_odo._step = _odo._size-1;
 
 	logger().fine("Initialized odometer of length %lu", _odo._size);
 	print_odometer();
