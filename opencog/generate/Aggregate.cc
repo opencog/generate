@@ -169,6 +169,7 @@ bool Aggregate::init_odometer(void)
 				_odo._from_connectors.push_back(from_con);
 				_odo._to_connectors.push_back(to_con);
 				_odo._sections.push_back(sect);
+				_odo._current.push_back(Handle::UNDEFINED);
 			}
 		}
 	}
