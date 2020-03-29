@@ -103,8 +103,9 @@ bool Aggregate::recurse(void)
 
 	// Take the first step.
 	push_frame();
-	_odo._step = 0;
+	_odo._step = _odo._size-1;
 	push_odo(false);
+	_odo._step = 0;
 	more = do_step();
 	_odo._step = _odo._size-1;
 
