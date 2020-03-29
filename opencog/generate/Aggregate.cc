@@ -127,10 +127,13 @@ bool Aggregate::recurse(void)
 
 		// Exploration is done, step to the next state.
 		// Clear out any cross-linking created before stepping.
+		HandleSeq settings = _odo._current;
 		pop_odo(false);
 		pop_frame();
 		push_frame();
 		push_odo(false);
+		_odo._current = settings;
+
 		more = step_odometer();
 		logger().fine("Recurse: After next step, have-more=%d", more);
 	}
@@ -260,6 +263,7 @@ bool Aggregate::do_step(void)
 			continue;
 		}
 
+		// ----------------------------
 		// If we made it to here, then the to-connector is still free.
 		// Find something to connect to it. Actually, restore the
 		// previous odo state, up to the stepper, and draw new state
