@@ -307,12 +307,16 @@ bool Aggregate::do_step(void)
 /// Clear out any cross-linking created before stepping.
 void Aggregate::reset_odometer(void)
 {
+	// Hmm... only some state should be cleared... other state
+	// should be kept...
+	size_t stepper = _odo._step;
 	HandleSeq settings = _odo._current;
 	pop_odo(false);
 	pop_frame();
 	push_frame();
 	push_odo(false);
 	_odo._current = settings;
+	_odo._step = stepper;
 }
 
 bool Aggregate::step_odometer(void)
