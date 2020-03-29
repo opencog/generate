@@ -126,14 +126,6 @@ bool Aggregate::recurse(void)
 		logger().fine("Returned from recurse");
 
 		// Exploration is done, step to the next state.
-		// Clear out any cross-linking created before stepping.
-		HandleSeq settings = _odo._current;
-		pop_odo(false);
-		pop_frame();
-		push_frame();
-		push_odo(false);
-		_odo._current = settings;
-
 		more = step_odometer();
 		logger().fine("Recurse: After next step, have-more=%d", more);
 	}
@@ -312,12 +304,24 @@ bool Aggregate::do_step(void)
 	return true;
 }
 
+/// Clear out any cross-linking created before stepping.
+void Aggregate::reset_odometer(void)
+{
+	HandleSeq settings = _odo._current;
+	pop_odo(false);
+	pop_frame();
+	push_frame();
+	push_odo(false);
+	_odo._current = settings;
+}
+
 bool Aggregate::step_odometer(void)
 {
 	// Total rollover
 	if (_odo._size < _odo._step) return false;
 
 	// Take a step.
+	reset_odometer();
 	bool did_step = do_step();
 	while (not did_step)
 	{
@@ -328,6 +332,7 @@ bool Aggregate::step_odometer(void)
 		}
 		logger().fine("Failed to step, try wheel %lu", _odo._step);
 
+		reset_odometer();
 		did_step = do_step();
 	}
 
