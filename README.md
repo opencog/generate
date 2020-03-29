@@ -298,7 +298,11 @@ design choices:
 
 # Version 0.0.4
 The current code implements a simple breadth-first aggregation
-algorithm. It passes a handful of basic unit tests, that's all.
+algorithm (this is an important improvement over the depth-first
+aggregation implemented in version 0.0.2).  It passes a handful
+of basic unit tests, including one which generates a graph with
+cycles in it (cycles are intractable for depth-first aggregation).
+
 It's missing various key features; these come next in the design.
 So far, nothing is done to cope with combinatoric explosion.  More
 sophisticated algos are possible, but these remain uncontemplated.
