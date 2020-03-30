@@ -39,6 +39,7 @@ public:
 	void test_hello();
 	void test_tree();
 	void test_loop();
+	void test_biloop();
 };
 
 AggregationUTest::AggregationUTest()
@@ -118,7 +119,7 @@ void AggregationUTest::test_hello()
 	logger().debug("END TEST: %s", __FUNCTION__);
 }
 
-// Four generations: "John/Sue saw a bird/cat", as an acyclic tree.
+// Four generations: "John/Mary saw a dog/cat", as an acyclic tree.
 void AggregationUTest::test_tree()
 {
 	logger().debug("BEGIN TEST: %s", __FUNCTION__);
@@ -157,8 +158,7 @@ void AggregationUTest::test_tree()
 	logger().debug("END TEST: %s", __FUNCTION__);
 }
 
-// Four generations: "John/Sue saw a bird/cat", as graph w/ cycles.
-// Currently failig due to inf recursion.
+// Four generations: "John/Mary saw a dog/cat", as graph w/ one cycle.
 void AggregationUTest::test_loop()
 {
 	logger().debug("BEGIN TEST: %s", __FUNCTION__);
@@ -184,13 +184,53 @@ void AggregationUTest::test_loop()
 	TSM_ASSERT("Bad loop result set!", result->get_arity() == 4);
 
 	// All of the solutions should be the same size, substituting
-	// only John/Mary and dog/cat in the parse tree.
+	// only John/Mary and dog/cat in the parse.
 	int cnt = 0;
 	for (const Handle& soln: result->getOutgoingSet())
 	{
 		logger().debug("   Soln %d expecting 5 links, got %d",
 			++cnt, soln->get_arity());
 		TSM_ASSERT("Bad section!", soln->get_arity() == 5);
+	}
+
+	logger().debug("END TEST: %s", __FUNCTION__);
+}
+
+// Two generations: "John thinks Mary saw a bird", and v.v. as graph
+// w/ two cycles.
+void AggregationUTest::test_biloop()
+{
+	logger().debug("BEGIN TEST: %s", __FUNCTION__);
+
+	eval->eval("(load-from-path \"tests/generate/dict-biloop.scm\")");
+	Handle wall = eval->eval_h("left-wall");
+
+	setup_dict();
+	DefaultCallback cb(as, *dict);
+
+	Handle result = ag->aggregate({wall}, cb);
+
+	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
+
+	// We expect the soultion to be have two loops
+	//
+	//     +------WV-----+------CV----+--O---+
+	//     +---W---+--S--+--Ce--+--S--+  +-D-+
+	//     |       |     |      |     |  |   |
+	// LEFT-WALL Mary thinks  John   saw a  bird
+	//
+	// printf("Loop result is %s\n", result->to_string().c_str());
+	printf("Loop result size is %lu expecting 4\n", result->get_arity());
+	TSM_ASSERT("Bad loop result set!", result->get_arity() == 4);
+
+	// All of the solutions should be the same size, substituting
+	// only John/Mary being swapped in the parse.
+	int cnt = 0;
+	for (const Handle& soln: result->getOutgoingSet())
+	{
+		logger().debug("   Soln %d expecting 8 links, got %d",
+			++cnt, soln->get_arity());
+		TSM_ASSERT("Bad section!", soln->get_arity() == 8);
 	}
 
 	logger().debug("END TEST: %s", __FUNCTION__);

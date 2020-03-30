@@ -9,6 +9,7 @@
 ;     LEFT-WALL John    saw   a    cat
 ;
 ; The other three substitute "Mary" for "John" and "dog" for "cat".
+; All four possible sentences are generated.
 ;
 ; The dictionary defines nine "jigsaw-puzzle pieces" in it.
 ; These assemble into the above trees. It should be obvious from
