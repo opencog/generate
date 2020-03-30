@@ -65,10 +65,10 @@ Handle Aggregate::aggregate(const HandleSet& nuclei,
 
 	for (const Handle& sect : sections)
 	{
-		push_frame();
+		push_frame(true);
 		_frame._open_sections.insert(sect);
 		recurse();
-		pop_frame();
+		pop_frame(true);
 	}
 
 	logger().fine("Finished; found %lu solutions\n", _solutions.size());
@@ -102,7 +102,7 @@ bool Aggregate::recurse(void)
 	}
 
 	// Take the first step.
-	push_frame();
+	push_frame(true);
 	_odo._step = _odo._size-1;
 	push_odo(false);
 	_odo._step = 0;
@@ -116,7 +116,7 @@ bool Aggregate::recurse(void)
 		if (not more)
 		{
 			pop_odo(false);
-			pop_frame();
+			pop_frame(true);
 			pop_odo(true);
 			return false;
 		}
@@ -312,8 +312,8 @@ void Aggregate::reset_odometer(void)
 	size_t stepper = _odo._step;
 	HandleSeq settings = _odo._current;
 	pop_odo(false);
-	pop_frame();
-	push_frame();
+	pop_frame(true);
+	push_frame(true);
 	push_odo(false);
 	_odo._current = settings;
 	_odo._step = stepper;
@@ -463,9 +463,14 @@ Handle Aggregate::make_link(const Handle& sect,
 	return linking;
 }
 
-void Aggregate::push_frame(void)
+/// Push the current frame state. If `fresh` is true, then the
+/// odometer wheels after this point will be turning. Otherwise,
+/// it is just a reply of previous odometer state.  In particular,
+/// The `fresh` setting is used to signal to the callback that
+/// it needs to be ready to be asked to select new odometer state.
+void Aggregate::push_frame(bool fresh)
 {
-	_cb->push_frame(_frame);
+	if (fresh) _cb->push_frame(_frame);
 	_frame_stack.push(_frame);
 
 	logger().fine("---- Push: Frame stack depth now %lu npts=%lu open=%lu lkg=%lu",
@@ -473,9 +478,9 @@ void Aggregate::push_frame(void)
 	     _frame._open_sections.size(), _frame._linkage.size());
 }
 
-void Aggregate::pop_frame(void)
+void Aggregate::pop_frame(bool fresh)
 {
-	_cb->pop_frame(_frame);
+	if (fresh) _cb->pop_frame(_frame);
 	_frame = _frame_stack.top(); _frame_stack.pop();
 
 	logger().fine("---- Pop: Frame stack depth now %lu npts=%lu open=%lu lkg=%lu",

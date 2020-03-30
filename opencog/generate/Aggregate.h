@@ -47,8 +47,8 @@ private:
 	Odometer _odo;
 
 	std::stack<Frame> _frame_stack;
-	void push_frame();
-	void pop_frame();
+	void push_frame(bool);
+	void pop_frame(bool);
 
 	std::stack<Odometer> _odo_stack;
 	void push_odo(bool);
