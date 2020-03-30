@@ -40,6 +40,7 @@ public:
 	void test_tree();
 	void test_loop();
 	void test_biloop();
+	void test_quad();
 };
 
 AggregationUTest::AggregationUTest()
@@ -150,7 +151,7 @@ void AggregationUTest::test_tree()
 	int cnt = 0;
 	for (const Handle& soln: result->getOutgoingSet())
 	{
-		logger().debug("   Soln %d expecting 5 links, got %d",
+		logger().debug("   Soln %d expecting 5 words, got %d",
 			++cnt, soln->get_arity());
 		TSM_ASSERT("Bad section!", soln->get_arity() == 5);
 	}
@@ -188,7 +189,7 @@ void AggregationUTest::test_loop()
 	int cnt = 0;
 	for (const Handle& soln: result->getOutgoingSet())
 	{
-		logger().debug("   Soln %d expecting 5 links, got %d",
+		logger().debug("   Soln %d expecting 5 words, got %d",
 			++cnt, soln->get_arity());
 		TSM_ASSERT("Bad section!", soln->get_arity() == 5);
 	}
@@ -196,7 +197,7 @@ void AggregationUTest::test_loop()
 	logger().debug("END TEST: %s", __FUNCTION__);
 }
 
-// Two generations: "John thinks Mary saw a bird", and v.v. as graph
+// Four generations: "John thinks Mary saw a bird", and v.v. as graph
 // w/ two cycles.
 void AggregationUTest::test_biloop()
 {
@@ -225,12 +226,54 @@ void AggregationUTest::test_biloop()
 
 	// All of the solutions should be the same size, substituting
 	// only John/Mary being swapped in the parse.
+	// printf("Parse is %s\n", result->getOutgoingAtom(0)->to_string().c_str());
 	int cnt = 0;
 	for (const Handle& soln: result->getOutgoingSet())
 	{
-		logger().debug("   Soln %d expecting 8 links, got %d",
+		logger().debug("   Soln %d expecting 7 words, got %d",
 			++cnt, soln->get_arity());
-		TSM_ASSERT("Bad section!", soln->get_arity() == 8);
+		TSM_ASSERT("Bad section!", soln->get_arity() == 7);
+	}
+
+	logger().debug("END TEST: %s", __FUNCTION__);
+}
+
+// Four generations: "Mary could see the dog", and v.v. as graph
+// w/ one quadrilateral cycle.
+void AggregationUTest::test_quad()
+{
+	logger().debug("BEGIN TEST: %s", __FUNCTION__);
+
+	eval->eval("(load-from-path \"tests/generate/dict-quad.scm\")");
+	Handle wall = eval->eval_h("left-wall");
+
+	setup_dict();
+	DefaultCallback cb(as, *dict);
+
+	Handle result = ag->aggregate({wall}, cb);
+
+	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
+
+	// We expect the soultion to be have one quad
+	//
+	//    +----------WV--------+----O-----+
+	//    +----W---+--S--+--I--+    +--D--+
+	//    |        |     |     |    |     |
+	// LEFT-WALL Mary  could  see  the   cat
+	//
+	// printf("Loop result is %s\n", result->to_string().c_str());
+	printf("Loop result size is %lu expecting 4\n", result->get_arity());
+	TSM_ASSERT("Bad loop result set!", result->get_arity() == 4);
+
+	// All of the solutions should be the same size, substituting
+	// only John/Mary and see/hear being swapped in the parse.
+	// printf("Parse is %s\n", result->getOutgoingAtom(0)->to_string().c_str());
+	int cnt = 0;
+	for (const Handle& soln: result->getOutgoingSet())
+	{
+		logger().debug("   Soln %d expecting 6 words, got %d",
+			++cnt, soln->get_arity());
+		TSM_ASSERT("Bad section!", soln->get_arity() == 6);
 	}
 
 	logger().debug("END TEST: %s", __FUNCTION__);
