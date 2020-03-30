@@ -40,7 +40,7 @@ public:
 	void test_tree();
 	void test_loop();
 	void test_biloop();
-	void test_quad();
+	void xtest_quad();
 };
 
 AggregationUTest::AggregationUTest()
@@ -240,7 +240,7 @@ void AggregationUTest::test_biloop()
 
 // Four generations: "Mary could see the dog", and v.v. as graph
 // w/ one quadrilateral cycle.
-void AggregationUTest::test_quad()
+void AggregationUTest::xtest_quad()
 {
 	logger().debug("BEGIN TEST: %s", __FUNCTION__);
 
@@ -249,6 +249,7 @@ void AggregationUTest::test_quad()
 
 	setup_dict();
 	DefaultCallback cb(as, *dict);
+logger().set_level(Logger::FINE);
 
 	Handle result = ag->aggregate({wall}, cb);
 
