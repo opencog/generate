@@ -168,7 +168,6 @@ bool Aggregate::init_odometer(void)
 	_odo._size = _odo._to_connectors.size();
 	if (0 == _odo._size) return false;
 	_odo._step = 0;
-	_odo._frame_depth = _frame_stack.size();
 
 	logger().fine("Initialized odometer of length %lu", _odo._size);
 	print_odometer();
@@ -474,6 +473,8 @@ void Aggregate::push_odo(void)
 	_odo_stack.push(_odo);
 
 	logger().fine("==== Push: Odo stack depth now %lu", _odo_stack.size());
+
+	_odo._frame_depth = _frame_stack.size();
 }
 
 void Aggregate::pop_odo(void)
