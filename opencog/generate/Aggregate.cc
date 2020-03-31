@@ -102,10 +102,10 @@ bool Aggregate::recurse(void)
 	}
 
 	// Take the first step.
+	push_frame();
 	_odo._step = 0;
 	more = do_step();
 	_odo._step = _odo._size-1;
-	_odo._last_step = _odo._step;
 
 	logger().fine("Recurse: After first step, have-more=%d", more);
 	while (true)
@@ -168,7 +168,6 @@ bool Aggregate::init_odometer(void)
 	_odo._size = _odo._to_connectors.size();
 	if (0 == _odo._size) return false;
 	_odo._step = 0;
-	_odo._last_step = _odo._size - 1;
 
 	logger().fine("Initialized odometer of length %lu", _odo._size);
 	print_odometer();
@@ -216,8 +215,8 @@ bool Aggregate::do_step(void)
 	               _odo._step, _odo._size, _odo_stack.size());
 	print_odometer();
 
-	for (size_t im = 0; im < _odo._last_step - _odo._step; im++)
-		pop_frame();
+	// Erase the last connection that was made.
+	pop_frame();
 
 	// Draw a new piece via callback, and attach it.
 	bool did_step = false;
@@ -259,7 +258,6 @@ bool Aggregate::do_step(void)
 		// If we made it to here, then the to-connector is still free.
 		// Draw a new section to connect to it.
 		Handle to_sect = _cb->select(_frame, fm_sect, fm_con, to_con);
-		did_step = true;
 
 		if (nullptr == to_sect)
 		{
@@ -275,6 +273,9 @@ bool Aggregate::do_step(void)
 			return false;
 		}
 
+		did_step = true;
+		push_frame();
+
 		// Connect it up, and get the newly-connected section.
 		Handle new_fm = connect_section(fm_sect, fm_con, to_sect, to_con);
 
@@ -285,9 +286,6 @@ bool Aggregate::do_step(void)
 		}
 	}
 
-	// Record which wheel we stepped.
-	_odo._last_step = _odo._step;
-
 	if (not did_step)
 	{
 		logger().fine("Did not step wheel: %lu of %lu at depth %lu",
@@ -295,6 +293,9 @@ bool Aggregate::do_step(void)
 		if (0 < _odo._step) _odo._step --;
 		return false;
 	}
+
+	// Next time, we will turn just the last wheel.
+	_odo._step = _odo._size - 1;
 
 	check_for_solution();
 

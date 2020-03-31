@@ -50,9 +50,6 @@ struct Odometer
 	/// The next wheel to be stepped. This is an index into the
 	/// above sequences.
 	size_t _step;
-
-	/// The wheel that was most recently stepped.
-	size_t _last_step;
 };
 
 /// Current traversal state
