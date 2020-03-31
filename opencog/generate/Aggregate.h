@@ -52,8 +52,8 @@ private:
 	void pop_frame();
 
 	std::stack<Odometer> _odo_stack;
-	void push_odo(bool);
-	void pop_odo(bool);
+	void push_odo();
+	void pop_odo();
 
 	/// Accumulated set of fully-grounded solutions.
 	std::set<HandleSet> _solutions;

@@ -92,22 +92,20 @@ bool Aggregate::recurse(void)
 {
 	logger().fine("Enter recurse");
 
-	// Initialize a brand-new odomter at the next recursion level.
-	push_odo(true);
+	// Initialize a brand-new odometer at the next recursion level.
+	push_odo();
 	bool more = init_odometer();
 	if (not more)
 	{
-		pop_odo(true);
+		pop_odo();
 		return false;
 	}
 
 	// Take the first step.
-	push_frame();
-	_odo._step = _odo._size-1;
-	push_odo(false);
 	_odo._step = 0;
 	more = do_step();
 	_odo._step = _odo._size-1;
+	_odo._last_step = _odo._step;
 
 	logger().fine("Recurse: After first step, have-more=%d", more);
 	while (true)
@@ -115,9 +113,7 @@ bool Aggregate::recurse(void)
 		// Odometer is exhausted; we are done.
 		if (not more)
 		{
-			pop_odo(false);
-			pop_frame();
-			pop_odo(true);
+			pop_odo();
 			return false;
 		}
 
@@ -469,25 +465,19 @@ void Aggregate::pop_frame(void)
 	     _frame._open_sections.size(), _frame._linkage.size());
 }
 
-/// Push the odometer state. If `lvl` is true, then a new set of
-/// odometer wheels are to be prepared. Else, if false, then this
-/// is being called to just roll the existing odo wheels. Note that
-/// while stepping, the odo state can be mangled, which is why a
-/// push-pop is needed for each step.
-void Aggregate::push_odo(bool lvl)
+/// Push the odometer state.
+void Aggregate::push_odo(void)
 {
-	if (lvl) _cb->push_odometer(_odo);
+	_cb->push_odometer(_odo);
 	_odo_stack.push(_odo);
 
-	logger().fine("==== Push: Odo stack depth now %lu : %s",
-	     _odo_stack.size(), lvl ? "recursive" : "stepper");
+	logger().fine("==== Push: Odo stack depth now %lu", _odo_stack.size());
 }
 
-void Aggregate::pop_odo(bool lvl)
+void Aggregate::pop_odo(void)
 {
-	if (lvl) _cb->pop_odometer(_odo);
+	_cb->pop_odometer(_odo);
 	_odo = _odo_stack.top(); _odo_stack.pop();
 
-	logger().fine("==== Pop: Odo stack depth now %lu : %s",
-	     _odo_stack.size(), lvl ? "recursive" : "stepper");
+	logger().fine("==== Pop: Odo stack depth now %lu", _odo_stack.size());
 }
