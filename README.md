@@ -304,7 +304,8 @@ of basic unit tests, including one which generates a graph with
 cycles in it (cycles are intractable for depth-first aggregation).
 
 It's missing various key features; these come next in the design.
-So far, nothing is done to cope with combinatoric explosion.  More
+This includes work on weighted/ranked selection, random selection,
+and some efforts to mitigate combinatoric explosion.  More
 sophisticated algos are possible, but these remain uncontemplated.
 
 ## Building & testing
