@@ -479,13 +479,15 @@ void Aggregate::push_odo(void)
 
 void Aggregate::pop_odo(void)
 {
+	size_t restore_depth = _odo._frame_depth;
+
 	_cb->pop_odometer(_odo);
 	_odo = _odo_stack.top(); _odo_stack.pop();
 
 	logger().fine("==== Pop: Odo stack depth now %lu", _odo_stack.size());
 
 	// Realign the frame stack to where we started.
-	while (_odo._frame_depth < _frame_stack.size()) pop_frame();
+	while (restore_depth < _frame_stack.size()) pop_frame();
 
 	// One extra push to match the pop in the stepper.
 	push_frame();
