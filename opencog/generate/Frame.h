@@ -47,13 +47,12 @@ struct Odometer
 	/// from-connectors.
 	HandleSeq _sections;
 
-	/// Ordered list of current to-sections. This is the actual
-	/// odometer, it is the thing that is stepped.
-	HandleSeq _current;
-
 	/// The next wheel to be stepped. This is an index into the
 	/// above sequences.
 	size_t _step;
+
+	/// The wheel that was most recently stepped.
+	size_t _last_step;
 };
 
 /// Current traversal state

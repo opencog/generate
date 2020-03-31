@@ -165,7 +165,6 @@ bool Aggregate::init_odometer(void)
 				_odo._from_connectors.push_back(from_con);
 				_odo._to_connectors.push_back(to_con);
 				_odo._sections.push_back(sect);
-				_odo._current.push_back(Handle::UNDEFINED);
 			}
 		}
 	}
@@ -173,6 +172,7 @@ bool Aggregate::init_odometer(void)
 	_odo._size = _odo._to_connectors.size();
 	if (0 == _odo._size) return false;
 	_odo._step = 0;
+	_odo._last_step = _odo._size - 1;
 
 	logger().fine("Initialized odometer of length %lu", _odo._size);
 	print_odometer();
@@ -220,11 +220,15 @@ bool Aggregate::do_step(void)
 	               _odo._step, _odo._size, _odo_stack.size());
 	print_odometer();
 
-	// Restore previous odometer state, when ic < _odo._step,
-	// Else draw a new piece via callback, and attach it.
+	for (size_t im = 0; im < _odo._last_step - _odo._step; im++)
+		pop_frame();
+
+	// Draw a new piece via callback, and attach it.
 	bool did_step = false;
-	for (size_t ic = 0; ic < _odo._size; ic++)
+	for (size_t ic = _odo._step; ic < _odo._size; ic++)
 	{
+		push_frame();
+
 		Handle fm_sect = _odo._sections[ic];
 		const Handle& fm_con = _odo._from_connectors[ic];
 		const Handle& to_con = _odo._to_connectors[ic];
@@ -257,15 +261,9 @@ bool Aggregate::do_step(void)
 
 		// ----------------------------
 		// If we made it to here, then the to-connector is still free.
-		// Find something to connect to it. Actually, restore the
-		// previous odo state, up to the stepper, and draw new state
-		// for wheels after that.
-		if (_odo._step <= ic)
-		{
-			_odo._current[ic] = _cb->select(_frame, fm_sect, fm_con, to_con);
-			did_step = true;
-		}
-		Handle to_sect = _odo._current[ic];
+		// Draw a new section to connect to it.
+		Handle to_sect = _cb->select(_frame, fm_sect, fm_con, to_con);
+		did_step = true;
 
 		if (nullptr == to_sect)
 		{
@@ -291,6 +289,9 @@ bool Aggregate::do_step(void)
 		}
 	}
 
+	// Record which wheel we stepped.
+	_odo._last_step = _odo._step;
+
 	if (not did_step)
 	{
 		logger().fine("Did not step wheel: %lu of %lu at depth %lu",
@@ -304,28 +305,12 @@ bool Aggregate::do_step(void)
 	return true;
 }
 
-/// Clear out any cross-linking created before stepping.
-void Aggregate::reset_odometer(void)
-{
-	// Hmm... only some state should be cleared... other state
-	// should be kept...
-	size_t stepper = _odo._step;
-	HandleSeq settings = _odo._current;
-	pop_odo(false);
-	pop_frame();
-	push_frame();
-	push_odo(false);
-	_odo._current = settings;
-	_odo._step = stepper;
-}
-
 bool Aggregate::step_odometer(void)
 {
 	// Total rollover
 	if (_odo._size < _odo._step) return false;
 
 	// Take a step.
-	reset_odometer();
 	bool did_step = do_step();
 	while (not did_step)
 	{
@@ -336,7 +321,6 @@ bool Aggregate::step_odometer(void)
 		}
 		logger().fine("Failed to step, try wheel %lu", _odo._step);
 
-		reset_odometer();
 		did_step = do_step();
 	}
 
@@ -467,6 +451,7 @@ void Aggregate::push_frame(void)
 {
 	_cb->push_frame(_frame);
 	_frame_stack.push(_frame);
+	_odo_sections.push(_odo._sections);
 
 	logger().fine("---- Push: Frame stack depth now %lu npts=%lu open=%lu lkg=%lu",
 	     _frame_stack.size(), _frame._open_points.size(),
@@ -477,6 +462,7 @@ void Aggregate::pop_frame(void)
 {
 	_cb->pop_frame(_frame);
 	_frame = _frame_stack.top(); _frame_stack.pop();
+	_odo._sections = _odo_sections.top(); _odo_sections.pop();
 
 	logger().fine("---- Pop: Frame stack depth now %lu npts=%lu open=%lu lkg=%lu",
 	     _frame_stack.size(), _frame._open_points.size(),
