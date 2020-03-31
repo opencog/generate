@@ -211,12 +211,12 @@ void Aggregate::print_odometer()
 
 bool Aggregate::do_step(void)
 {
+	// Erase the last connection that was made.
+	pop_frame();
+
 	logger().fine("Step odometer wheel %lu of %lu at depth %lu",
 	               _odo._step, _odo._size, _odo_stack.size());
 	print_odometer();
-
-	// Erase the last connection that was made.
-	pop_frame();
 
 	// Draw a new piece via callback, and attach it.
 	bool did_step = false;
