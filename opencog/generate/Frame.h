@@ -50,6 +50,9 @@ struct Odometer
 	/// The next wheel to be stepped. This is an index into the
 	/// above sequences.
 	size_t _step;
+
+	/// The correspoding frame-stack depth, when this odo was created.
+	size_t _frame_depth;
 };
 
 /// Current traversal state
