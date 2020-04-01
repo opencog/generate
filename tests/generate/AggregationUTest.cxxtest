@@ -41,6 +41,7 @@ public:
 	void test_loop();
 	void test_biloop();
 	void test_quad();
+	void test_biquad();
 };
 
 AggregationUTest::AggregationUTest()
@@ -249,7 +250,6 @@ void AggregationUTest::test_quad()
 
 	setup_dict();
 	DefaultCallback cb(as, *dict);
-logger().set_level(Logger::FINE);
 
 	Handle result = ag->aggregate({wall}, cb);
 
@@ -275,6 +275,43 @@ logger().set_level(Logger::FINE);
 		logger().debug("   Soln %d expecting 6 words, got %d",
 			++cnt, soln->get_arity());
 		TSM_ASSERT("Bad section!", soln->get_arity() == 6);
+	}
+
+	logger().debug("END TEST: %s", __FUNCTION__);
+}
+
+// Four generations: "Mary might think that John could fall", and v.v.
+// as graph w/ two quadrilateral cycles.
+void AggregationUTest::test_biquad()
+{
+	logger().debug("BEGIN TEST: %s", __FUNCTION__);
+
+	eval->eval("(load-from-path \"tests/generate/dict-biquad.scm\")");
+	Handle wall = eval->eval_h("left-wall");
+
+	setup_dict();
+	DefaultCallback cb(as, *dict);
+logger().set_level(Logger::FINE);
+
+	Handle result = ag->aggregate({wall}, cb);
+
+	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
+
+	// We expect the soultion to be have two quads
+	//
+	// printf("Loop result is %s\n", result->to_string().c_str());
+	printf("Loop result size is %lu expecting 4\n", result->get_arity());
+	TSM_ASSERT("Bad loop result set!", result->get_arity() == 4);
+
+	// All of the solutions should be the same size, substituting
+	// only might/could in the parse.
+	// printf("Parse is %s\n", result->getOutgoingAtom(0)->to_string().c_str());
+	int cnt = 0;
+	for (const Handle& soln: result->getOutgoingSet())
+	{
+		logger().debug("   Soln %d expecting 6 words, got %d",
+			++cnt, soln->get_arity());
+		TSM_ASSERT("Bad section!", soln->get_arity() == 7);
 	}
 
 	logger().debug("END TEST: %s", __FUNCTION__);
