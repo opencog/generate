@@ -177,40 +177,6 @@ bool Aggregate::init_odometer(void)
 	return true;
 }
 
-void Aggregate::print_wheel(size_t i)
-{
-	bool sect_open = true;
-	const Handle& fm_sect = _odo._sections[i];
-	if (_frame._open_sections.find(fm_sect) == _frame._open_sections.end())
-		sect_open = false;
-
-	bool conn_open = false;
-	const Handle& fm_con = _odo._from_connectors[i];
-	Handle disj = fm_sect->getOutgoingAtom(1);
-	for (const Handle& fco: disj->getOutgoingSet())
-	{
-		if (fco == fm_con) { conn_open = true; break; }
-	}
-
-	logger().fine("    wheel %lu: %s : %s\t: %s -> %s (sect %s; conn %s)",
-		i,
-		_odo._sections[i]->getOutgoingAtom(0)->get_name().c_str(),
-		_odo._from_connectors[i]->getOutgoingAtom(0)->get_name().c_str(),
-		_odo._from_connectors[i]->getOutgoingAtom(1)->get_name().c_str(),
-		_odo._to_connectors[i]->getOutgoingAtom(1)->get_name().c_str(),
-		sect_open ? "open" : "closed",
-		conn_open ? "open" : "closed"
-	);
-}
-
-void Aggregate::print_odometer()
-{
-	logger().fine("Odometer State: length %lu at depth %lu",
-		_odo._size, _odo_stack.size());
-	for (size_t i=0; i<_odo._size; i++)
-		print_wheel(i);
-}
-
 bool Aggregate::do_step(void)
 {
 	// Erase the last connection that was made.
@@ -492,3 +458,80 @@ void Aggregate::pop_odo(void)
 	// Realign the frame stack to where we started.
 	while (restore_depth < _frame_stack.size()) pop_frame();
 }
+
+// =================================================================
+// Debug printing utilities.
+// Current printing format makes assumptions about connectors
+// which will be invalid, in general. XXX FIMXE, someday.
+
+void Aggregate::print_section(const Handle& section) const
+{
+	logger().fine("     %s:",
+		section->getOutgoingAtom(0)->get_name().c_str());
+	const HandleSeq& conseq = section->getOutgoingAtom(1)->getOutgoingSet();
+	for (const Handle& con : conseq)
+	{
+		if (CONNECTOR == con->get_type())
+			logger().fine("      %s%s",
+				con->getOutgoingAtom(0)->get_name().c_str(),
+				con->getOutgoingAtom(1)->get_name().c_str());
+		else
+			logger().fine("      %s - %s - %s",
+				con->getOutgoingAtom(1)->getOutgoingAtom(0)->get_name().c_str(),
+				con->getOutgoingAtom(0)->get_name().c_str(),
+				con->getOutgoingAtom(1)->getOutgoingAtom(1)->get_name().c_str());
+	}
+}
+
+void Aggregate::print_frame(const Frame& frm) const
+{
+	logger().fine("Frame:");
+	std::string pts;
+	for (const Handle& pt : frm._open_points)
+		pts += pt->get_name() + ", ";
+	logger().fine("    pts: %s", pts.c_str());
+
+	logger().fine("  Open:");
+	for (const Handle& open : frm._open_sections)
+		print_section(open);
+
+	logger().fine("  Closed:");
+	for (const Handle& lkg : frm._linkage)
+		print_section(lkg);
+}
+
+void Aggregate::print_wheel(size_t i) const
+{
+	bool sect_open = true;
+	const Handle& fm_sect = _odo._sections[i];
+	if (_frame._open_sections.find(fm_sect) == _frame._open_sections.end())
+		sect_open = false;
+
+	bool conn_open = false;
+	const Handle& fm_con = _odo._from_connectors[i];
+	Handle disj = fm_sect->getOutgoingAtom(1);
+	for (const Handle& fco: disj->getOutgoingSet())
+	{
+		if (fco == fm_con) { conn_open = true; break; }
+	}
+
+	logger().fine("    wheel %lu: %s : %s\t: %s -> %s (sect %s; conn %s)",
+		i,
+		_odo._sections[i]->getOutgoingAtom(0)->get_name().c_str(),
+		_odo._from_connectors[i]->getOutgoingAtom(0)->get_name().c_str(),
+		_odo._from_connectors[i]->getOutgoingAtom(1)->get_name().c_str(),
+		_odo._to_connectors[i]->getOutgoingAtom(1)->get_name().c_str(),
+		sect_open ? "open" : "closed",
+		conn_open ? "open" : "closed"
+	);
+}
+
+void Aggregate::print_odometer() const
+{
+	logger().fine("Odometer State: length %lu at depth %lu",
+		_odo._size, _odo_stack.size());
+	for (size_t i=0; i<_odo._size; i++)
+		print_wheel(i);
+}
+
+// ========================== END OF FILE ==========================
