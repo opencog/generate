@@ -343,8 +343,11 @@ Handle Aggregate::connect_section(const Handle& fm_sect,
                                   const Handle& to_sect,
                                   const Handle& to_con)
 {
-	logger().fine("Connect %s\nto %s",
-		fm_sect->to_string().c_str(), to_sect->to_string().c_str());
+	// logger().fine("Connect %s\nto %s",
+	//	fm_sect->to_string().c_str(), to_sect->to_string().c_str());
+	logger().fine("Connect:");
+	print_section(fm_sect);
+	print_section(to_sect);
 
 	Handle fm_point = fm_sect->getOutgoingAtom(0);
 	Handle to_point = to_sect->getOutgoingAtom(0);
@@ -433,6 +436,7 @@ void Aggregate::pop_frame(void)
 	logger().fine("---- Pop: Frame stack depth now %lu npts=%lu open=%lu lkg=%lu",
 	     _frame_stack.size(), _frame._open_points.size(),
 	     _frame._open_sections.size(), _frame._linkage.size());
+	print_frame(_frame);
 }
 
 /// Push the odometer state.
@@ -466,7 +470,7 @@ void Aggregate::pop_odo(void)
 
 void Aggregate::print_section(const Handle& section) const
 {
-	logger().fine("     %s:",
+	logger().fine("    %s:",
 		section->getOutgoingAtom(0)->get_name().c_str());
 	const HandleSeq& conseq = section->getOutgoingAtom(1)->getOutgoingSet();
 	for (const Handle& con : conseq)
