@@ -47,19 +47,19 @@ private:
 	Odometer _odo;
 
 	std::stack<Frame> _frame_stack;
+	std::stack<HandleSeq> _odo_sections;
 	void push_frame();
 	void pop_frame();
 
 	std::stack<Odometer> _odo_stack;
-	void push_odo(bool);
-	void pop_odo(bool);
+	void push_odo();
+	void pop_odo();
 
 	/// Accumulated set of fully-grounded solutions.
 	std::set<HandleSet> _solutions;
 
 	bool init_odometer(void);
 	bool step_odometer(void);
-	void reset_odometer(void);
 	bool do_step(void);
 	void print_wheel(size_t);
 	void print_odometer(void);
