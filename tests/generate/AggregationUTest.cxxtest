@@ -43,6 +43,7 @@ public:
 	void test_quad();
 	void test_biquad();
 	void test_triquad();
+	void test_mixed();
 };
 
 AggregationUTest::AggregationUTest()
@@ -111,7 +112,7 @@ void AggregationUTest::test_hello()
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
 
-	// We expect the soultion to be LEFT_WALL --W--> Hello --OH--> world
+	// We expect the solution to be LEFT_WALL --W--> Hello --OH--> world
 	// printf("Hello-world result is  %s\n", result->to_string().c_str());
 	logger().debug("Expecting 1 solution, got %d", result->get_arity());
 	TSM_ASSERT("Bad result set!", result->get_arity() == 1);
@@ -137,7 +138,7 @@ void AggregationUTest::test_tree()
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
 
-	// We expect the soultion to be loop-free (acyclic)
+	// We expect the solution to be loop-free (acyclic)
 	//                    +----O-----+
 	//    +--->W---+---S--+    +--D--+
 	//    |        |      |    |     |
@@ -176,7 +177,7 @@ void AggregationUTest::test_loop()
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
 
-	// We expect the soultion to be have a loop
+	// We expect the solution to have a loop
 	//    +-------WV------+----O-----+
 	//    +--->W---+---S--+    +--D--+
 	//    |        |      |    |     |
@@ -215,7 +216,7 @@ void AggregationUTest::test_biloop()
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
 
-	// We expect the soultion to be have two loops
+	// We expect the solution to have two loops
 	//
 	//     +------WV-----+------CV----+--O---+
 	//     +---W---+--S--+--Ce--+--S--+  +-D-+
@@ -256,7 +257,7 @@ void AggregationUTest::test_quad()
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
 
-	// We expect the soultion to be have one quad
+	// We expect the solution to have one quad
 	//
 	//    +----------WV--------+----O-----+
 	//    +----W---+--S--+--I--+    +--D--+
@@ -297,7 +298,7 @@ void AggregationUTest::test_biquad()
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
 
-	// We expect the soultion to be have two quads
+	// We expect the solution to have two quads
 	//
 	// printf("Loop result is %s\n", result->to_string().c_str());
 	printf("Loop result size is %lu expecting 4\n", result->get_arity());
@@ -327,13 +328,12 @@ void AggregationUTest::test_triquad()
 
 	setup_dict();
 	DefaultCallback cb(as, *dict);
-logger().set_level(Logger::FINE);
 
 	Handle result = ag->aggregate({wall}, cb);
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
 
-	// We expect the soultion to be have two quads
+	// We expect the solution to have three quads
 	//
 	// printf("Loop result is %s\n", result->to_string().c_str());
 	printf("Loop result size is %lu expecting 4\n", result->get_arity());
@@ -348,6 +348,40 @@ logger().set_level(Logger::FINE);
 		logger().debug("   Soln %d expecting 8 words, got %d",
 			++cnt, soln->get_arity());
 		TSM_ASSERT("Bad section!", soln->get_arity() == 8);
+	}
+
+	logger().debug("END TEST: %s", __FUNCTION__);
+}
+
+// Mixture of trees and cycles.
+void AggregationUTest::test_mixed()
+{
+	logger().debug("BEGIN TEST: %s", __FUNCTION__);
+
+	eval->eval("(load-from-path \"tests/generate/dict-mixed.scm\")");
+	Handle wall = eval->eval_h("left-wall");
+
+	setup_dict();
+	DefaultCallback cb(as, *dict);
+// logger().set_level(Logger::FINE);
+
+	Handle result = ag->aggregate({wall}, cb);
+
+	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
+
+	// printf("Mixed result is %s\n", result->to_string().c_str());
+	printf("Mixed result size is %lu expecting 8\n", result->get_arity());
+	TSM_ASSERT("Bad loop result set!", result->get_arity() == 8);
+
+	// All of the solutions should be the same size, substituting
+	// only might/could in the parse.
+	// printf("Parse is %s\n", result->getOutgoingAtom(0)->to_string().c_str());
+	int cnt = 0;
+	for (const Handle& soln: result->getOutgoingSet())
+	{
+		logger().debug("   Soln %d expecting 10 words, got %d",
+			++cnt, soln->get_arity());
+		TSM_ASSERT("Bad section!", soln->get_arity() == 10);
 	}
 
 	logger().debug("END TEST: %s", __FUNCTION__);
