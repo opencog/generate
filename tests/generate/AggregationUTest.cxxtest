@@ -43,7 +43,7 @@ public:
 	void test_quad();
 	void test_biquad();
 	void test_triquad();
-	void test_xmixed();
+	void test_mixed();
 };
 
 AggregationUTest::AggregationUTest()
@@ -354,7 +354,7 @@ void AggregationUTest::test_triquad()
 }
 
 // Mixture of trees and cycles.
-void AggregationUTest::test_xmixed()
+void AggregationUTest::test_mixed()
 {
 	logger().debug("BEGIN TEST: %s", __FUNCTION__);
 

@@ -10,7 +10,7 @@
 ;        |            +------MXs------+        |     |
 ;        |            |  +------Xd----+        |     |
 ;        +-----W------+  | +---Ds-----+        |     |
-;        |      +--D--+  | |    +--A--+-Xc-+   +--Xc-+
+;        |      +--D--+  | |    +--A--+-Xc-+   +--Xf-+
 ;        |      |     |  | |    |     |    |   |     |
 ;    LEFT-WALL the   dog , a black   lab   , barked  .
 ;
@@ -69,7 +69,7 @@
 	(Concept ".")
 	(ConnectorSeq
 		(Connector (Concept "Xp") (ConnectorDir "-"))
-		(Connector (Concept "Xc") (ConnectorDir "-"))))
+		(Connector (Concept "Xf") (ConnectorDir "-"))))
 
 (Section
 	(Concept "black")
@@ -95,11 +95,11 @@
 	(ConnectorSeq
 		(Connector (Concept "WV") (ConnectorDir "-"))
 		(Connector (Concept "S") (ConnectorDir "-"))
-		(Connector (Concept "Xc") (ConnectorDir "+"))))
+		(Connector (Concept "Xf") (ConnectorDir "+"))))
 
 (Section
 	(Concept "purred")
 	(ConnectorSeq
 		(Connector (Concept "WV") (ConnectorDir "-"))
 		(Connector (Concept "S") (ConnectorDir "-"))
-		(Connector (Concept "Xc") (ConnectorDir "+"))))
+		(Connector (Concept "Xf") (ConnectorDir "+"))))
