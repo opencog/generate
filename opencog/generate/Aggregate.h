@@ -70,8 +70,8 @@ private:
 
 	bool recurse(void);
 
-	Handle connect_section(const Handle&, const Handle&,
-	                       const Handle&, const Handle&);
+	HandlePair connect_section(const Handle&, const Handle&,
+	                           const Handle&, const Handle&);
 	Handle make_link(const Handle&, const Handle&,
 	                 const Handle&);
 

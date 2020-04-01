@@ -243,12 +243,13 @@ bool Aggregate::do_step(void)
 		_frame._wheel = ic;
 
 		// Connect it up, and get the newly-connected section.
-		Handle new_fm = connect_section(fm_sect, fm_con, to_sect, to_con);
+		HandlePair hpr = connect_section(fm_sect, fm_con, to_sect, to_con);
 
 		// Replace the from-section with the now-connected section.
 		for (size_t in = 0; in < _odo._size; in++)
 		{
-			if (_odo._sections[in] == fm_sect) _odo._sections[in] = new_fm;
+			if (_odo._sections[in] == fm_sect) _odo._sections[in] = hpr.first;
+			// if (_odo._sections[in] == to_sect) _odo._sections[in] = hpr.second;
 		}
 	}
 
@@ -338,11 +339,11 @@ bool Aggregate::check_for_solution(void)
 /// connectors. Two new sections will be created, with the connector
 /// in each section replaced by the link.
 ///
-/// Return the newly-connected from-section.
-Handle Aggregate::connect_section(const Handle& fm_sect,
-                                  const Handle& fm_con,
-                                  const Handle& to_sect,
-                                  const Handle& to_con)
+/// Return the pair of newly-connected sections.
+HandlePair Aggregate::connect_section(const Handle& fm_sect,
+                                      const Handle& fm_con,
+                                      const Handle& to_sect,
+                                      const Handle& to_con)
 {
 	// logger().fine("Connect %s\nto %s",
 	//	fm_sect->to_string().c_str(), to_sect->to_string().c_str());
@@ -355,8 +356,9 @@ Handle Aggregate::connect_section(const Handle& fm_sect,
 
 	Handle link = _cb->make_link(fm_con, to_con, fm_point, to_point);
 
-	make_link(to_sect, to_con, link);
-	return make_link(fm_sect, fm_con, link);
+	Handle new_fm = make_link(fm_sect, fm_con, link);
+	Handle new_to = make_link(to_sect, to_con, link);
+	return HandlePair(new_fm, new_to);
 }
 
 /// Create a link.  That is, replace a connector `con` by `link` in
