@@ -1,0 +1,9 @@
+
+Version 0.0.5
+ * More unit tests and fixes
+
+Version 0.0.4
+ * Initial breadth-first aggregation
+
+Version 0.0.2
+ * Initial depth-first aggregation
