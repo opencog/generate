@@ -104,23 +104,22 @@ Handle DefaultCallback::select_from_open(const Frame& frame,
 		// Start iterating over the sections that contain to_con.
 		if (0 < to_sects.size())
 		{
-			// _opensel._opensect[to_con] = to_sects;
 			_opensel._openit[to_con] = 1;
 			return to_sects[0];
 		}
-		// else fall-through here, and go to the lexis-lookup of the
-		// connector.
+
+		// If we are here, there were no existing open sections.
+		// Return and do something else. (Currently, this means
+		// that the lexist will be used).
+		return Handle::UNDEFINED;
 	}
 	else
 	{
 		const HandleSeq& to_sects = _opensel._opensect[to_con];
+
+		// We've iterated to the end; we're done.
 		if (to_sects.size() <= fit)
-		{
-			// We've iterated to the end; we're done.
-			_opensel._opensect.erase(to_con);
-			_opensel._openit.erase(to_con);
 			return Handle::UNDEFINED;
-		}
 
 		// Increment and save.
 		_opensel._openit[to_con] ++;
