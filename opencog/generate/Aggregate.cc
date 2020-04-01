@@ -217,6 +217,15 @@ bool Aggregate::do_step(void)
 			logger().fine("Wheel-con not open: %lu of %lu at depth %lu",
 			               ic, _odo._size, _odo_stack.size());
 			print_wheel(ic);
+
+			if (ic == _odo._step)
+			{
+				// If we are here, then this wheel has "effectively"
+				// rolled over. We cannot continue to the remaining
+				// wheels.
+				_odo._step = ic - 1;
+				return false;
+			}
 			continue;
 		}
 
@@ -249,7 +258,7 @@ bool Aggregate::do_step(void)
 		for (size_t in = 0; in < _odo._size; in++)
 		{
 			if (_odo._sections[in] == fm_sect) _odo._sections[in] = hpr.first;
-			// if (_odo._sections[in] == to_sect) _odo._sections[in] = hpr.second;
+			if (_odo._sections[in] == to_sect) _odo._sections[in] = hpr.second;
 		}
 	}
 
