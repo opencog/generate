@@ -488,7 +488,4 @@ void Aggregate::pop_odo(void)
 
 	// Realign the frame stack to where we started.
 	while (restore_depth < _frame_stack.size()) pop_frame();
-
-	// One extra push to match the pop in the stepper.
-	push_frame();
 }
