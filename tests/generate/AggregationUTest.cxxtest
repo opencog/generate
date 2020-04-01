@@ -43,7 +43,7 @@ public:
 	void test_quad();
 	void test_biquad();
 	void test_triquad();
-	void test_mixed();
+	void test_xmixed();
 };
 
 AggregationUTest::AggregationUTest()
@@ -354,7 +354,7 @@ void AggregationUTest::test_triquad()
 }
 
 // Mixture of trees and cycles.
-void AggregationUTest::test_mixed()
+void AggregationUTest::test_xmixed()
 {
 	logger().debug("BEGIN TEST: %s", __FUNCTION__);
 
@@ -363,7 +363,7 @@ void AggregationUTest::test_mixed()
 
 	setup_dict();
 	DefaultCallback cb(as, *dict);
-// logger().set_level(Logger::FINE);
+logger().set_level(Logger::FINE);
 
 	Handle result = ag->aggregate({wall}, cb);
 
