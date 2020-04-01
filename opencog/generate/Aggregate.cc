@@ -90,6 +90,9 @@ Handle Aggregate::aggregate(const HandleSet& nuclei,
 
 bool Aggregate::recurse(void)
 {
+	// Nothing to do.
+	if (0 == _frame._open_sections.size()) return false;
+
 	logger().fine("Enter recurse");
 
 	// Initialize a brand-new odometer at the next recursion level.
