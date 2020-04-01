@@ -315,9 +315,10 @@ bool Aggregate::check_for_solution(void)
 		logger().fine("====================================");
 		if (nsolns != news)
 		{
-			logger().fine("Obtained new solution %lu of size %lu:\n%s",
-			       news, _frame._linkage.size(),
-				    oc_to_string(_frame._linkage).c_str());
+			logger().fine("Obtained new solution %lu of size %lu:",
+			       news, _frame._linkage.size());
+			for (const Handle& lkg : _frame._linkage)
+				print_section(lkg);
 		}
 		else
 		{
