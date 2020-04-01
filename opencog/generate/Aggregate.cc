@@ -235,7 +235,6 @@ bool Aggregate::do_step(void)
 			// That means that its time for the next wheel to take
 			// a step. Mark that wheel.
 			_odo._step = ic - 1;
-			if (0 == ic) _odo._step = 0;
 			return false;
 		}
 
@@ -278,7 +277,8 @@ bool Aggregate::step_odometer(void)
 	bool did_step = do_step();
 	while (not did_step)
 	{
-		if (0 == _odo._step)
+		// If the stepper rollwed over to minus-one, then we're done.
+		if (SIZE_MAX == _odo._step)
 		{
 			logger().fine("Exhaused the odometer at depth %lu", _odo_stack.size());
 			return false;
