@@ -88,6 +88,8 @@ Handle Aggregate::aggregate(const HandleSet& nuclei,
 	return createLink(std::move(solns), SET_LINK);
 }
 
+/// Breadth-first recursion.
+/// See the README.md for an explanation.
 bool Aggregate::recurse(void)
 {
 	// Nothing to do.
@@ -180,7 +182,8 @@ bool Aggregate::init_odometer(void)
 bool Aggregate::do_step(void)
 {
 	// Erase the last connection that was made.
-	if (_frame._wheel == _odo._step and _frame._nodo == _odo_stack.size()) pop_frame();
+	if (_frame._wheel == _odo._step and
+	    _frame._nodo == _odo_stack.size()) pop_frame();
 
 	logger().fine("Step odometer wheel %lu of %lu at depth %lu",
 	               _odo._step, _odo._size, _odo_stack.size());

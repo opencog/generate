@@ -67,6 +67,9 @@ struct Frame
 	/// Completed links.
 	HandleSet _linkage;
 
+	/// The depth of the odometer stack, and the odometer wheel
+	/// that this frame is isolating. State earlier than this is
+	/// in earlier frames, and later state is in later frames.
 	size_t _nodo;
 	size_t _wheel;
 };

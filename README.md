@@ -296,17 +296,22 @@ design choices:
   I have no desire to reinvent any wheels, here.
 
 
-# Version 0.0.4
-The current code implements a simple breadth-first aggregation
-algorithm (this is an important improvement over the depth-first
-aggregation implemented in version 0.0.2).  It passes a handful
-of basic unit tests, including one which generates a graph with
-cycles in it (cycles are intractable for depth-first aggregation).
+# Version 0.0.5
+The current code implements a breadth-first aggregation algorithm.
+It passes all unit tests for unambiguous graphs compsed of trees
+and cycles.
+
+"Unambiguous graphs" are those graphs where each link type occurs
+at most once in each graph. If the same link type can make multiple
+connections, then each of these connections are explorable, leading
+to a potential combinatoric explosion.
 
 It's missing various key features; these come next in the design.
 This includes work on weighted/ranked selection, random selection,
 and some efforts to mitigate combinatoric explosion.  More
 sophisticated algos are possible, but these remain uncontemplated.
+
+Other missing features are listed in the github issues list.
 
 ## Building & testing
 The code here presumes the [AtomSpace](https://github.com/opencog/atomspace)

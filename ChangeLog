@@ -1,9 +1,9 @@
 
-Version 0.0.5
+Version 0.0.5 (1 April 2020)
  * More unit tests and fixes
 
-Version 0.0.4
+Version 0.0.4 (29 March 2020)
  * Initial breadth-first aggregation
 
-Version 0.0.2
+Version 0.0.2 (20 March 2020)
  * Initial depth-first aggregation
