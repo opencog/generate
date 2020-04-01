@@ -102,7 +102,6 @@ bool Aggregate::recurse(void)
 	}
 
 	// Take the first step.
-	push_frame();
 	_odo._step = 0;
 	more = do_step();
 	_odo._step = _odo._size-1;
@@ -212,7 +211,7 @@ void Aggregate::print_odometer()
 bool Aggregate::do_step(void)
 {
 	// Erase the last connection that was made.
-	pop_frame();
+	if (_frame._wheel == _odo._step and _frame._nodo == _odo_stack.size()) pop_frame();
 
 	logger().fine("Step odometer wheel %lu of %lu at depth %lu",
 	               _odo._step, _odo._size, _odo_stack.size());
@@ -222,8 +221,6 @@ bool Aggregate::do_step(void)
 	bool did_step = false;
 	for (size_t ic = _odo._step; ic < _odo._size; ic++)
 	{
-		push_frame();
-
 		Handle fm_sect = _odo._sections[ic];
 		const Handle& fm_con = _odo._from_connectors[ic];
 		const Handle& to_con = _odo._to_connectors[ic];
@@ -275,6 +272,7 @@ bool Aggregate::do_step(void)
 
 		did_step = true;
 		push_frame();
+		_frame._wheel = ic;
 
 		// Connect it up, and get the newly-connected section.
 		Handle new_fm = connect_section(fm_sect, fm_con, to_sect, to_con);
@@ -449,6 +447,8 @@ void Aggregate::push_frame(void)
 	_cb->push_frame(_frame);
 	_frame_stack.push(_frame);
 	_odo_sections.push(_odo._sections);
+	_frame._nodo = _odo_stack.size();
+	_frame._wheel = -1;
 
 	logger().fine("---- Push: Frame stack depth now %lu npts=%lu open=%lu lkg=%lu",
 	     _frame_stack.size(), _frame._open_points.size(),

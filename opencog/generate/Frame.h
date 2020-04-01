@@ -66,6 +66,9 @@ struct Frame
 
 	/// Completed links.
 	HandleSet _linkage;
+
+	size_t _nodo;
+	size_t _wheel;
 };
 
 /** @}*/
