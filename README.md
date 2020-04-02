@@ -299,7 +299,7 @@ design choices:
 # Version 0.0.5
 The current code implements a breadth-first aggregation algorithm.
 It passes all unit tests for unambiguous graphs compsed of trees
-and cycles.
+and cycles. See [opencog/generate/README]() for algo details.
 
 "Unambiguous graphs" are those graphs where each link type occurs
 at most once in each graph. If the same link type can make multiple
@@ -325,8 +325,9 @@ that, and then build the stuff here in the same way.
 ## Examples
 To understand how to use this, take a look at the [tests
 directory](tests/generate) and the files `dict-helloworld.scm`, then
-`dict-tree.scm` and finally `dict-loop.scm`. This requires at least
-some basic familiarity with the AtomSpace (see the tutorial-examples
-there). Some general understanding of
+`dict-tree.scm`, `dict-loop.scm` and then the others. Understanding
+these requires at least some basic familiarity with the AtomSpace
+(see the tutorial-examples there). Some general understanding of
 [Link Grammar](https://www.abisource.com/projects/link-grammar/)
-is also useful, as all initial examples will be of natural language.
+is also useful, as all initial examples emulate Link-Grammar type
+natural-language parse graphs.
