@@ -299,7 +299,8 @@ design choices:
 # Version 0.0.5
 The current code implements a breadth-first aggregation algorithm.
 It passes all unit tests for unambiguous graphs compsed of trees
-and cycles. See [opencog/generate/README]() for algo details.
+and cycles. See [opencog/generate/README](opencog/generate/README)
+for algo details.
 
 "Unambiguous graphs" are those graphs where each link type occurs
 at most once in each graph. If the same link type can make multiple
