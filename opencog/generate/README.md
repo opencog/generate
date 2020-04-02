@@ -11,7 +11,7 @@ Some terms used in the code.
   section (per formal definition of "a section" in mathematics).
 
 * The label on each puzzle-piece is called a "point" or "vertex".
-  All pieces are labelled.
+  All pieces are labeled.
 
 * "Aggregation" means attaching new pieces to the existing assembly
   of pieces.
@@ -25,7 +25,7 @@ piece: this is called the "odometer".  It gets this name because each
 connector can be attached to several other puzzle-pieces; as each one is
 tried, one must iterate over the remaining untried pieces. Each
 unconnected connector corresponds to a "wheel" in the odometer; the
-number of markings on each wheel corrsponds to the number of puzzle-
+number of markings on each wheel corresponds to the number of puzzle-
 pieces that could attach to that connector. The odometer is "stepped"
 as expected: the right-most wheel must revolve once, before the next
 wheel can take a single step, and so-on.  This guarantees that each
@@ -34,7 +34,7 @@ combination of potential connections is attempted once.
 When all of the initial list of connectors have been extended by new
 attachments, the algorithm pushes the odometer state onto a stack,
 and then constructs a brand-new odometer at the "next level". A new
-list is created, of all of the unconnected conectors. This forms the
+list is created, of all of the unconnected connectors. This forms the
 spine of the new odometer. Again, each of these must be extended;
 when this is done, the algo repeats: it pushes the odometer state,
 and creates a new odometer.
@@ -55,8 +55,8 @@ odometer get a connection, before moving to the next level.
 If a solution is found, or if it is impossible to proceed, then the
 odometer must be stepped to the next step.  Conceptually, this requires
 detaching the previously-connected piece at the given location, then
-selecting a new piece, and attaching it. To facilitate this attachement-
-detachement process, there is a second stake, the "frame stack".  The
+selecting a new piece, and attaching it. To facilitate this attachment-
+detachment process, there is a second stake, the "frame stack".  The
 frame is a set of the currently-assembled pieces and the set of pieces
 that are not yet fully connected. A new frame is created just before
 attaching a puzzle-piece; thus, returning to the previous unconnected
@@ -70,13 +70,13 @@ level. When this happens, this effectively knocks out one of the
 odometer wheels for that level: it cannot get a new connection because
 it is already connected.  During stepping, those wheels cannot be
 stepped.  As a result, the frame-stack is pushed only when a new
-connection is possible. This saves a few cpu-cycles of un-necessary
+connection is possible. This saves a few CPU-cycles of un-necessary
 frame pushes.  Each frame is marked with the corresponding odometer
 and odometer-wheel to allow management of the frame-pop operation.
 
 == User-defined callbacks
-The above desciption suggests that each odometer wheel exists as a
-finite list of connectale pieces. This is **NOT** the case! Instead,
+The above description suggests that each odometer wheel exists as a
+finite list of connectable pieces. This is **NOT** the case! Instead,
 each wheel is implemented as a future or promise, such that, when asked
 upon, a "user-defined" callback will provide a connectable piece.
 This allows the code to be cleanly split into two parts: the aggregation
@@ -89,7 +89,7 @@ be applied:
 * Puzzle pieces can be drawn at random, or in deterministic order, from
   a finite or infinite pool.
 * Zero matches can be returned to force early termination of the search.
-* Pieces can be given a weighting, proabilistic or otherwise, so that
+* Pieces can be given a weighting, probabilistic or otherwise, so that
   a lowest-cost aggregation path can be pursued. This allows local
   hill-climbing algos, simulated annealing, Bayesian or Markov nets,
   etc.
@@ -105,7 +105,7 @@ what these may be -- the aggregation algorithm explores all valid
 connection-types.
 
 == The Default Callback
-Currently, only a very crude and primitve callback is implemented.
+Currently, only a very crude and primitive callback is implemented.
 Enhancing this is the next task.
 
 This callback does the following things (subject to change):
@@ -133,4 +133,4 @@ This callback does the following things (subject to change):
 
 And, of course... mandatory seeds!
 
-THE END. Thans for paying attention!
+THE END. Thanks for paying attention!
