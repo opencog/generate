@@ -1,9 +1,9 @@
 
-=Theory of Operation
+# Theory of Operation
 Below are the details of the data structures in use, and the algorithms
 used to perform the breadth-first search.
 
-== Terminology
+## Terminology
 Some terms used in the code.
 
 * Each "jigsaw-puzzle piece" is called a "section". This is a poor
@@ -18,7 +18,7 @@ Some terms used in the code.
 
 Other terminology is introduced below.
 
-== Breadth-first Aggregation
+## Breadth-first Aggregation
 The breadth-first algo starts when it is given a single puzzle-piece.
 It creates an ordered list of the (unconnected) connectors on the puzzle
 piece: this is called the "odometer".  It gets this name because each
@@ -74,7 +74,7 @@ connection is possible. This saves a few CPU-cycles of un-necessary
 frame pushes.  Each frame is marked with the corresponding odometer
 and odometer-wheel to allow management of the frame-pop operation.
 
-== User-defined callbacks
+## User-defined callbacks
 The above description suggests that each odometer wheel exists as a
 finite list of connectable pieces. This is **NOT** the case! Instead,
 each wheel is implemented as a future or promise, such that, when asked
@@ -104,7 +104,7 @@ opposites that can connect to one-another.  There is no restriction on
 what these may be -- the aggregation algorithm explores all valid
 connection-types.
 
-== The Default Callback
+## The Default Callback
 Currently, only a very crude and primitive callback is implemented.
 Enhancing this is the next task.
 
@@ -121,7 +121,7 @@ This callback does the following things (subject to change):
   Thus, users of this callback need only specify the pieces in this
   lexis.
 
-== To-do
+## To-do
 
 * Add weights to the polar-pairs list.
 * Add weights to the puzzle-pieces and/or connectors.
