@@ -3,6 +3,22 @@
 Below are the details of the data structures in use, and the algorithms
 used to perform the breadth-first search.
 
+== Terminology
+Some terms used in the code.
+
+* Each "jigsaw-puzzle piece" is called a "section". This is a poor
+  choice of terminology, since several connected pieces are also a
+  section (per formal definition of "a section" in mathematics).
+
+* The label on each puzzle-piece is called a "point" or "vertex".
+  All pieces are labelled.
+
+* "Aggregation" means attaching new pieces to the existing assembly
+  of pieces.
+
+Other terminology is introduced below.
+
+== Breadth-first Aggregation
 The breadth-first algo starts when it is given a single puzzle-piece.
 It creates an ordered list of the (unconnected) connectors on the puzzle
 piece: this is called the "odometer".  It gets this name because each
@@ -34,14 +50,32 @@ attachment process is restarted.  This continues until all solutions
 have been found, or until a termination condition triggers.
 
 This is breadth-first aggregation, in that all of the connectors in the
-odometer get a connection, before a step to the next level is taken.
+odometer get a connection, before moving to the next level.
 
 If a solution is found, or if it is impossible to proceed, then the
 odometer must be stepped to the next step.  Conceptually, this requires
-detaching 
+detaching the previously-connected piece at the given location, then
+selecting a new piece, and attaching it. To facilitate this attachement-
+detachement process, there is a second stake, the "frame stack".  The
+frame is a set of the currently-assembled pieces and the set of pieces
+that are not yet fully connected. A new frame is created just before
+attaching a puzzle-piece; thus, returning to the previous unconnected
+state is as easy as popping the frame-stack.
 
-When it is possible to connect a puzzle-piece to an existing unconnected
-conector
+The frame-stack could, but does not march in synchrony with the
+extension at each level.  This is because the stepping of the odometer
+is faced with several complications.  Foremost is that a connector
+at a given level might connect with another connector at that same
+level. When this happens, this effectively knocks out one of the
+odometer wheels for that level: it cannot get a new connection because
+it is already connected.  During stepping, those wheels cannot be
+stepped.  As a result, the frame-stack is pushed only when a new
+connection is possible. This saves a few cpu-cycles of un-necessary
+frame pushes.  Each frame is marked with the corresponding odometer
+and odometer-wheel to allow management of the frame-pop operation.
+
+
+
 
 
 == Odometer details
