@@ -74,20 +74,63 @@ connection is possible. This saves a few cpu-cycles of un-necessary
 frame pushes.  Each frame is marked with the corresponding odometer
 and odometer-wheel to allow management of the frame-pop operation.
 
+== User-defined callbacks
+The above desciption suggests that each odometer wheel exists as a
+finite list of connectale pieces. This is **NOT** the case! Instead,
+each wheel is implemented as a future or promise, such that, when asked
+upon, a "user-defined" callback will provide a connectable piece.
+This allows the code to be cleanly split into two parts: the aggregation
+algorithm described above, and the specifics of managing the pool of
+available puzzle-pieces and the priority-order in which they are tried.
 
+In particular, the callback mechanism allows the following tricks to
+be applied:
 
+* Puzzle pieces can be drawn at random, or in deterministic order, from
+  a finite or infinite pool.
+* Zero matches can be returned to force early termination of the search.
+* Pieces can be given a weighting, proabilistic or otherwise, so that
+  a lowest-cost aggregation path can be pursued. This allows local
+  hill-climbing algos, simulated annealing, Bayesian or Markov nets,
+  etc.
 
+The callback is called to create the linkage between two pieces. This
+allows the user to create either directed or undirected edges, or have
+any other arbitrarily-complex markup in the linkage.
 
-== Odometer details
+Although not part of the callback, the definition of matching connectors
+must be provided on startup.  This is a set of "polar pairs" -- polar
+opposites that can connect to one-another.  There is no restriction on
+what these may be -- the aggregation algorithm explores all valid
+connection-types.
 
+== The Default Callback
+Currently, only a very crude and primitve callback is implemented.
+Enhancing this is the next task.
 
+This callback does the following things (subject to change):
 
+* If it is possible to perform a connection to an existing connector,
+  this is given the highest (and only) priority. This prevents
+  infinite recursion in graphs that contain cycles -- otherwise any
+  cycle could be "unwound" by drawing new pieces, and attaching them,
+  ad infinitum.
 
-= Callback-specific structures.
-The below describes data structures that are not part of the general
-implementation, but are instead used by specific callback to acheive
-specific functions.
+* When a cyclic connection is not possible, new pieces are drawn from
+  a "dictionary" or "lexis" -- the "box" of unconnected pieces.
+  Thus, users of this callback need only specify the pieces in this
+  lexis.
 
-== Dictionary
-The dictionary is the "box" of unconnected puzzle pieces.
+== To-do
 
+* Add weights to the polar-pairs list.
+* Add weights to the puzzle-pieces and/or connectors.
+* Add weighted random draw
+* Allow pieces to be drawn at most N times, for any given piece.
+* Force planar graphs
+* Control recursion when there are degenerate link-types.
+* Fix the one-connector-type-per-disjunct issue, see issue #4.
+
+And, of course... mandatory seeds!
+
+THE END. Thans for paying attention!
