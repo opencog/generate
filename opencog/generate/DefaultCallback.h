@@ -31,6 +31,14 @@ namespace opencog
  *  @{
  */
 
+/// Callback to provide sections (aka "puzzle pieces") to extend the
+/// current assembly. The current implementation here is deterministic,
+/// always attempting to join together two open connectors, if that
+/// is possible, else drawing a new section from a dictionary (lexis).
+/// This behavior is useful only in certain small, limited cases, where
+/// the lexis has been designed to have only a finite number of possible
+/// solutions.
+
 class DefaultCallback : public GenerateCallback
 {
 protected:
