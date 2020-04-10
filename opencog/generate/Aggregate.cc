@@ -205,6 +205,15 @@ bool Aggregate::do_step(void)
 			logger().fine("Wheel-sect not open: %lu of %lu at depth %lu",
 			               ic, _odo._size, _odo_stack.size());
 			print_wheel(ic);
+
+			if (ic == _odo._step)
+			{
+				// If we are here, then this wheel has "effectively"
+				// rolled over. We cannot continue to the remaining
+				// wheels.
+				_odo._step = ic - 1;
+				return false;
+			}
 			continue;
 		}
 
@@ -244,8 +253,8 @@ bool Aggregate::do_step(void)
 			print_wheel(ic);
 
 			// If we are here, then this wheel has rolled over.
-			// That means that its time for the next wheel to take
-			// a step. Mark that wheel.
+			// That means that it's time for the previous wheel
+			// to take a step. Mark that wheel.
 			_odo._step = ic - 1;
 			return false;
 		}
