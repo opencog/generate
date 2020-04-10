@@ -139,7 +139,10 @@ Handle DefaultCallback::select(const Frame& frame,
 }
 
 /// Create an undirected edge connecting the two points `fm_pnt` and
-/// `to_pnt`, using the connectors `fm_con` and `to_con`.
+/// `to_pnt`, using the connectors `fm_con` and `to_con`. The edge
+/// is "undirected" because a SetLink is used to hold the two
+/// end-points. Recall SetLinks are unordered links, so neither point
+/// can be identified as head or tail.
 Handle DefaultCallback::make_link(const Handle& fm_con,
                                   const Handle& to_con,
                                   const Handle& fm_pnt,
