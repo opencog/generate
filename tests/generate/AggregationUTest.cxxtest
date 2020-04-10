@@ -363,7 +363,6 @@ void AggregationUTest::test_mixed()
 
 	setup_dict();
 	DefaultCallback cb(as, *dict);
-logger().set_level(Logger::FINE);
 
 	Handle result = ag->aggregate({wall}, cb);
 
