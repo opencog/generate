@@ -51,7 +51,7 @@ public:
 	/// set may be empty, or may contain more than one match.
 	virtual HandleSeq joints(const Handle&) = 0;
 
-	/// Given an exsiting connected section `fm_sect` and a connector
+	/// Given an existing connected section `fm_sect` and a connector
 	/// `fm_con` on that section, as well as a mating `to_con`, return
 	/// a section that could be attached. This allows the callback to
 	/// chose sections in such a way that the highest-priority or most

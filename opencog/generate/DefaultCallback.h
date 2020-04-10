@@ -39,9 +39,6 @@ protected:
 private:
 	Dictionary _dict;
 
-	size_t _frame_stack_depth;
-	size_t _effort;
-
 	// -------------------------------------------
 	// Lexical selection
 	virtual Handle select_from_lexis(const Frame&,
@@ -90,7 +87,6 @@ public:
 	virtual void pop_frame(const Frame&);
 	virtual void push_odometer(const Odometer&);
 	virtual void pop_odometer(const Odometer&);
-	virtual bool recurse(const Frame&);
 };
 
 

@@ -28,21 +28,11 @@
 using namespace opencog;
 
 DefaultCallback::DefaultCallback(AtomSpace* as, const Dictionary& dict)
-	: GenerateCallback(as), _as(as), _dict(dict),
-	_frame_stack_depth(0), _effort(0)
+	: GenerateCallback(as), _as(as), _dict(dict)
 {
 }
 
 DefaultCallback::~DefaultCallback() {}
-
-static inline Handle uniform_choice(const HandleSeq& lst)
-{
-	static std::random_device seed;
-	static std::mt19937 rangen(seed());
-	std::uniform_int_distribution<> dist(0, lst.size()-1);
-	int sno = dist(rangen);
-	return lst[sno];
-}
 
 /// Return a section containing `to_con`.
 /// Pick a new section from the lexis.
@@ -146,26 +136,6 @@ Handle DefaultCallback::select(const Frame& frame,
 
 	// Select from the dictionary...
 	return select_from_lexis(frame, fm_sect, fm_con, to_con);
-
-#if 0
-	// Randomly draw elegible sections. The long term strategy
-	// is to use some guided, weighted random draw anyway.
-	Handle to_sect = uniform_choice(its->second);
-#endif
-
-#if 0
-	// Avoid retrying previously-tried connections...
-	Handle fm_point = fm_sect->getOutgoingAtom(0);
-	Handle to_point = to_sect->getOutgoingAtom(0);
-	Handle cpr = _as->get_link(SET_LINK, fm_point, to_point);
-
-	// If above list doesn't exist, no connection has been made before.
-	if (nullptr == cpr) return true;
-
-	Handle linkty = fm_con->getOutgoingAtom(0);
-	Handle link = _as->get_link(EVALUATION_LINK, linkty, cpr);
-	if (nullptr == link) return false;
-#endif
 }
 
 /// Create an undirected edge connecting the two points `fm_pnt` and
@@ -182,24 +152,8 @@ Handle DefaultCallback::make_link(const Handle& fm_con,
 	return lnk;
 }
 
-/// 100% pure hackalicious junkola. XXX FIXME.
-bool DefaultCallback::recurse(const Frame& frm)
-{
-	_effort ++;
-	if (12123 < _effort) return false;
-
-	// Pick 20 as an arbitrary choice. XXX FIXME - why?
-	// Well, 2^20 is a big number, and 10^20 is even bigger. Ouch.
-	if (_frame_stack_depth < 20) return true;
-
-	// Well, we could also randomly continue half the time ...!?
-	// std rand uniform distribution ...
-	return false;
-}
-
 void DefaultCallback::push_frame(const Frame& frm)
 {
-	_frame_stack_depth++;
 	_opensel_stack.push(_opensel);
 	_opensel._opensect.clear();
 	_opensel._openit.clear();
@@ -207,7 +161,6 @@ void DefaultCallback::push_frame(const Frame& frm)
 
 void DefaultCallback::pop_frame(const Frame& frm)
 {
-	_frame_stack_depth--;
 	_opensel = _opensel_stack.top(); _opensel_stack.pop();
 }
 
