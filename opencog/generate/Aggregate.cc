@@ -26,7 +26,7 @@
 #include <opencog/atomspace/AtomSpace.h>
 
 #include "Aggregate.h"
-#include "DefaultCallback.h"
+#include "GenerateCallback.h"
 
 using namespace opencog;
 
