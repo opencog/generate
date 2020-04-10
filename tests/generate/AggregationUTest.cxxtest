@@ -10,7 +10,7 @@
 #include <opencog/atomspace/AtomSpace.h>
 #include <opencog/guile/SchemeEval.h>
 #include <opencog/generate/Aggregate.h>
-#include <opencog/generate/DefaultCallback.h>
+#include <opencog/generate/SimpleCallback.h>
 
 #include <cxxtest/TestSuite.h>
 
@@ -107,7 +107,7 @@ void AggregationUTest::test_hello()
 	Handle wall = eval->eval_h("left-wall");
 
 	setup_dict();
-	DefaultCallback cb(as, *dict);
+	SimpleCallback cb(as, *dict);
 	Handle result = ag->aggregate({wall}, cb);
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
@@ -132,7 +132,7 @@ void AggregationUTest::test_tree()
 	Handle wall = eval->eval_h("left-wall");
 
 	setup_dict();
-	DefaultCallback cb(as, *dict);
+	SimpleCallback cb(as, *dict);
 
 	Handle result = ag->aggregate({wall}, cb);
 
@@ -171,7 +171,7 @@ void AggregationUTest::test_loop()
 	Handle wall = eval->eval_h("left-wall");
 
 	setup_dict();
-	DefaultCallback cb(as, *dict);
+	SimpleCallback cb(as, *dict);
 
 	Handle result = ag->aggregate({wall}, cb);
 
@@ -210,7 +210,7 @@ void AggregationUTest::test_biloop()
 	Handle wall = eval->eval_h("left-wall");
 
 	setup_dict();
-	DefaultCallback cb(as, *dict);
+	SimpleCallback cb(as, *dict);
 
 	Handle result = ag->aggregate({wall}, cb);
 
@@ -251,7 +251,7 @@ void AggregationUTest::test_quad()
 	Handle wall = eval->eval_h("left-wall");
 
 	setup_dict();
-	DefaultCallback cb(as, *dict);
+	SimpleCallback cb(as, *dict);
 
 	Handle result = ag->aggregate({wall}, cb);
 
@@ -292,7 +292,7 @@ void AggregationUTest::test_biquad()
 	Handle wall = eval->eval_h("left-wall");
 
 	setup_dict();
-	DefaultCallback cb(as, *dict);
+	SimpleCallback cb(as, *dict);
 
 	Handle result = ag->aggregate({wall}, cb);
 
@@ -327,7 +327,7 @@ void AggregationUTest::test_triquad()
 	Handle wall = eval->eval_h("left-wall");
 
 	setup_dict();
-	DefaultCallback cb(as, *dict);
+	SimpleCallback cb(as, *dict);
 
 	Handle result = ag->aggregate({wall}, cb);
 
@@ -362,7 +362,7 @@ void AggregationUTest::test_mixed()
 	Handle wall = eval->eval_h("left-wall");
 
 	setup_dict();
-	DefaultCallback cb(as, *dict);
+	SimpleCallback cb(as, *dict);
 
 	Handle result = ag->aggregate({wall}, cb);
 

@@ -1,5 +1,5 @@
 /*
- * opencog/generate/DefaultCallback.h
+ * opencog/generate/SimpleCallback.h
  *
  * Copyright (C) 2020 Linas Vepstas <linasvepstas@gmail.com>
  *
@@ -19,8 +19,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _OPENCOG_DEFAULT_CALLBACK_H
-#define _OPENCOG_DEFAULT_CALLBACK_H
+#ifndef _OPENCOG_SIMPLE_CALLBACK_H
+#define _OPENCOG_SIMPLE_CALLBACK_H
 
 #include <opencog/generate/Dictionary.h>
 #include <opencog/generate/GenerateCallback.h>
@@ -43,7 +43,7 @@ namespace opencog
 /// the lexis has been designed to have only a finite number of possible
 /// solutions.
 
-class DefaultCallback : public GenerateCallback
+class SimpleCallback : public GenerateCallback
 {
 protected:
 	AtomSpace* _as;
@@ -83,8 +83,8 @@ private:
 	// -------------------------------------------
 
 public:
-	DefaultCallback(AtomSpace*, const Dictionary&);
-	virtual ~DefaultCallback();
+	SimpleCallback(AtomSpace*, const Dictionary&);
+	virtual ~SimpleCallback();
 
 	virtual HandleSeq joints(const Handle& con) {
 		return _dict.joints(con);
@@ -105,4 +105,4 @@ public:
 /** @}*/
 }  // namespace opencog
 
-#endif // _OPENCOG_DEFAULT_CALLBACK_H
+#endif // _OPENCOG_SIMPLE_CALLBACK_H

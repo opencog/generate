@@ -1,5 +1,5 @@
 /*
- * opencog/generate/DefaultCallback.cc
+ * opencog/generate/SimpleCallback.cc
  *
  * Copyright (C) 2020 Linas Vepstas <linasvepstas@gmail.com>
  *
@@ -23,20 +23,20 @@
 
 #include <opencog/atoms/base/Link.h>
 
-#include "DefaultCallback.h"
+#include "SimpleCallback.h"
 
 using namespace opencog;
 
-DefaultCallback::DefaultCallback(AtomSpace* as, const Dictionary& dict)
+SimpleCallback::SimpleCallback(AtomSpace* as, const Dictionary& dict)
 	: GenerateCallback(as), _as(as), _dict(dict)
 {
 }
 
-DefaultCallback::~DefaultCallback() {}
+SimpleCallback::~SimpleCallback() {}
 
 /// Return a section containing `to_con`.
 /// Pick a new section from the lexis.
-Handle DefaultCallback::select_from_lexis(const Frame& frame,
+Handle SimpleCallback::select_from_lexis(const Frame& frame,
                                const Handle& fm_sect, const Handle& fm_con,
                                const Handle& to_con)
 {
@@ -71,7 +71,7 @@ Handle DefaultCallback::select_from_lexis(const Frame& frame,
 
 /// Return a section containing `to_con`.
 /// Try to attach to an existing open section.
-Handle DefaultCallback::select_from_open(const Frame& frame,
+Handle SimpleCallback::select_from_open(const Frame& frame,
                                const Handle& fm_sect, const Handle& fm_con,
                                const Handle& to_con)
 {
@@ -122,7 +122,7 @@ Handle DefaultCallback::select_from_open(const Frame& frame,
 /// Return a section containing `to_con`.
 /// First try to attach to an existing open section.
 /// If that fails, then pick a new section from the lexis.
-Handle DefaultCallback::select(const Frame& frame,
+Handle SimpleCallback::select(const Frame& frame,
                                const Handle& fm_sect, const Handle& fm_con,
                                const Handle& to_con)
 {
@@ -143,7 +143,7 @@ Handle DefaultCallback::select(const Frame& frame,
 /// is "undirected" because a SetLink is used to hold the two
 /// end-points. Recall SetLinks are unordered links, so neither point
 /// can be identified as head or tail.
-Handle DefaultCallback::make_link(const Handle& fm_con,
+Handle SimpleCallback::make_link(const Handle& fm_con,
                                   const Handle& to_con,
                                   const Handle& fm_pnt,
                                   const Handle& to_pnt)
@@ -155,25 +155,25 @@ Handle DefaultCallback::make_link(const Handle& fm_con,
 	return lnk;
 }
 
-void DefaultCallback::push_frame(const Frame& frm)
+void SimpleCallback::push_frame(const Frame& frm)
 {
 	_opensel_stack.push(_opensel);
 	_opensel._opensect.clear();
 	_opensel._openit.clear();
 }
 
-void DefaultCallback::pop_frame(const Frame& frm)
+void SimpleCallback::pop_frame(const Frame& frm)
 {
 	_opensel = _opensel_stack.top(); _opensel_stack.pop();
 }
 
-void DefaultCallback::push_odometer(const Odometer& odo)
+void SimpleCallback::push_odometer(const Odometer& odo)
 {
 	_lexlit_stack.push(_lexlit);
 	_lexlit.clear();
 }
 
-void DefaultCallback::pop_odometer(const Odometer& odo)
+void SimpleCallback::pop_odometer(const Odometer& odo)
 {
 	_lexlit = _lexlit_stack.top(); _lexlit_stack.pop();
 }
