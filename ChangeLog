@@ -1,6 +1,7 @@
 
 Version 0.0.5 (1 April 2020)
  * More unit tests and fixes
+ * Description of the breadth-first algo.
 
 Version 0.0.4 (29 March 2020)
  * Initial breadth-first aggregation

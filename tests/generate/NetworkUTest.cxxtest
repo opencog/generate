@@ -1,0 +1,109 @@
+/*
+ * NetworkUTest.cxxtest
+ *
+ * Copyright (C) 2020 Linas Vepstas <linasvepstas@gmail.com>
+ * All Rights Reserved
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
+#include <opencog/atoms/atom_types/atom_types.h>
+#include <opencog/atomspace/AtomSpace.h>
+#include <opencog/guile/SchemeEval.h>
+#include <opencog/generate/Aggregate.h>
+#include <opencog/generate/DefaultCallback.h>
+
+#include <cxxtest/TestSuite.h>
+
+using namespace opencog;
+
+#define al as->add_link
+#define an as->add_node
+
+class NetworkUTest: public CxxTest::TestSuite
+{
+private:
+	AtomSpace* as;
+	SchemeEval* eval;
+	Aggregate* ag;
+	Dictionary* dict;
+
+public:
+	NetworkUTest();
+	~NetworkUTest();
+
+	void setUp();
+	void tearDown();
+
+	void setup_dict();
+
+	void test_network();
+};
+
+NetworkUTest::NetworkUTest()
+{
+	logger().set_level(Logger::DEBUG);
+	logger().set_print_to_stdout_flag(true);
+	logger().set_timestamp_flag(false);
+}
+
+NetworkUTest::~NetworkUTest()
+{
+	logger().info("Completed running NetworkUTest");
+
+	// erase the log file if no assertions failed
+	if (!CxxTest::TestTracker::tracker().suiteFailed())
+		std::remove(logger().get_filename().c_str());
+	else
+	{
+		logger().info("NetworkUTest failed!");
+		logger().flush();
+	}
+}
+
+void NetworkUTest::setUp()
+{
+	as = new AtomSpace();
+	eval = new SchemeEval(as);
+	eval->eval("(add-to-load-path \"" PROJECT_SOURCE_DIR "\")");
+	ag = new Aggregate(as);
+}
+
+void NetworkUTest::tearDown()
+{
+	delete ag;
+	delete eval;
+	delete as;
+}
+
+void NetworkUTest::setup_dict()
+{
+	dict = new Dictionary(as);
+
+	// The directions to connect.
+	Handle any = an(CONNECTOR_DIR_NODE, "*");
+	dict->add_pole_pair(any, any);
+
+	// The lexis to use XXX we should generate not read from file.
+	HandleSet lex;
+	as->get_handleset_by_type(lex, SECTION);
+	dict->add_to_lexis(lex);
+}
+
+// Single generation: "Hello world"
+void NetworkUTest::test_hello()
+{
+	logger().debug("BEGIN TEST: %s", __FUNCTION__);
+
+	eval->eval("(load-from-path \"tests/generate/network.scm\")");
+	Handle root = eval->eval_h("peep 3");
+
+	setup_dict();
+	DefaultCallback cb(as, *dict);
+	Handle result = ag->aggregate({root}, cb);
+
+	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
+
+	printf("result is  %s\n", result->to_string().c_str());
+
+	logger().debug("END TEST: %s", __FUNCTION__);
+}
