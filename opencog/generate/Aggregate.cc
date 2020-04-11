@@ -48,11 +48,9 @@ Aggregate::~Aggregate()
 void Aggregate::clear(void)
 {
 	_solutions.clear();
-#if 0
-	_frame_stack.clear();
-	_odo_sections.clear();
-	_odo_stack.clear();
-#endif
+	while (not _frame_stack.empty()) _frame_stack.pop();
+	while (not _odo_sections.empty()) _odo_sections.pop();
+	while (not _odo_stack.empty()) _odo_stack.pop();
 }
 
 /// The nuclei are the nucleation points: points that must
