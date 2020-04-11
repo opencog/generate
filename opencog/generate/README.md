@@ -74,6 +74,13 @@ connection is possible. This saves a few CPU-cycles of un-necessary
 frame pushes.  Each frame is marked with the corresponding odometer
 and odometer-wheel to allow management of the frame-pop operation.
 
+### A curious limitation!?
+The current implementation of the above is such that only one link
+is generated to connect one puzzle piece to another. Thus, although
+a pair of pieces may have multiple connectors that can be connected at
+once, only one of these is connected, and the possibility of connecting
+the others is not explored.
+
 ## User-defined callbacks
 The above description suggests that each odometer wheel exists as a
 finite list of connectable pieces. This is **NOT** the case! Instead,
@@ -104,9 +111,10 @@ opposites that can connect to one-another.  There is no restriction on
 what these may be -- the aggregation algorithm explores all valid
 connection-types.
 
-## The Default Callback
-Currently, only a very crude and primitive callback is implemented.
-Enhancing this is the next task.
+## The `SimpleCallback`
+This callback provides a minimalistic basic operation, suitable for
+exhaustive searches over grammars that generate a strictly finite
+number of graphs.
 
 This callback does the following things (subject to change):
 
@@ -120,6 +128,14 @@ This callback does the following things (subject to change):
   a "dictionary" or "lexis" -- the "box" of unconnected pieces.
   Thus, users of this callback need only specify the pieces in this
   lexis.
+
+The callback is deterministic, but the order is not specified. There
+is no weighting or ranking involved in the drawing of pieces.
+
+## The `RandomCallback`
+
+Under construction. Will provide ranking. Will provide random weighted
+draws.
 
 ## To-do
 
