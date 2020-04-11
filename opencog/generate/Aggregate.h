@@ -72,8 +72,7 @@ private:
 
 	HandlePair connect_section(const Handle&, size_t,
 	                           const Handle&, const Handle&);
-	Handle make_link(const Handle&, const Handle&,
-	                 const Handle&);
+	Handle make_link(const Handle&, size_t, const Handle&);
 
 public:
 	Aggregate(AtomSpace*);

@@ -346,7 +346,7 @@ HandlePair Aggregate::connect_section(const Handle& fm_sect,
 {
 	// logger().fine("Connect %s\nto %s",
 	//	fm_sect->to_string().c_str(), to_sect->to_string().c_str());
-	logger().fine("Connect:");
+	logger().fine("Connect fm-offset=%lu:", offset);
 	print_section(fm_sect);
 	print_section(to_sect);
 
@@ -358,8 +358,18 @@ HandlePair Aggregate::connect_section(const Handle& fm_sect,
 
 	Handle link = _cb->make_link(fm_con, to_con, fm_point, to_point);
 
-	Handle new_fm = make_link(fm_sect, fm_con, link);
-	Handle new_to = make_link(to_sect, to_con, link);
+	// Oh dear, we need the index of the to_con in the to_sect
+	// Perhaps the callback should provide this info?
+	const Handle& disj = to_sect->getOutgoingAtom(1);
+	const HandleSeq& tseq = disj->getOutgoingSet();
+	size_t tidx = -1;
+	for (size_t i=0; i<tseq.size(); i++)
+	{
+		if (to_con == tseq[i]) { tidx = i; break; }
+	}
+
+	Handle new_fm = make_link(fm_sect, offset, link);
+	Handle new_to = make_link(to_sect, tidx, link);
 	return HandlePair(new_fm, new_to);
 }
 
@@ -370,30 +380,31 @@ HandlePair Aggregate::connect_section(const Handle& fm_sect,
 /// to the linkage; the point is removed from the set of open points.
 ///
 /// `point` should be the first atom of a section (the point)
-/// `sect` should be the section to connect
-/// `con` should be the connector to connect
-/// `link` should be the connecting link.
+/// `sect`  should be the section to connect
+/// `index` should be the index of the connector to connect
+/// `link`  should be the connecting link.
 ///
 /// Returns the newly-created section.
-Handle Aggregate::make_link(const Handle& sect,
-                            const Handle& con, const Handle& link)
+Handle Aggregate::make_link(const Handle& sect, size_t index,
+                            const Handle& link)
 {
+	const Handle& point = sect->getOutgoingAtom(0);
+	const Handle& disj = sect->getOutgoingAtom(1);
+	HandleSeq oset = disj->getOutgoingSet();
+
+	// Replace the connector with the link.
+	oset[index] = link;
+
+	// Any remaining unconnected connectors?
 	bool is_open = false;
-	HandleSeq oset;
-	Handle point = sect->getOutgoingAtom(0);
-	Handle seq = sect->getOutgoingAtom(1);
-	for (const Handle& fc: seq->getOutgoingSet())
+	for (const Handle& fc : oset)
 	{
-		// If it's not the relevant connector, then just copy.
-		if (fc != con)
-		{
-			oset.push_back(fc);
-			if (CONNECTOR == fc->get_type()) is_open = true;
-		}
-		else
-			oset.push_back(link);
+		if (CONNECTOR == fc->get_type()) { is_open = true; break; }
 	}
 
+	// Create the now-connected linkage.
+	// XXX Why are we polluting the AtomSpace with this stuff?
+	// Shouldn't this go into a temp AtomSpace of some kind?
 	Handle linking =
 		_as->add_link(SECTION, point,
 			_as->add_link(CONNECTOR_SEQ, std::move(oset)));

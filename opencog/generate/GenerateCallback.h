@@ -73,7 +73,7 @@ public:
 	/// section from a (virtual) list of eligible sections.
 	virtual Handle select(const Frame&,
 	                      const Handle& fm_sect, size_t offset,
-	                      const Handle& to_sect) = 0;
+	                      const Handle& to_con) = 0;
 
 	/// Create a link from connector `fm_con` to connector `to_con`,
 	/// which will connect `fm_pnt` to `to_pnt`.
