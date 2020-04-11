@@ -43,6 +43,7 @@ protected:
 
 private:
 	Dictionary _dict;
+	Handle _weight_key;
 
 	// -------------------------------------------
 	// Lexical selection
@@ -78,6 +79,8 @@ private:
 public:
 	RandomCallback(AtomSpace*, const Dictionary&);
 	virtual ~RandomCallback();
+
+	void set_weight_key(const Handle& pred) { _weight_key = pred; }
 
 	virtual HandleSeq joints(const Handle& con) {
 		return _dict.joints(con);

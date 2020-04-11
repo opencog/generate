@@ -107,6 +107,7 @@ logger().set_level(Logger::FINE);
 	dict->sort_lexis(weights);
 
 	RandomCallback cb(as, *dict);
+	cb->set_weight_key(weights);
 
 	Handle root = eval->eval_h("(Concept \"peep 3\")");
 	Handle result = ag->aggregate({root}, cb);
