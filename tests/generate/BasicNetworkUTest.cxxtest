@@ -100,11 +100,15 @@ void BasicNetworkUTest::test_network()
 	logger().debug("BEGIN TEST: %s", __FUNCTION__);
 
 	eval->eval("(load-from-path \"tests/generate/basic-network.scm\")");
-	Handle root = eval->eval_h("(Concept \"peep 3\")");
 
 logger().set_level(Logger::FINE);
 	setup_dict();
+	Handle weights = eval->eval_h("(Predicate \"weights\")");
+	dict->sort_lexis(weights);
+
 	RandomCallback cb(as, *dict);
+
+	Handle root = eval->eval_h("(Concept \"peep 3\")");
 	Handle result = ag->aggregate({root}, cb);
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);

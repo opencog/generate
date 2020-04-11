@@ -22,6 +22,7 @@
 #include <random>
 
 #include <opencog/atoms/base/Link.h>
+#include <opencog/atoms/value/FloatValue.h>
 
 #include "Dictionary.h"
 
@@ -98,6 +99,34 @@ void Dictionary::add_to_lexis(const Handle& sect)
 		HandleSeq sect_list = _lexis[con];
 		sect_list.push_back(sect);
 		_lexis[con] = sect_list;
+	}
+}
+
+/// Sort the list of sections containing some connecter into weighted
+/// order, by acessing the weights located at the predicate key.
+///
+/// That is, for each connector, the lexis matains a sequential list
+/// of sections holding that connector. This will sort that list, from
+/// greatest to least, based on the FloatValue located at `predicate`
+/// on the section.
+void Dictionary::sort_lexis(const Handle& predicate)
+{
+	struct {
+		Handle pred;
+		bool operator()(Handle a, Handle b) const
+		{
+			FloatValuePtr va(FloatValueCast(a->getValue(pred)));
+			FloatValuePtr vb(FloatValueCast(b->getValue(pred)));
+			return va->value()[0] > vb->value()[0];
+		}
+	} bigger;
+
+	bigger.pred = predicate;
+
+	for (auto& pr: _lexis)
+	{
+		HandleSeq& seq = pr.second;
+		std::sort(seq.begin(), seq.end(), bigger);
 	}
 }
 

@@ -66,6 +66,7 @@ public:
 	void add_to_lexis(const HandleSet& lex) {
 		for (const Handle& h: lex) add_to_lexis(h);
 	}
+	void sort_lexis(const Handle&);
 
 	const HandleSeq& sections(const Handle&) const;
 };
