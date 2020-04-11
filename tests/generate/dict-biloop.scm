@@ -42,13 +42,13 @@
 	(Concept "John")
 	(ConnectorSeq
 		(Connector (Concept "Ce") (ConnectorDir "-"))
-		(Connector (Concept "S") (ConnectorDir "+"))))
+		(Connector (Concept "Sx") (ConnectorDir "+"))))
 
 (Section
 	(Concept "Mary")
 	(ConnectorSeq
 		(Connector (Concept "Ce") (ConnectorDir "-"))
-		(Connector (Concept "S") (ConnectorDir "+"))))
+		(Connector (Concept "Sx") (ConnectorDir "+"))))
 
 (Section
 	(Concept "thinks")
@@ -61,7 +61,7 @@
 (Section
 	(Concept "saw")
 	(ConnectorSeq
-		(Connector (Concept "S") (ConnectorDir "-"))
+		(Connector (Concept "Sx") (ConnectorDir "-"))
 		(Connector (Concept "CV") (ConnectorDir "-"))
 		(Connector (Concept "O") (ConnectorDir "+"))))
 
