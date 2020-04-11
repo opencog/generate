@@ -15,6 +15,7 @@
 #include <opencog/guile/SchemeEval.h>
 #include <opencog/generate/Aggregate.h>
 #include <opencog/generate/RandomCallback.h>
+#include <opencog/generate/SimpleCallback.h>
 
 #include <cxxtest/TestSuite.h>
 
@@ -40,6 +41,7 @@ public:
 
 	void setup_dict();
 
+	void test_dipole();
 	void test_network();
 };
 
@@ -91,6 +93,36 @@ void BasicNetworkUTest::setup_dict()
 	HandleSet lex;
 	as->get_handleset_by_type(lex, SECTION);
 	dict->add_to_lexis(lex);
+}
+
+// Test create of dipole graphs by the SimpleCallback
+// https://en.wikipedia.org/wiki/Dipole_graph
+void BasicNetworkUTest::test_dipole()
+{
+	logger().debug("BEGIN TEST: %s", __FUNCTION__);
+
+	eval->eval("(load-from-path \"tests/generate/basic-network.scm\")");
+	setup_dict();
+	SimpleCallback cb(as, *dict);
+
+	Handle root = eval->eval_h("(Concept \"peep 3\")");
+	Handle result = ag->aggregate({root}, cb);
+	// printf("result is  %s\n", result->to_string().c_str());
+
+	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
+	TSM_ASSERT("Wrong number of solutions!", result->get_arity() == 1);
+	Handle soln = result->getOutgoingAtom(0);
+	TSM_ASSERT("Wrong number of graph elts!", soln->get_arity() == 1);
+	Handle sect = soln->getOutgoingAtom(0);
+	TSM_ASSERT("Not a valid section!", sect->get_arity() == 2);
+	Handle seq = sect->getOutgoingAtom(1);
+	TSM_ASSERT("Wrong number of links!", seq->get_arity() == 3);
+
+	HandleSeq links = seq->getOutgoingSet();
+	for (size_t i=1; i<seq->get_arity(); i++)
+		TSM_ASSERT("Incompletely linked!", *links[i] == *links[0]);
+
+	logger().debug("END TEST: %s", __FUNCTION__);
 }
 
 // Start out real simple...
