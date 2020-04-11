@@ -90,15 +90,20 @@ void Dictionary::add_to_lexis(const Handle& sect)
 	// Anyway, this is a lookup table: given a connector, we can lookup
 	// a list of sections that have that connector in it. We're using
 	// a sequence, not a set, for two reasons: (1) fast random lookup,
-	// the sequence can be ordered in priority order (e.g. Zipfian)
-	// which is not done here, but could be. XXX FIXME.
+	// and (2) the sequence can be ordered in priority order.
 	//
 	Handle con_seq = sect->getOutgoingAtom(1);
 	for (const Handle& con : con_seq->getOutgoingSet())
 	{
 		HandleSeq sect_list = _lexis[con];
-		sect_list.push_back(sect);
-		_lexis[con] = sect_list;
+
+		// Only allow unique entries
+		auto found = std::find(sect_list.begin(), sect_list.end(), sect);
+		if (sect_list.end() == found)
+		{
+			sect_list.push_back(sect);
+			_lexis[con] = sect_list;
+		}
 	}
 }
 
