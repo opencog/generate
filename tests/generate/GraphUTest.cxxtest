@@ -1,0 +1,147 @@
+/*
+ * GraphUTest.cxxtest
+ *
+ * Assorted graphs, created using the SimpleCallback.
+ *
+ * Copyright (C) 2020 Linas Vepstas <linasvepstas@gmail.com>
+ * All Rights Reserved
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
+#include <opencog/atoms/atom_types/atom_types.h>
+#include <opencog/atomspace/AtomSpace.h>
+#include <opencog/guile/SchemeEval.h>
+#include <opencog/generate/Aggregate.h>
+#include <opencog/generate/SimpleCallback.h>
+
+#include <cxxtest/TestSuite.h>
+
+using namespace opencog;
+
+#define al as->add_link
+#define an as->add_node
+
+class GraphUTest: public CxxTest::TestSuite
+{
+private:
+	AtomSpace* as;
+	SchemeEval* eval;
+	Aggregate* ag;
+	Dictionary* dict;
+
+public:
+	GraphUTest();
+	~GraphUTest();
+
+	void setUp();
+	void tearDown();
+
+	void setup_dict();
+	void check_dipole(Handle, size_t);
+
+	void test_dipole();
+};
+
+GraphUTest::GraphUTest()
+{
+	logger().set_level(Logger::DEBUG);
+	logger().set_print_to_stdout_flag(true);
+	logger().set_timestamp_flag(false);
+}
+
+GraphUTest::~GraphUTest()
+{
+	logger().info("Completed running GraphUTest");
+
+	// erase the log file if no assertions failed
+	if (!CxxTest::TestTracker::tracker().suiteFailed())
+		std::remove(logger().get_filename().c_str());
+	else
+	{
+		logger().info("GraphUTest failed!");
+		logger().flush();
+	}
+}
+
+void GraphUTest::setUp()
+{
+	as = new AtomSpace();
+	eval = new SchemeEval(as);
+	eval->eval("(add-to-load-path \"" PROJECT_SOURCE_DIR "\")");
+	ag = new Aggregate(as);
+}
+
+void GraphUTest::tearDown()
+{
+	delete ag;
+	delete eval;
+	delete as;
+}
+
+void GraphUTest::setup_dict()
+{
+	dict = new Dictionary(as);
+
+	// The directions to connect.
+	Handle any = an(CONNECTOR_DIR_NODE, "*");
+	dict->add_pole_pair(any, any);
+
+	// The lexis to use XXX we should generate not read from file.
+	HandleSet lex;
+	as->get_handleset_by_type(lex, SECTION);
+	dict->add_to_lexis(lex);
+}
+
+// Test create of dipole graphs by the SimpleCallback
+// https://en.wikipedia.org/wiki/Dipole_graph
+void GraphUTest::check_dipole(Handle root, size_t nedges)
+{
+	SimpleCallback cb(as, *dict);
+
+	Aggregate lag(as);
+	Handle result = lag.aggregate({root}, cb);
+	// printf("result is  %s\n", result->to_string().c_str());
+
+	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
+	TSM_ASSERT("Wrong number of solutions!", result->get_arity() == 1);
+	Handle soln = result->getOutgoingAtom(0);
+	TSM_ASSERT("Wrong number of graph elts!", soln->get_arity() == 1);
+	Handle sect = soln->getOutgoingAtom(0);
+	TSM_ASSERT("Not a valid section!", sect->get_arity() == 2);
+	Handle seq = sect->getOutgoingAtom(1);
+	TSM_ASSERT("Wrong number of links!", seq->get_arity() == nedges);
+
+	HandleSeq links = seq->getOutgoingSet();
+	for (size_t i=1; i<nedges; i++)
+		TSM_ASSERT("Incompletely linked!", *links[i] == *links[0]);
+}
+
+// Test create of dipole graphs by the SimpleCallback
+// https://en.wikipedia.org/wiki/Dipole_graph
+void GraphUTest::test_dipole()
+{
+	logger().debug("BEGIN TEST: %s", __FUNCTION__);
+
+	eval->eval("(load-from-path \"tests/generate/basic-network.scm\")");
+	setup_dict();
+
+	Handle root = eval->eval_h("(Concept \"peep 1\")");
+	check_dipole (root, 1);
+
+	root = eval->eval_h("(Concept \"peep 2\")");
+	check_dipole (root, 2);
+
+	root = eval->eval_h("(Concept \"peep 3\")");
+	check_dipole (root, 3);
+
+	root = eval->eval_h("(Concept \"peep 4\")");
+	check_dipole (root, 4);
+
+	root = eval->eval_h("(Concept \"peep 5\")");
+	check_dipole (root, 5);
+
+	root = eval->eval_h("(Concept \"peep 6\")");
+	check_dipole (root, 6);
+
+	logger().debug("END TEST: %s", __FUNCTION__);
+}
