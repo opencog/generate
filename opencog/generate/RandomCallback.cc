@@ -60,31 +60,33 @@ Handle RandomCallback::select_from_lexis(const Frame& frame,
 {
 	const HandleSeq& to_sects = _dict.sections(to_con);
 
-	// Do we have an iterator (a future/promise) for the to-connector?
-	// If not, then set one up. Else use the one we found.  The iterator
-	// that we are setting up here will point into the dictionary, i.e.
-	// into the pool of allowable sections that we can pick from.
-	unsigned curit = _lexlit.get(to_con, 0);
-	if (0 == curit)
-	{
-		// Oh no, dead end!
-		if (0 == to_sects.size()) return Handle::UNDEFINED;
+	// Oh no, dead end!
+	if (0 == to_sects.size()) return Handle::UNDEFINED;
 
-		// Start it up.
-		_lexlit[to_con] = 1;
-		return to_sects[0];
+	// Do we have a chooser for the to-connector?
+	// If so, then use to pick a section, randomly.
+	auto curit = _distmap.find(to_con);
+	if (_distmap.end() != curit)
+	{
+		auto dist = curit->second;
+		return to_sects[dist(rangen)];
 	}
 
-	if (to_sects.size() <= curit)
+	// Create a discrete distribution. This will randomly pick an
+	// index into the `to_sects` array. The weight of each index
+	// is given by the pdf aka "probability distribution function".
+	// The pdf is just given by the weighting-key haning off the
+	// section (in a FloatValue).
+	std::vector<double> pdf;
+	for (const Handle& sect: to_sects)
 	{
-		// We've iterated to the end; we're done.
-		_lexlit.erase(to_con);
-		return Handle::UNDEFINED;
+		FloatValuePtr fvp(FloatValueCast(sect->getValue(_weight_key)));
+		pdf.push_back(fvp->value()[0]);
 	}
+	std::discrete_distribution<size_t> dist(pdf.begin(), pdf.end());
+	_distmap.emplace(std::make_pair(to_con, dist));
 
-	// Increment and save.
-	_lexlit[to_con] ++;
-	return to_sects[curit];
+	return to_sects[dist(rangen)];
 }
 
 /// Return a section containing `to_con`.
@@ -186,11 +188,8 @@ void RandomCallback::pop_frame(const Frame& frm)
 
 void RandomCallback::push_odometer(const Odometer& odo)
 {
-	_lexlit_stack.push(_lexlit);
-	_lexlit.clear();
 }
 
 void RandomCallback::pop_odometer(const Odometer& odo)
 {
-	_lexlit = _lexlit_stack.top(); _lexlit_stack.pop();
 }

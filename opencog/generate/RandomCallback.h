@@ -51,13 +51,10 @@ private:
 	                                 const Handle&, size_t,
 	                                 const Handle&);
 
-	// Iterator, pointing from a to-connector, to a list of
-	// all sections in the dictionary that contain this to-connector.
+	// Cached normalized weighted chooser. Map of all
+	// sections in the dictionary that contain this to-connector.
 	// Used by `select()` to return the next attachable section.
-	HandleUCounter _lexlit;
-
-	// Stack of iterators into the lists of sections.
-	std::stack<HandleUCounter> _lexlit_stack;
+	std::map<Handle, std::discrete_distribution<size_t>> _distmap;
 
 	// -------------------------------------------
 	virtual Handle select_from_open(const Frame&,
