@@ -31,15 +31,22 @@ namespace opencog
  *  @{
  */
 
-/// Executive decision-making callbacks
+/// Aggregation selection callbacks. As an assembly is being created,
+/// that assembly will have unconnected, open connectors on it.
+/// Aggregation proceeds by attaching sections ("puzzle pieces") to
+/// each open connector, until there are none left. But what to connect
+/// to what? The master aggregation algorithm defers that choice to this
+/// callback API.  Different algos can offer up different connections to
+/// try out. The master aggregation algo manages the overall process of
+/// connecting things up; the callbacks suggest what to connect next.
 ///
-/// At every branch-point in the traversal algorithm, a list of
-/// branches to traverse must be obtained. Likwise, a priority-order
-/// for these branches must be given. At any point, there must be
-/// a decision to termnate, or to continue traversal. All of these
-/// executive decisions are made via the callback interface defined
-/// in this class.
-/// 
+/// The master aggregation algo is stack-based, and potentially
+/// combinatoric-explosive, as each the current set of open connectors
+/// depends on the history of what was previously attached. Because
+/// the algo is breadt-first (see other descriptions) two stacks are
+/// maintained: one for each "row" (odometer) and one for each
+/// odometer-wheel.
+///
 class GenerateCallback
 {
 public:

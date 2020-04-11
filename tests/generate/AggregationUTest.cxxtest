@@ -1,5 +1,9 @@
 /*
  * AggregationUTest.cxxtest
+ * Basic does-it-work? unit test. Explores some very very simple
+ * natural-language grammars that generate a handful (less than a dozen)
+ * different sentences. No combinatoric explosions, no stochastic
+ * elements.
  *
  * Copyright (C) 2020 Linas Vepstas <linasvepstas@gmail.com>
  * All Rights Reserved

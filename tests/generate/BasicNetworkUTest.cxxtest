@@ -1,5 +1,9 @@
 /*
- * NetworkUTest.cxxtest
+ * BasicNetworkUTest.cxxtest
+ *
+ * Basic, simple random network unit test. Generates stochastic random
+ * networks, where all edge types are the same, and all node types are
+ * the same, except for the node arity. 
  *
  * Copyright (C) 2020 Linas Vepstas <linasvepstas@gmail.com>
  * All Rights Reserved
@@ -10,7 +14,7 @@
 #include <opencog/atomspace/AtomSpace.h>
 #include <opencog/guile/SchemeEval.h>
 #include <opencog/generate/Aggregate.h>
-#include <opencog/generate/DefaultCallback.h>
+#include <opencog/generate/RandomCallback.h>
 
 #include <cxxtest/TestSuite.h>
 
@@ -19,7 +23,7 @@ using namespace opencog;
 #define al as->add_link
 #define an as->add_node
 
-class NetworkUTest: public CxxTest::TestSuite
+class BasicNetworkUTest: public CxxTest::TestSuite
 {
 private:
 	AtomSpace* as;
@@ -28,8 +32,8 @@ private:
 	Dictionary* dict;
 
 public:
-	NetworkUTest();
-	~NetworkUTest();
+	BasicNetworkUTest();
+	~BasicNetworkUTest();
 
 	void setUp();
 	void tearDown();
@@ -39,28 +43,28 @@ public:
 	void test_network();
 };
 
-NetworkUTest::NetworkUTest()
+BasicNetworkUTest::BasicNetworkUTest()
 {
 	logger().set_level(Logger::DEBUG);
 	logger().set_print_to_stdout_flag(true);
 	logger().set_timestamp_flag(false);
 }
 
-NetworkUTest::~NetworkUTest()
+BasicNetworkUTest::~BasicNetworkUTest()
 {
-	logger().info("Completed running NetworkUTest");
+	logger().info("Completed running BasicNetworkUTest");
 
 	// erase the log file if no assertions failed
 	if (!CxxTest::TestTracker::tracker().suiteFailed())
 		std::remove(logger().get_filename().c_str());
 	else
 	{
-		logger().info("NetworkUTest failed!");
+		logger().info("BasicNetworkUTest failed!");
 		logger().flush();
 	}
 }
 
-void NetworkUTest::setUp()
+void BasicNetworkUTest::setUp()
 {
 	as = new AtomSpace();
 	eval = new SchemeEval(as);
@@ -68,14 +72,14 @@ void NetworkUTest::setUp()
 	ag = new Aggregate(as);
 }
 
-void NetworkUTest::tearDown()
+void BasicNetworkUTest::tearDown()
 {
 	delete ag;
 	delete eval;
 	delete as;
 }
 
-void NetworkUTest::setup_dict()
+void BasicNetworkUTest::setup_dict()
 {
 	dict = new Dictionary(as);
 
@@ -89,16 +93,16 @@ void NetworkUTest::setup_dict()
 	dict->add_to_lexis(lex);
 }
 
-// Single generation: "Hello world"
-void NetworkUTest::test_hello()
+// Start out real simple...
+void BasicNetworkUTest::test_network()
 {
 	logger().debug("BEGIN TEST: %s", __FUNCTION__);
 
-	eval->eval("(load-from-path \"tests/generate/network.scm\")");
+	eval->eval("(load-from-path \"tests/generate/basic-network.scm\")");
 	Handle root = eval->eval_h("peep 3");
 
 	setup_dict();
-	DefaultCallback cb(as, *dict);
+	RandomCallback cb(as, *dict);
 	Handle result = ag->aggregate({root}, cb);
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);

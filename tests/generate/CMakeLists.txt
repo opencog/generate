@@ -6,3 +6,4 @@ LINK_LIBRARIES(
 
 # Run the tests in logical order, not alphabetical order.
 ADD_CXXTEST(AggregationUTest)
+ADD_CXXTEST(BasicNetworkUTest)

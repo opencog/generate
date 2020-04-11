@@ -3,6 +3,7 @@
 ADD_LIBRARY(generate SHARED
 	Aggregate
 	Dictionary
+	RandomCallback
 	SimpleCallback
 )
 
@@ -19,6 +20,7 @@ INSTALL(FILES
 	Dictionary.h
 	Frame.h
 	GenerateCallback.h
+	RandomCallback.h
 	SimpleCallback.h
 	DESTINATION "include/opencog/generate"
 )
