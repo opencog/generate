@@ -542,23 +542,33 @@ void Aggregate::print_wheel(size_t i) const
 	if (_frame._open_sections.find(fm_sect) == _frame._open_sections.end())
 		sect_open = false;
 
-	bool conn_open = false;
 	const Handle& disj = fm_sect->getOutgoingAtom(1);
 	const Handle& fm_con = disj->getOutgoingAtom(_odo._from_index[i]);
-	for (const Handle& fco: disj->getOutgoingSet())
-	{
-		if (fco == fm_con) { conn_open = true; break; }
-	}
 
-	logger().fine("    wheel %lu: %s : %s\t: %s -> %s (sect %s; conn %s)",
-		i,
-		_odo._sections[i]->getOutgoingAtom(0)->get_name().c_str(),
-		fm_con->getOutgoingAtom(0)->get_name().c_str(),
-		fm_con->getOutgoingAtom(1)->get_name().c_str(),
-		_odo._to_connectors[i]->getOutgoingAtom(1)->get_name().c_str(),
-		sect_open ? "open" : "closed",
-		conn_open ? "open" : "closed"
-	);
+	bool conn_open = (fm_con->get_type() == CONNECTOR);
+	if (conn_open)
+		logger().fine("    wheel %lu: %s : %s\t: %s -> %s (sect %s; conn %s)",
+			i,
+			_odo._sections[i]->getOutgoingAtom(0)->get_name().c_str(),
+			fm_con->getOutgoingAtom(0)->get_name().c_str(),
+			fm_con->getOutgoingAtom(1)->get_name().c_str(),
+			_odo._to_connectors[i]->getOutgoingAtom(1)->get_name().c_str(),
+			sect_open ? "open" : "closed",
+			conn_open ? "open" : "closed"
+		);
+	else
+	{
+		const Handle& lnkset = fm_con->getOutgoingAtom(1);
+		logger().fine("    wheel %lu: %s : %s\t: %s -> %s (sect %s; conn %s)",
+			i,
+			_odo._sections[i]->getOutgoingAtom(0)->get_name().c_str(),
+			fm_con->getOutgoingAtom(0)->get_name().c_str(),
+			lnkset->getOutgoingAtom(0)->get_name().c_str(),
+			lnkset->getOutgoingAtom(1)->get_name().c_str(),
+			sect_open ? "open" : "closed",
+			conn_open ? "open" : "closed"
+		);
+	}
 }
 
 void Aggregate::print_odometer() const
