@@ -24,6 +24,7 @@
 
 #include <opencog/generate/Dictionary.h>
 #include <opencog/generate/GenerateCallback.h>
+#include <opencog/generate/RandomParameters.h>
 
 namespace opencog
 {
@@ -43,6 +44,7 @@ protected:
 
 private:
 	Dictionary _dict;
+	RandomParameters* _parms;
 	Handle _weight_key;
 
 	// -------------------------------------------
@@ -73,7 +75,7 @@ private:
 	// -------------------------------------------
 
 public:
-	RandomCallback(AtomSpace*, const Dictionary&);
+	RandomCallback(AtomSpace*, const Dictionary&, RandomParameters&);
 	virtual ~RandomCallback();
 
 	void set_weight_key(const Handle& pred) { _weight_key = pred; }

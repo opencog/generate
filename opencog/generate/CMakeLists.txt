@@ -21,6 +21,7 @@ INSTALL(FILES
 	Frame.h
 	GenerateCallback.h
 	RandomCallback.h
+	RandomParameters.h
 	SimpleCallback.h
 	DESTINATION "include/opencog/generate"
 )
