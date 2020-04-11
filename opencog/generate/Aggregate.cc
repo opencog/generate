@@ -195,7 +195,7 @@ bool Aggregate::do_step(void)
 	bool did_step = false;
 	for (size_t ic = _odo._step; ic < _odo._size; ic++)
 	{
-		const Handle& fm_sect = _odo._sections[ic];
+		Handle fm_sect = _odo._sections[ic];
 		size_t offset = _odo._from_index[ic];
 		const Handle& conseq = fm_sect->getOutgoingAtom(1);
 		const Handle& fm_con = conseq->getOutgoingAtom(offset);
