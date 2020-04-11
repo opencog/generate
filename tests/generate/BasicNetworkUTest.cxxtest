@@ -101,7 +101,7 @@ void BasicNetworkUTest::test_network()
 
 	eval->eval("(load-from-path \"tests/generate/basic-network.scm\")");
 
-logger().set_level(Logger::FINE);
+// logger().set_level(Logger::FINE);
 	setup_dict();
 	Handle weights = eval->eval_h("(Predicate \"weights\")");
 

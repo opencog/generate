@@ -186,10 +186,7 @@ void RandomCallback::pop_frame(const Frame& frm)
 	_opensel = _opensel_stack.top(); _opensel_stack.pop();
 }
 
-void RandomCallback::push_odometer(const Odometer& odo)
+bool RandomCallback::recurse(const Frame& frm)
 {
-}
-
-void RandomCallback::pop_odometer(const Odometer& odo)
-{
+	return true;
 }
