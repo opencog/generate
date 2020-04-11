@@ -34,6 +34,24 @@ RandomCallback::RandomCallback(AtomSpace* as, const Dictionary& dict)
 
 RandomCallback::~RandomCallback() {}
 
+static std::random_device seed;
+static std::mt19937 rangen(seed());
+
+static inline double uniform_double(void)
+{
+	static std::uniform_real_distribution<> dist(0.0, 1.0);
+	return dist(rangen);
+}
+
+// Pick one out of the sequence.
+static inline Handle uniform_choice(const HandleSeq& lst)
+{
+	std::uniform_int_distribution<> dist(0, lst.size()-1);
+	int sno = dist(rangen);
+	return lst[sno];
+}
+
+
 /// Return a section containing `to_con`.
 /// Pick a new section from the lexis.
 Handle RandomCallback::select_from_lexis(const Frame& frame,
@@ -76,34 +94,9 @@ Handle RandomCallback::select_from_open(const Frame& frame,
                                const Handle& to_con)
 {
 	// Do we have an iterator (a future/promise) for the to-connector
-	// in the current frame?  If not, try to set one up. If this fails,
-	// then kick over to the dictionary.
+	// in the current frame?  If so, then return that and increment.
 	unsigned fit = _opensel._openit.get(to_con, 0);
-	if (0 == fit)
-	{
-		HandleSeq to_sects;
-		for (const Handle& open_sect : frame._open_sections)
-		{
-			const Handle& conseq = open_sect->getOutgoingAtom(1);
-			for (const Handle& con : conseq->getOutgoingSet())
-			{
-				if (con == to_con) to_sects.push_back(open_sect);
-			}
-		}
-
-		// Start iterating over the sections that contain to_con.
-		if (0 < to_sects.size())
-		{
-			_opensel._openit[to_con] = 1;
-			return to_sects[0];
-		}
-
-		// If we are here, there were no existing open sections.
-		// Return and do something else. (Currently, this means
-		// that the lexist will be used).
-		return Handle::UNDEFINED;
-	}
-	else
+	if (0 < fit)
 	{
 		const HandleSeq& to_sects = _opensel._opensect[to_con];
 
@@ -116,6 +109,27 @@ Handle RandomCallback::select_from_open(const Frame& frame,
 		return to_sects[fit];
 	}
 
+	// Set up an iterator, if possible.
+	// XXX this should be ranked by weight.
+	HandleSeq to_sects;
+	for (const Handle& open_sect : frame._open_sections)
+	{
+		const Handle& conseq = open_sect->getOutgoingAtom(1);
+		for (const Handle& con : conseq->getOutgoingSet())
+		{
+			if (con == to_con) to_sects.push_back(open_sect);
+		}
+	}
+
+	// Start iterating over the sections that contain to_con.
+	if (0 < to_sects.size())
+	{
+		_opensel._openit[to_con] = 1;
+		return to_sects[0];
+	}
+
+	// If we are here, there were no existing open sections.
+	// Return and do something else.
 	return Handle::UNDEFINED;
 }
 
@@ -127,12 +141,15 @@ Handle RandomCallback::select(const Frame& frame,
                                const Handle& to_con)
 {
 	// See if we can find other open connectors to connect to.
-	Handle open_sect = select_from_open(frame, fm_sect, offset, to_con);
-	if (open_sect) return open_sect;
+	if (0.5 < uniform_double())
+	{
+		Handle open_sect = select_from_open(frame, fm_sect, offset, to_con);
+		if (open_sect) return open_sect;
 
-	// If this is non-empty, the the odometer rolled over.
-	if (_opensel._opensect.find(to_con) != _opensel._opensect.end())
-		return Handle::UNDEFINED;
+		// If this is non-empty, the the odometer rolled over.
+		if (_opensel._opensect.find(to_con) != _opensel._opensect.end())
+			return Handle::UNDEFINED;
+	}
 
 	// Select from the dictionary...
 	return select_from_lexis(frame, fm_sect, offset, to_con);

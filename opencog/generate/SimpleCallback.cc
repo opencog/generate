@@ -76,34 +76,9 @@ Handle SimpleCallback::select_from_open(const Frame& frame,
                                const Handle& to_con)
 {
 	// Do we have an iterator (a future/promise) for the to-connector
-	// in the current frame?  If not, try to set one up. If this fails,
-	// then kick over to the dictionary.
+	// in the current frame? If so, then return that and increment.
 	unsigned fit = _opensel._openit.get(to_con, 0);
-	if (0 == fit)
-	{
-		HandleSeq to_sects;
-		for (const Handle& open_sect : frame._open_sections)
-		{
-			const Handle& conseq = open_sect->getOutgoingAtom(1);
-			for (const Handle& con : conseq->getOutgoingSet())
-			{
-				if (con == to_con) to_sects.push_back(open_sect);
-			}
-		}
-
-		// Start iterating over the sections that contain to_con.
-		if (0 < to_sects.size())
-		{
-			_opensel._openit[to_con] = 1;
-			return to_sects[0];
-		}
-
-		// If we are here, there were no existing open sections.
-		// Return and do something else. (Currently, this means
-		// that the lexist will be used).
-		return Handle::UNDEFINED;
-	}
-	else
+	if (0 < fit)
 	{
 		const HandleSeq& to_sects = _opensel._opensect[to_con];
 
@@ -116,6 +91,27 @@ Handle SimpleCallback::select_from_open(const Frame& frame,
 		return to_sects[fit];
 	}
 
+	// Set up an iterator, if possible.
+	HandleSeq to_sects;
+	for (const Handle& open_sect : frame._open_sections)
+	{
+		const Handle& conseq = open_sect->getOutgoingAtom(1);
+		for (const Handle& con : conseq->getOutgoingSet())
+		{
+			if (con == to_con) to_sects.push_back(open_sect);
+		}
+	}
+
+	// Start iterating over the sections that contain to_con.
+	if (0 < to_sects.size())
+	{
+		_opensel._openit[to_con] = 1;
+		return to_sects[0];
+	}
+
+	// If we are here, there were no existing open sections.
+	// Return and do something else. (Currently, this means
+	// that the lexis will be used).
 	return Handle::UNDEFINED;
 }
 
