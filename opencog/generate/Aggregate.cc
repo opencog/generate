@@ -140,7 +140,7 @@ bool Aggregate::recurse(void)
 bool Aggregate::init_odometer(void)
 {
 	// Should be empty already, but just in case...
-	_odo._from_connectors.clear();
+	_odo._from_index.clear();
 	_odo._to_connectors.clear();
 	_odo._sections.clear();
 
@@ -149,8 +149,10 @@ bool Aggregate::init_odometer(void)
 	{
 		Handle disj = sect->getOutgoingAtom(1);
 		const HandleSeq& conseq = disj->getOutgoingSet();
-		for (const Handle& from_con: conseq)
+		for (size_t idx = 0; idx < conseq.size(); idx++)
 		{
+			const Handle& from_con = conseq[idx];
+
 			// There may be fully connected links in the sequence.
 			// Ignore those. We want unconnected connectors only.
 			if (CONNECTOR != from_con->get_type()) continue;
@@ -162,9 +164,9 @@ bool Aggregate::init_odometer(void)
 
 			for (const Handle& to_con: to_cons)
 			{
-				_odo._from_connectors.push_back(from_con);
-				_odo._to_connectors.push_back(to_con);
 				_odo._sections.push_back(sect);
+				_odo._from_index.push_back(idx);
+				_odo._to_connectors.push_back(to_con);
 			}
 		}
 	}
@@ -193,8 +195,10 @@ bool Aggregate::do_step(void)
 	bool did_step = false;
 	for (size_t ic = _odo._step; ic < _odo._size; ic++)
 	{
-		Handle fm_sect = _odo._sections[ic];
-		const Handle& fm_con = _odo._from_connectors[ic];
+		const Handle& fm_sect = _odo._sections[ic];
+		size_t offset = _odo._from_index[ic];
+		const Handle& conseq = fm_sect->getOutgoingAtom(1);
+		const Handle& fm_con = conseq->getOutgoingAtom(offset);
 		const Handle& to_con = _odo._to_connectors[ic];
 
 		// It's possible that the section is no longer open,
@@ -244,7 +248,7 @@ bool Aggregate::do_step(void)
 		// ----------------------------
 		// If we made it to here, then the to-connector is still free.
 		// Draw a new section to connect to it.
-		Handle to_sect = _cb->select(_frame, fm_sect, fm_con, to_con);
+		Handle to_sect = _cb->select(_frame, fm_sect, offset, to_con);
 
 		if (nullptr == to_sect)
 		{
@@ -264,7 +268,7 @@ bool Aggregate::do_step(void)
 		_frame._wheel = ic;
 
 		// Connect it up, and get the newly-connected section.
-		HandlePair hpr = connect_section(fm_sect, fm_con, to_sect, to_con);
+		HandlePair hpr = connect_section(fm_sect, offset, to_sect, to_con);
 
 		// Replace the from-section with the now-connected section.
 		for (size_t in = 0; in < _odo._size; in++)
@@ -362,7 +366,7 @@ bool Aggregate::check_for_solution(void)
 ///
 /// Return the pair of newly-connected sections.
 HandlePair Aggregate::connect_section(const Handle& fm_sect,
-                                      const Handle& fm_con,
+                                      size_t offset,
                                       const Handle& to_sect,
                                       const Handle& to_con)
 {
@@ -372,8 +376,11 @@ HandlePair Aggregate::connect_section(const Handle& fm_sect,
 	print_section(fm_sect);
 	print_section(to_sect);
 
-	Handle fm_point = fm_sect->getOutgoingAtom(0);
-	Handle to_point = to_sect->getOutgoingAtom(0);
+	const Handle& fm_point = fm_sect->getOutgoingAtom(0);
+	const Handle& to_point = to_sect->getOutgoingAtom(0);
+
+	const Handle& conseq = fm_sect->getOutgoingAtom(1);
+	const Handle& fm_con = conseq->getOutgoingAtom(offset);
 
 	Handle link = _cb->make_link(fm_con, to_con, fm_point, to_point);
 
@@ -536,8 +543,8 @@ void Aggregate::print_wheel(size_t i) const
 		sect_open = false;
 
 	bool conn_open = false;
-	const Handle& fm_con = _odo._from_connectors[i];
-	Handle disj = fm_sect->getOutgoingAtom(1);
+	const Handle& disj = fm_sect->getOutgoingAtom(1);
+	const Handle& fm_con = disj->getOutgoingAtom(_odo._from_index[i]);
 	for (const Handle& fco: disj->getOutgoingSet())
 	{
 		if (fco == fm_con) { conn_open = true; break; }
@@ -546,8 +553,8 @@ void Aggregate::print_wheel(size_t i) const
 	logger().fine("    wheel %lu: %s : %s\t: %s -> %s (sect %s; conn %s)",
 		i,
 		_odo._sections[i]->getOutgoingAtom(0)->get_name().c_str(),
-		_odo._from_connectors[i]->getOutgoingAtom(0)->get_name().c_str(),
-		_odo._from_connectors[i]->getOutgoingAtom(1)->get_name().c_str(),
+		fm_con->getOutgoingAtom(0)->get_name().c_str(),
+		fm_con->getOutgoingAtom(1)->get_name().c_str(),
 		_odo._to_connectors[i]->getOutgoingAtom(1)->get_name().c_str(),
 		sect_open ? "open" : "closed",
 		conn_open ? "open" : "closed"

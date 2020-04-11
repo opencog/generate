@@ -65,11 +65,14 @@ public:
 	/// preferable sections are mated first.  Return null handle to
 	/// discontinue mating.
 	///
+	/// The `fm_con` is the connector located at `offset` in the
+	/// `fm_sect`.
+	///
 	/// This should be implemented so that it behaves like a 'future'
 	/// or a 'promise', so that, when called, it returns the next
 	/// section from a (virtual) list of eligible sections.
 	virtual Handle select(const Frame&,
-	                      const Handle& fm_sect, const Handle& fm_con,
+	                      const Handle& fm_sect, size_t offset,
 	                      const Handle& to_sect) = 0;
 
 	/// Create a link from connector `fm_con` to connector `to_con`,

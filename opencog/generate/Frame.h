@@ -36,16 +36,19 @@ struct Odometer
 	/// Size of odometer. All vectors below are of this size.
 	size_t _size;
 
-	/// Ordered list of open connectors. Each from-connector is a
-	/// connector on an open section.  Each to-connector is a
-	/// connector that can be legally joined to a from-connector.
-	/// There can be multiple to-connectors for each from-connector.
-	HandleSeq _from_connectors;
-	HandleSeq _to_connectors;
-
-	/// Ordered list of from-sections which hold the above
+	/// Ordered list of from-sections which have unconnected connectors
+	// that are being explored as a part of this odometer.
 	/// from-connectors.
 	HandleSeq _sections;
+
+	/// Index into the corresponding section, pointing at the open
+	/// connector (the "from-connector").
+	std::vector<size_t> _from_index;
+
+	/// List of valid connectors that each from-connector can mate to.
+	/// (That can be legally joined to a from-connector) Note there
+	/// may be multiple to-connectors for each from-connector.
+	HandleSeq _to_connectors;
 
 	/// The next wheel to be stepped. This is an index into the
 	/// above sequences.

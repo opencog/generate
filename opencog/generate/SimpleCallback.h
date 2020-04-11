@@ -54,7 +54,7 @@ private:
 	// -------------------------------------------
 	// Lexical selection
 	virtual Handle select_from_lexis(const Frame&,
-	                                 const Handle&, const Handle&,
+	                                 const Handle&, size_t,
 	                                 const Handle&);
 
 	// Iterator, pointing from a to-connector, to a list of
@@ -67,7 +67,7 @@ private:
 
 	// -------------------------------------------
 	virtual Handle select_from_open(const Frame&,
-	                                const Handle&, const Handle&,
+	                                const Handle&, size_t,
 	                                const Handle&);
 	struct OpenSelections
 	{
@@ -90,7 +90,7 @@ public:
 		return _dict.joints(con);
 	}
 	virtual Handle select(const Frame&,
-	                      const Handle&, const Handle&,
+	                      const Handle&, size_t,
 	                      const Handle&);
 
 	virtual Handle make_link(const Handle&, const Handle&,

@@ -37,7 +37,7 @@ SimpleCallback::~SimpleCallback() {}
 /// Return a section containing `to_con`.
 /// Pick a new section from the lexis.
 Handle SimpleCallback::select_from_lexis(const Frame& frame,
-                               const Handle& fm_sect, const Handle& fm_con,
+                               const Handle& fm_sect, size_t offset,
                                const Handle& to_con)
 {
 	const HandleSeq& to_sects = _dict.sections(to_con);
@@ -72,7 +72,7 @@ Handle SimpleCallback::select_from_lexis(const Frame& frame,
 /// Return a section containing `to_con`.
 /// Try to attach to an existing open section.
 Handle SimpleCallback::select_from_open(const Frame& frame,
-                               const Handle& fm_sect, const Handle& fm_con,
+                               const Handle& fm_sect, size_t offset,
                                const Handle& to_con)
 {
 	// Do we have an iterator (a future/promise) for the to-connector
@@ -123,11 +123,11 @@ Handle SimpleCallback::select_from_open(const Frame& frame,
 /// First try to attach to an existing open section.
 /// If that fails, then pick a new section from the lexis.
 Handle SimpleCallback::select(const Frame& frame,
-                               const Handle& fm_sect, const Handle& fm_con,
+                               const Handle& fm_sect, size_t offset,
                                const Handle& to_con)
 {
 	// See if we can find other open connectors to connect to.
-	Handle open_sect = select_from_open(frame, fm_sect, fm_con, to_con);
+	Handle open_sect = select_from_open(frame, fm_sect, offset, to_con);
 	if (open_sect) return open_sect;
 
 	// If this is non-empty, the the odometer rolled over.
@@ -135,7 +135,7 @@ Handle SimpleCallback::select(const Frame& frame,
 		return Handle::UNDEFINED;
 
 	// Select from the dictionary...
-	return select_from_lexis(frame, fm_sect, fm_con, to_con);
+	return select_from_lexis(frame, fm_sect, offset, to_con);
 }
 
 /// Create an undirected edge connecting the two points `fm_pnt` and
