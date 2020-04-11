@@ -64,9 +64,8 @@ private:
 	{
 		HandleSeqMap _opensect;
 
-		// Iterator, pointing from a to-connector, to a list of
-		// all open sections in the current frame.
-		HandleUCounter _openit;
+		// Chooser, selecting a one of the open sections the current frame.
+		std::map<Handle, std::discrete_distribution<size_t>> _opendi;
 	};
 
 	OpenSelections _opensel;

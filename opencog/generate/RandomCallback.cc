@@ -95,24 +95,27 @@ Handle RandomCallback::select_from_open(const Frame& frame,
                                const Handle& fm_sect, size_t offset,
                                const Handle& to_con)
 {
-	// Do we have an iterator (a future/promise) for the to-connector
-	// in the current frame?  If so, then return that and increment.
-	unsigned fit = _opensel._openit.get(to_con, 0);
-	if (0 < fit)
+	// XXX FIXME -- this implements a cache of distributions
+	// ... which are kept on a stack ... this could be RAM intensive
+	// ... and also CPU intensive. It might be faster to just
+	// choose on the fly, yeah? Don't know... needs investigation.
+
+	// Are there any attachable connectors?
+	auto tosit = _opensel._opensect.find(to_con);
+	if (_opensel._opensect.end() != tosit and tosit->second.size() == 0)
+		return Handle::UNDEFINED;
+
+	// Do we have a chooser for the to-connector in the current frame?
+	// If so, then use it.
+	auto curit = _opensel._opendi.find(to_con);
+	if (_opensel._opendi.end() != curit)
 	{
-		const HandleSeq& to_sects = _opensel._opensect[to_con];
-
-		// We've iterated to the end; we're done.
-		if (to_sects.size() <= fit)
-			return Handle::UNDEFINED;
-
-		// Increment and save.
-		_opensel._openit[to_con] ++;
-		return to_sects[fit];
+		const HandleSeq& to_sects = tosit->second;
+		auto dist = curit->second;
+		return to_sects[dist(rangen)];
 	}
 
-	// Set up an iterator, if possible.
-	// XXX this should be ranked by weight.
+	// Create a list of connectable sections
 	HandleSeq to_sects;
 	for (const Handle& open_sect : frame._open_sections)
 	{
@@ -123,16 +126,23 @@ Handle RandomCallback::select_from_open(const Frame& frame,
 		}
 	}
 
-	// Start iterating over the sections that contain to_con.
-	if (0 < to_sects.size())
-	{
-		_opensel._openit[to_con] = 1;
-		return to_sects[0];
-	}
+	// Save it...
+	_opensel._opensect[to_con] = to_sects;
 
-	// If we are here, there were no existing open sections.
-	// Return and do something else.
-	return Handle::UNDEFINED;
+	// Oh no, dead end!
+	if (0 == to_sects.size()) return Handle::UNDEFINED;
+
+	// Create a discrete distribution.
+	std::vector<double> pdf;
+	for (const Handle& sect: to_sects)
+	{
+		FloatValuePtr fvp(FloatValueCast(sect->getValue(_weight_key)));
+		pdf.push_back(fvp->value()[0]);
+	}
+	std::discrete_distribution<size_t> dist(pdf.begin(), pdf.end());
+	_opensel._opendi.emplace(std::make_pair(to_con, dist));
+
+	return to_sects[dist(rangen)];
 }
 
 /// Return a section containing `to_con`.
@@ -178,7 +188,7 @@ void RandomCallback::push_frame(const Frame& frm)
 {
 	_opensel_stack.push(_opensel);
 	_opensel._opensect.clear();
-	_opensel._openit.clear();
+	_opensel._opendi.clear();
 }
 
 void RandomCallback::pop_frame(const Frame& frm)
