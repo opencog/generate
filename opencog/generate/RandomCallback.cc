@@ -38,12 +38,6 @@ RandomCallback::~RandomCallback() {}
 static std::random_device seed;
 static std::mt19937 rangen(seed());
 
-static inline double uniform_double(void)
-{
-	static std::uniform_real_distribution<> dist(0.0, 1.0);
-	return dist(rangen);
-}
-
 // Pick one out of the sequence.
 static inline Handle uniform_choice(const HandleSeq& lst)
 {
@@ -165,7 +159,7 @@ Handle RandomCallback::select(const Frame& frame,
                                const Handle& to_con)
 {
 	// See if we can find other open connectors to connect to.
-	if (0.5 < uniform_double())
+	if (_parms->connect_to_open(frame))
 	{
 		Handle open_sect = select_from_open(frame, fm_sect, offset, to_con);
 		if (open_sect) return open_sect;

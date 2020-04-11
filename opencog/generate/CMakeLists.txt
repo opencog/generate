@@ -2,6 +2,7 @@
 
 ADD_LIBRARY(generate SHARED
 	Aggregate
+	BasicParameters
 	Dictionary
 	RandomCallback
 	SimpleCallback
@@ -17,6 +18,7 @@ INSTALL(TARGETS generate
 
 INSTALL(FILES
 	Aggregate.h
+	BasicParameters.h
 	Dictionary.h
 	Frame.h
 	GenerateCallback.h

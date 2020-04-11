@@ -14,6 +14,7 @@
 #include <opencog/atomspace/AtomSpace.h>
 #include <opencog/guile/SchemeEval.h>
 #include <opencog/generate/Aggregate.h>
+#include <opencog/generate/BasicParameters.h>
 #include <opencog/generate/RandomCallback.h>
 
 #include <cxxtest/TestSuite.h>
@@ -105,7 +106,8 @@ void BasicNetworkUTest::test_network()
 	setup_dict();
 	Handle weights = eval->eval_h("(Predicate \"weights\")");
 
-	RandomCallback cb(as, *dict);
+	BasicParameters basic;
+	RandomCallback cb(as, *dict, basic);
 	cb.set_weight_key(weights);
 
 	Handle root = eval->eval_h("(Concept \"peep 3\")");

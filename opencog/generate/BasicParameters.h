@@ -1,5 +1,5 @@
 /*
- * opencog/generate/RandomParameters.h
+ * opencog/generate/BasicParameters.h
  *
  * Copyright (C) 2020 Linas Vepstas <linasvepstas@gmail.com>
  *
@@ -19,10 +19,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _OPENCOG_RANDOM_PARAMETERS_H
-#define _OPENCOG_RANDOM_PARAMETERS_H
+#ifndef _OPENCOG_BASIC_PARAMETERS_H
+#define _OPENCOG_BASIC_PARAMETERS_H
 
-#include <opencog/generate/Frame.h>
+#include <random>
+#include <opencog/generate/RandomParameters.h>
 
 namespace opencog
 {
@@ -30,22 +31,22 @@ namespace opencog
  *  @{
  */
 
-/// The RandomParameters class is used to provide configuration info
+/// The BasicParameters class is used to provide configuration info
 /// to the RandomCallback class, constraining the ranges and
-/// distributions that get used.
-///
+/// distributions that get used. Its currently a mish-mash of policy.
+/// Under construction.
 
-class RandomParameters
+class BasicParameters : public RandomParameters
 {
 public:
-	RandomParameters() {}
-	virtual ~RandomParameters() {}
+	BasicParameters();
+	virtual ~BasicParameters();
 
-	virtual bool connect_to_open(const Frame&) = 0;
+	virtual bool connect_to_open(const Frame&);
 };
 
 
 /** @}*/
 }  // namespace opencog
 
-#endif // _OPENCOG_RANDOM_PARAMETERS_H
+#endif // _OPENCOG_BASIC_PARAMETERS_H

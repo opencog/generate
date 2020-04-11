@@ -1,7 +1,5 @@
 /*
- * opencog/generate/RandomParameters.h
- *
- * Copyright (C) 2020 Linas Vepstas <linasvepstas@gmail.com>
+ * opencog/generate/BasicParameters.cc
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License v3 as
@@ -19,33 +17,28 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _OPENCOG_RANDOM_PARAMETERS_H
-#define _OPENCOG_RANDOM_PARAMETERS_H
+#include <stdio.h>
 
-#include <opencog/generate/Frame.h>
+#include "BasicParameters.h"
 
-namespace opencog
+using namespace opencog;
+
+BasicParameters::BasicParameters()
+{}
+
+BasicParameters::~BasicParameters()
+{}
+
+static std::random_device seed;
+static std::mt19937 rangen(seed());
+
+static inline double uniform_double(void)
 {
-/** \addtogroup grp_generate
- *  @{
- */
+   static std::uniform_real_distribution<> dist(0.0, 1.0);
+   return dist(rangen);
+}
 
-/// The RandomParameters class is used to provide configuration info
-/// to the RandomCallback class, constraining the ranges and
-/// distributions that get used.
-///
-
-class RandomParameters
+bool BasicParameters::connect_to_open(const Frame& frm)
 {
-public:
-	RandomParameters() {}
-	virtual ~RandomParameters() {}
-
-	virtual bool connect_to_open(const Frame&) = 0;
-};
-
-
-/** @}*/
-}  // namespace opencog
-
-#endif // _OPENCOG_RANDOM_PARAMETERS_H
+	return 0.5 < uniform_double();
+}
