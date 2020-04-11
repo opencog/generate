@@ -99,8 +99,9 @@ void BasicNetworkUTest::test_network()
 	logger().debug("BEGIN TEST: %s", __FUNCTION__);
 
 	eval->eval("(load-from-path \"tests/generate/basic-network.scm\")");
-	Handle root = eval->eval_h("peep 3");
+	Handle root = eval->eval_h("(Concept \"peep 3\")");
 
+logger().set_level(Logger::FINE);
 	setup_dict();
 	RandomCallback cb(as, *dict);
 	Handle result = ag->aggregate({root}, cb);

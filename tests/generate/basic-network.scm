@@ -1,5 +1,5 @@
 ;
-; network.scm
+; basic-network.scm
 ;
 ; Basic test: Generate random network. Dictionary contains one word,
 ; with arbitrary numbers of connectors, all of the same type.
