@@ -133,12 +133,23 @@ Handle RandomCallback::select_from_open(const Frame& frame,
 	if (0 == to_sects.size()) return Handle::UNDEFINED;
 
 	// Create a discrete distribution.
+	// Argh ... XXX FIXME ... the aggregator does NOT copy
+	// values onto the assembled linkage, and so these will
+	// always fail to have the weight key on them. That's OK,
+	// for now, because copying the values it probably wasteful.
+	// but still ... this results in a uniform distribution,
+	// and so its ... ick. Imperfect. Perfect enemy of the good.
+#if 0
 	std::vector<double> pdf;
 	for (const Handle& sect: to_sects)
 	{
 		FloatValuePtr fvp(FloatValueCast(sect->getValue(_weight_key)));
-		pdf.push_back(fvp->value()[0]);
+		if (fvp) pdf.push_back(fvp->value()[0]);
+		else pdf.push_back(1.0);
 	}
+#else
+	std::vector<double> pdf(to_sects.size(), 1.0);
+#endif
 	std::discrete_distribution<size_t> dist(pdf.begin(), pdf.end());
 	_opensel._opendi.emplace(std::make_pair(to_con, dist));
 
