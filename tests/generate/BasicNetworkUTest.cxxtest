@@ -40,9 +40,10 @@ public:
 	void tearDown();
 
 	void setup_dict();
+	void check_dipole(Handle, size_t);
 
 	void test_dipole();
-	void test_network();
+	void xtest_network();
 };
 
 BasicNetworkUTest::BasicNetworkUTest()
@@ -97,16 +98,12 @@ void BasicNetworkUTest::setup_dict()
 
 // Test create of dipole graphs by the SimpleCallback
 // https://en.wikipedia.org/wiki/Dipole_graph
-void BasicNetworkUTest::test_dipole()
+void BasicNetworkUTest::check_dipole(Handle root, size_t nedges)
 {
-	logger().debug("BEGIN TEST: %s", __FUNCTION__);
-
-	eval->eval("(load-from-path \"tests/generate/basic-network.scm\")");
-	setup_dict();
 	SimpleCallback cb(as, *dict);
 
-	Handle root = eval->eval_h("(Concept \"peep 3\")");
-	Handle result = ag->aggregate({root}, cb);
+	Aggregate lag(as);
+	Handle result = lag.aggregate({root}, cb);
 	// printf("result is  %s\n", result->to_string().c_str());
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
@@ -116,17 +113,45 @@ void BasicNetworkUTest::test_dipole()
 	Handle sect = soln->getOutgoingAtom(0);
 	TSM_ASSERT("Not a valid section!", sect->get_arity() == 2);
 	Handle seq = sect->getOutgoingAtom(1);
-	TSM_ASSERT("Wrong number of links!", seq->get_arity() == 3);
+	TSM_ASSERT("Wrong number of links!", seq->get_arity() == nedges);
 
 	HandleSeq links = seq->getOutgoingSet();
-	for (size_t i=1; i<seq->get_arity(); i++)
+	for (size_t i=1; i<nedges; i++)
 		TSM_ASSERT("Incompletely linked!", *links[i] == *links[0]);
+}
+
+// Test create of dipole graphs by the SimpleCallback
+// https://en.wikipedia.org/wiki/Dipole_graph
+void BasicNetworkUTest::test_dipole()
+{
+	logger().debug("BEGIN TEST: %s", __FUNCTION__);
+
+	eval->eval("(load-from-path \"tests/generate/basic-network.scm\")");
+	setup_dict();
+
+	Handle root = eval->eval_h("(Concept \"peep 1\")");
+	check_dipole (root, 1);
+
+	root = eval->eval_h("(Concept \"peep 2\")");
+	check_dipole (root, 2);
+
+	root = eval->eval_h("(Concept \"peep 3\")");
+	check_dipole (root, 3);
+
+	root = eval->eval_h("(Concept \"peep 4\")");
+	check_dipole (root, 4);
+
+	root = eval->eval_h("(Concept \"peep 5\")");
+	check_dipole (root, 5);
+
+	root = eval->eval_h("(Concept \"peep 6\")");
+	check_dipole (root, 6);
 
 	logger().debug("END TEST: %s", __FUNCTION__);
 }
 
 // Start out real simple...
-void BasicNetworkUTest::test_network()
+void BasicNetworkUTest::xtest_network()
 {
 	logger().debug("BEGIN TEST: %s", __FUNCTION__);
 

@@ -60,6 +60,8 @@ private:
 	/// Accumulated set of fully-grounded solutions.
 	std::set<HandleSet> _solutions;
 
+	void clear(void);
+
 	bool init_odometer(void);
 	bool step_odometer(void);
 	bool do_step(void);

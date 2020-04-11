@@ -44,6 +44,17 @@ Aggregate::~Aggregate()
 {
 }
 
+/// Yuck. Should not allow re-use... XXX FIXME!?
+void Aggregate::clear(void)
+{
+	_solutions.clear();
+#if 0
+	_frame_stack.clear();
+	_odo_sections.clear();
+	_odo_stack.clear();
+#endif
+}
+
 /// The nuclei are the nucleation points: points that must
 /// appear in sections, some section of which must be linkable.
 ///
@@ -53,8 +64,8 @@ Aggregate::~Aggregate()
 Handle Aggregate::aggregate(const HandleSet& nuclei,
                             GenerateCallback& cb)
 {
+	clear();
 	_cb = &cb;
-
 	_frame._open_points = nuclei;
 
 	// Pick a point, any point.
