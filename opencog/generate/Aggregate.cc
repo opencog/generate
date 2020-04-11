@@ -201,34 +201,8 @@ bool Aggregate::do_step(void)
 		const Handle& fm_con = conseq->getOutgoingAtom(offset);
 		const Handle& to_con = _odo._to_connectors[ic];
 
-		// It's possible that the section is no longer open,
-		// because the connector got connected to it. So check.
-		if (_frame._open_sections.find(fm_sect) ==
-		    _frame._open_sections.end())
-		{
-			logger().fine("Wheel-sect not open: %lu of %lu at depth %lu",
-			               ic, _odo._size, _odo_stack.size());
-			print_wheel(ic);
-
-			if (ic == _odo._step)
-			{
-				// If we are here, then this wheel has "effectively"
-				// rolled over. We cannot continue to the remaining
-				// wheels.
-				_odo._step = ic - 1;
-				return false;
-			}
-			continue;
-		}
-
-		// Section is still open, but the connector might not be.
-		bool still_open = false;
-		Handle disj = fm_sect->getOutgoingAtom(1);
-		for (const Handle& fco: disj->getOutgoingSet())
-		{
-			if (fco == fm_con) { still_open = true; break; }
-		}
-		if (not still_open)
+		// Is there an open connector at this location?
+		if (fm_con->get_type() != CONNECTOR)
 		{
 			logger().fine("Wheel-con not open: %lu of %lu at depth %lu",
 			               ic, _odo._size, _odo_stack.size());
