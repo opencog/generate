@@ -26,7 +26,7 @@
 using namespace opencog;
 
 SimpleCallback::SimpleCallback(AtomSpace* as, const Dictionary& dict)
-	: SolutionCallback(as), _dict(dict)
+	: GenerateCallback(as), _as(as), _dict(dict)
 {
 }
 

@@ -1,5 +1,5 @@
 /*
- * opencog/generate/SolutionCallback.cc
+ * opencog/generate/CollectSolutions.cc
  *
  * Copyright (C) 2020 Linas Vepstas <linasvepstas@gmail.com>
  *
@@ -21,18 +21,17 @@
 
 #include <opencog/atoms/base/Link.h>
 
-#include "SolutionCallback.h"
+#include "CollectSolutions.h"
 
 using namespace opencog;
 
-SolutionCallback::SolutionCallback(AtomSpace* as)
-	: GenerateCallback(as), _as(as)
+CollectSolutions::CollectSolutions(void)
 {
 }
 
-SolutionCallback::~SolutionCallback() {}
+CollectSolutions::~CollectSolutions() {}
 
-void SolutionCallback::solution(const Frame& frm)
+void CollectSolutions::record_solution(const Frame& frm)
 {
 	size_t nsolns = _solutions.size();
 	_solutions.insert(frm._linkage);
@@ -42,10 +41,8 @@ void SolutionCallback::solution(const Frame& frm)
 	{
 		logger().fine("Obtained new solution %lu of size %lu:",
 		       news, frm._linkage.size());
-#if 0
 		for (const Handle& lkg : frm._linkage)
-			print_section(lkg);
-#endif
+			frm.print_section(lkg);
 	}
 	else
 	{
@@ -57,7 +54,7 @@ void SolutionCallback::solution(const Frame& frm)
 
 /// XXX FIXME ... maybe should attach to a MemberLink or something?
 /// This obviously fails to scale if the section is large.
-Handle SolutionCallback::get_solutions(void)
+Handle CollectSolutions::get_solutions(void)
 {
 	HandleSeq solns;
 	for (const auto& sol : _solutions)

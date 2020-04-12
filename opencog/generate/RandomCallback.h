@@ -23,7 +23,8 @@
 #define _OPENCOG_RANDOM_CALLBACK_H
 
 #include <opencog/generate/Dictionary.h>
-#include <opencog/generate/SolutionCallback.h>
+#include <opencog/generate/GenerateCallback.h>
+#include <opencog/generate/CollectSolutions.h>
 #include <opencog/generate/RandomParameters.h>
 
 namespace opencog
@@ -37,9 +38,10 @@ namespace opencog
 /// a stochastic, random selection process.
 ///
 
-class RandomCallback : public SolutionCallback
+class RandomCallback : public GenerateCallback, public CollectSolutions
 {
 private:
+	AtomSpace* _as;
 	Dictionary _dict;
 	RandomParameters* _parms;
 	Handle _weight_key;

@@ -29,7 +29,7 @@ using namespace opencog;
 
 RandomCallback::RandomCallback(AtomSpace* as, const Dictionary& dict,
                                RandomParameters& parms)
-	: SolutionCallback(as), _dict(dict), _parms(&parms)
+	: GenerateCallback(as), _as(as), _dict(dict), _parms(&parms)
 {
 }
 

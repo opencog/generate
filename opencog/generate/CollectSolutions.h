@@ -1,5 +1,5 @@
 /*
- * opencog/generate/SolutionCallback.h
+ * opencog/generate/CollectSolutions.h
  *
  * Copyright (C) 2020 Linas Vepstas <linasvepstas@gmail.com>
  *
@@ -19,10 +19,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _OPENCOG_SOLUTION_CALLBACK_H
-#define _OPENCOG_SOLUTION_CALLBACK_H
+#ifndef _OPENCOG_COLLECT_SOLUTIONS_H
+#define _OPENCOG_COLLECT_SOLUTIONS_H
 
-#include <opencog/generate/GenerateCallback.h>
+#include <opencog/generate/Frame.h>
 
 namespace opencog
 {
@@ -30,22 +30,19 @@ namespace opencog
  *  @{
  */
 
-/// Callback to record completed networks. Only records results;
-/// does not provide any other functions.
+/// Record completed networks.
 
-class SolutionCallback : public GenerateCallback
+class CollectSolutions
 {
 protected:
-	AtomSpace* _as;
-
 	/// Accumulated set of fully-grounded solutions.
 	std::set<HandleSet> _solutions;
 
 public:
-	SolutionCallback(AtomSpace*);
-	virtual ~SolutionCallback();
+	CollectSolutions(void);
+	~CollectSolutions();
 
-	virtual void solution(const Frame&);
+	void record_solution(const Frame&);
 
 	std::set<HandleSet> get_solution_set(void) { return _solutions; }
 	Handle get_solutions(void);
@@ -55,4 +52,4 @@ public:
 /** @}*/
 }  // namespace opencog
 
-#endif // _OPENCOG_SOLUTION_CALLBACK_H
+#endif // _OPENCOG_COLLECT_SOLUTIONS_H

@@ -3,11 +3,11 @@
 ADD_LIBRARY(generate SHARED
 	Aggregate
 	BasicParameters
+	CollectSolutions
 	Dictionary
 	Frame
 	RandomCallback
 	SimpleCallback
-	SolutionCallback
 )
 
 TARGET_LINK_LIBRARIES(generate
@@ -21,12 +21,12 @@ INSTALL(TARGETS generate
 INSTALL(FILES
 	Aggregate.h
 	BasicParameters.h
+	CollectSolutions.h
 	Dictionary.h
 	Frame.h
 	GenerateCallback.h
 	RandomCallback.h
 	RandomParameters.h
 	SimpleCallback.h
-	SolutionCallback.h
 	DESTINATION "include/opencog/generate"
 )
