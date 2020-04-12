@@ -92,6 +92,7 @@ public:
 	virtual void pop_frame(const Frame&);
 
 	virtual bool step(const Frame&);
+	virtual void solution(const Frame&);
 };
 
 

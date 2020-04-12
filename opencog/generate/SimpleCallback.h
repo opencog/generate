@@ -98,6 +98,7 @@ public:
 	virtual void pop_frame(const Frame&);
 	virtual void push_odometer(const Odometer&);
 	virtual void pop_odometer(const Odometer&);
+	virtual void solution(const Frame&);
 };
 
 

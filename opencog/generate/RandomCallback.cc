@@ -206,3 +206,8 @@ bool RandomCallback::step(const Frame& frm)
 {
 	return true;
 }
+
+void RandomCallback::solution(const Frame& frm)
+{
+	record_solution(frm);
+}

@@ -171,3 +171,8 @@ void SimpleCallback::pop_odometer(const Odometer& odo)
 {
 	_lexlit = _lexlit_stack.top(); _lexlit_stack.pop();
 }
+
+void SimpleCallback::solution(const Frame& frm)
+{
+	record_solution(frm);
+}
