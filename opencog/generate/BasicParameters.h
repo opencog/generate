@@ -42,7 +42,16 @@ public:
 	BasicParameters();
 	virtual ~BasicParameters();
 
-	virtual bool connect_to_open(const Frame&);
+	virtual bool connect_existing(const Frame&);
+
+	/// Fraction of the time that an attempt should be made to join
+	/// together two existing open connectors, if that is possible.
+	/// When two existing connectors are joined together, the size
+	/// of the network does not increase, and the number of existing
+	/// unconnected connectorsdrops by two. Otherwise, a new puzzle
+	/// piece is selected from the lexis (thus necessarily enlarging
+	/// the network.)
+	double join_existing;
 };
 
 

@@ -41,7 +41,12 @@ public:
 	RandomParameters() {}
 	virtual ~RandomParameters() {}
 
-	virtual bool connect_to_open(const Frame&) = 0;
+	/// Return true attempt connecting a pair of existing open sections,
+	/// else return false to fish for a new, fresh puzzle-piece out of
+	/// the lexis. Consistently returning true will maximally close off
+	/// any open connectors without enlarging the network. Rturning false
+	/// will always increase the size of the network.
+	virtual bool connect_existing(const Frame&) = 0;
 };
 
 

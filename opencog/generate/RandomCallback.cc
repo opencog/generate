@@ -159,14 +159,10 @@ Handle RandomCallback::select(const Frame& frame,
                                const Handle& to_con)
 {
 	// See if we can find other open connectors to connect to.
-	if (_parms->connect_to_open(frame))
+	if (_parms->connect_existing(frame))
 	{
 		Handle open_sect = select_from_open(frame, fm_sect, offset, to_con);
 		if (open_sect) return open_sect;
-
-		// If this is non-empty, the the odometer rolled over.
-		if (_opensel._opensect.find(to_con) != _opensel._opensect.end())
-			return Handle::UNDEFINED;
 	}
 
 	// Select from the dictionary...

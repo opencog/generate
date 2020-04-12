@@ -24,7 +24,9 @@
 using namespace opencog;
 
 BasicParameters::BasicParameters()
-{}
+{
+	join_existing = 0.7;
+}
 
 BasicParameters::~BasicParameters()
 {}
@@ -38,7 +40,7 @@ static inline double uniform_double(void)
    return dist(rangen);
 }
 
-bool BasicParameters::connect_to_open(const Frame& frm)
+bool BasicParameters::connect_existing(const Frame& frm)
 {
-	return 0.5 < uniform_double();
+	return uniform_double() < join_existing;
 }
