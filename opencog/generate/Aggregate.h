@@ -70,7 +70,7 @@ private:
 
 	bool check_for_solution(void);
 
-	bool recurse(void);
+	void recurse(void);
 
 	HandlePair connect_section(const Handle&, size_t,
 	                           const Handle&, const Handle&);

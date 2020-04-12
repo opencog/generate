@@ -99,10 +99,10 @@ Handle Aggregate::aggregate(const HandleSet& nuclei,
 
 /// Breadth-first recursion.
 /// See the README.md for an explanation.
-bool Aggregate::recurse(void)
+void Aggregate::recurse(void)
 {
 	// Nothing to do.
-	if (0 == _frame._open_sections.size()) return false;
+	if (0 == _frame._open_sections.size()) return;
 
 	logger().fine("Enter recurse");
 
@@ -112,7 +112,7 @@ bool Aggregate::recurse(void)
 	if (not more)
 	{
 		pop_odo();
-		return false;
+		return;
 	}
 
 	// Take the first step.
@@ -127,7 +127,7 @@ bool Aggregate::recurse(void)
 		if (not more)
 		{
 			pop_odo();
-			return false;
+			return;
 		}
 
 		// If we are here, we have a valid odo state. Explore it.
@@ -139,7 +139,7 @@ bool Aggregate::recurse(void)
 		logger().fine("Recurse: After next step, have-more=%d", more);
 	}
 
-	return false; // *not-reached*
+	return; // *not-reached*
 }
 
 /// Initialize the odometer state. This creates an ordered list of
