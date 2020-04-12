@@ -86,10 +86,13 @@ public:
 	virtual void push_odometer(const Odometer&) {}
 	virtual void pop_odometer(const Odometer&) {}
 
-	/// Called before the next tree-walking recursive step is taken.
-	/// Should return `true` to continue recursion, else false.
+	/// Called after each successful step of the odometer.
+	/// Return `true` to continue stepping, else false.
+	/// Returning false will abort the odometer at it's
+	/// current level, and pop it to an earlier level.
+	///
 	/// The default below allows infinite recursion.
-	virtual bool recurse(const Frame&) { return true; }
+	virtual bool step(const Frame&) { return true; }
 };
 
 

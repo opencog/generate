@@ -274,6 +274,13 @@ bool Aggregate::do_step(void)
 
 	check_for_solution();
 
+	if (not _cb->step(_frame))
+	{
+		logger().fine("Odometer stepping halted at depth %lu",
+			_frame_stack.size());
+		return false;
+	}
+
 	return true;
 }
 
@@ -286,7 +293,7 @@ bool Aggregate::step_odometer(void)
 	bool did_step = do_step();
 	while (not did_step)
 	{
-		// If the stepper rollwed over to minus-one, then we're done.
+		// If the stepper rolled over to minus-one, then we're done.
 		if (SIZE_MAX == _odo._step)
 		{
 			logger().fine("Exhaused the odometer at depth %lu", _odo_stack.size());
@@ -300,17 +307,10 @@ bool Aggregate::step_odometer(void)
 	return did_step;
 }
 
-// False means halt, no more solutions possible along this path.
+/// False means halt, no more solutions possible along this path.
 bool Aggregate::check_for_solution(void)
 {
 	logger().fine("--------- Check for solution -------------");
-	if (not _cb->recurse(_frame))
-	{
-		logger().fine("Solution seeking halted at depth %lu",
-			_frame_stack.size());
-		return false;
-	}
-
 	logger().fine("Current state: open-points=%lu open-sect=%lu lkg=%lu",
 		_frame._open_points.size(), _frame._open_sections.size(),
 		_frame._linkage.size());
