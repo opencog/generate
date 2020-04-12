@@ -30,6 +30,9 @@ BasicParameters::BasicParameters()
 
 	// Not interested in networks larger than 20 nodes.
 	max_network_size = 20;
+
+	// Max diameter of 10
+	max_depth = 10;
 }
 
 BasicParameters::~BasicParameters()
@@ -51,5 +54,6 @@ bool BasicParameters::connect_existing(const Frame& frm)
 
 bool BasicParameters::step(const Frame& frm)
 {
-	return frm._linkage.size() < max_network_size;
+	return (frm._linkage.size() < max_network_size)
+		and (frm._nodo < max_depth);
 }

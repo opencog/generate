@@ -57,6 +57,12 @@ public:
 	/// Maximum size of the generated network. Exploration of networks
 	/// larger than this will not be attempted.
 	size_t max_network_size;
+
+	/// Maximum depth to explore from the starting point. This is
+	/// counted in terms of the maximum depth of the stack of
+	/// odometers. This is maximum diameter of the network, as measured
+	/// from the starting point.
+	size_t max_depth;
 };
 
 
