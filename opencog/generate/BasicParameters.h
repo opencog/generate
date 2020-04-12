@@ -43,6 +43,7 @@ public:
 	virtual ~BasicParameters();
 
 	virtual bool connect_existing(const Frame&);
+	virtual bool step(const Frame&);
 
 	/// Fraction of the time that an attempt should be made to join
 	/// together two existing open connectors, if that is possible.
@@ -52,6 +53,10 @@ public:
 	/// piece is selected from the lexis (thus necessarily enlarging
 	/// the network.)
 	double join_existing;
+
+	/// Maximum size of the generated network. Exploration of networks
+	/// larger than this will not be attempted.
+	size_t max_network_size;
 };
 
 

@@ -25,7 +25,11 @@ using namespace opencog;
 
 BasicParameters::BasicParameters()
 {
+	// Try to close existing connectors .. most of the time.
 	join_existing = 0.7;
+
+	// Not interested in networks larger than 20 nodes.
+	max_network_size = 20;
 }
 
 BasicParameters::~BasicParameters()
@@ -43,4 +47,9 @@ static inline double uniform_double(void)
 bool BasicParameters::connect_existing(const Frame& frm)
 {
 	return uniform_double() < join_existing;
+}
+
+bool BasicParameters::step(const Frame& frm)
+{
+	return frm._linkage.size() < max_network_size;
 }

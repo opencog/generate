@@ -200,7 +200,7 @@ void RandomCallback::pop_frame(const Frame& frm)
 
 bool RandomCallback::step(const Frame& frm)
 {
-	return true;
+	return _parms->step(frm);
 }
 
 void RandomCallback::solution(const Frame& frm)
