@@ -99,7 +99,8 @@ void GraphUTest::check_dipole(Handle root, size_t nedges)
 	SimpleCallback cb(as, *dict);
 
 	Aggregate lag(as);
-	Handle result = lag.aggregate({root}, cb);
+	lag.aggregate({root}, cb);
+	Handle result = cb.get_solutions();
 	// printf("result is  %s\n", result->to_string().c_str());
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);

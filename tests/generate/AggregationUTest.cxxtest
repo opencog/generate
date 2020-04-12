@@ -113,7 +113,8 @@ void AggregationUTest::test_hello()
 
 	setup_dict();
 	SimpleCallback cb(as, *dict);
-	Handle result = ag->aggregate({wall}, cb);
+	ag->aggregate({wall}, cb);
+	Handle result = cb.get_solutions();
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
 
@@ -139,7 +140,8 @@ void AggregationUTest::test_tree()
 	setup_dict();
 	SimpleCallback cb(as, *dict);
 
-	Handle result = ag->aggregate({wall}, cb);
+	ag->aggregate({wall}, cb);
+	Handle result = cb.get_solutions();
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
 
@@ -178,7 +180,8 @@ void AggregationUTest::test_loop()
 	setup_dict();
 	SimpleCallback cb(as, *dict);
 
-	Handle result = ag->aggregate({wall}, cb);
+	ag->aggregate({wall}, cb);
+	Handle result = cb.get_solutions();
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
 
@@ -217,7 +220,8 @@ void AggregationUTest::test_biloop()
 	setup_dict();
 	SimpleCallback cb(as, *dict);
 
-	Handle result = ag->aggregate({wall}, cb);
+	ag->aggregate({wall}, cb);
+	Handle result = cb.get_solutions();
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
 
@@ -258,7 +262,8 @@ void AggregationUTest::test_quad()
 	setup_dict();
 	SimpleCallback cb(as, *dict);
 
-	Handle result = ag->aggregate({wall}, cb);
+	ag->aggregate({wall}, cb);
+	Handle result = cb.get_solutions();
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
 
@@ -299,7 +304,8 @@ void AggregationUTest::test_biquad()
 	setup_dict();
 	SimpleCallback cb(as, *dict);
 
-	Handle result = ag->aggregate({wall}, cb);
+	ag->aggregate({wall}, cb);
+	Handle result = cb.get_solutions();
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
 
@@ -334,7 +340,8 @@ void AggregationUTest::test_triquad()
 	setup_dict();
 	SimpleCallback cb(as, *dict);
 
-	Handle result = ag->aggregate({wall}, cb);
+	ag->aggregate({wall}, cb);
+	Handle result = cb.get_solutions();
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
 
@@ -369,7 +376,8 @@ void AggregationUTest::test_mixed()
 	setup_dict();
 	SimpleCallback cb(as, *dict);
 
-	Handle result = ag->aggregate({wall}, cb);
+	ag->aggregate({wall}, cb);
+	Handle result = cb.get_solutions();
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
 
