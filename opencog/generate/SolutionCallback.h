@@ -22,7 +22,6 @@
 #ifndef _OPENCOG_SOLUTION_CALLBACK_H
 #define _OPENCOG_SOLUTION_CALLBACK_H
 
-#include <opencog/generate/Dictionary.h>
 #include <opencog/generate/GenerateCallback.h>
 
 namespace opencog
@@ -39,11 +38,17 @@ class SolutionCallback : public GenerateCallback
 protected:
 	AtomSpace* _as;
 
+	/// Accumulated set of fully-grounded solutions.
+	std::set<HandleSet> _solutions;
+
 public:
 	SolutionCallback(AtomSpace*);
 	virtual ~SolutionCallback();
 
-	virtual bool solution(const Frame&);
+	virtual void solution(const Frame&);
+
+	std::set<HandleSet> get_solution_set(void) { return _solutions; }
+	Handle get_solutions(void);
 };
 
 

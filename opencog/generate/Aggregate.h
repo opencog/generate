@@ -57,9 +57,6 @@ private:
 	void push_odo();
 	void pop_odo();
 
-	/// Accumulated set of fully-grounded solutions.
-	std::set<HandleSet> _solutions;
-
 	void clear(void);
 
 	bool init_odometer(void);
@@ -67,8 +64,6 @@ private:
 	bool do_step(void);
 	void print_wheel(size_t) const;
 	void print_odometer(void) const;
-
-	void check_for_solution(void);
 
 	void recurse(void);
 
@@ -80,7 +75,7 @@ public:
 	Aggregate(AtomSpace*);
 	~Aggregate();
 
-	Handle aggregate(const HandleSet&, GenerateCallback&);
+	void aggregate(const HandleSet&, GenerateCallback&);
 
 };
 

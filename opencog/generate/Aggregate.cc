@@ -47,7 +47,6 @@ Aggregate::~Aggregate()
 /// Yuck. Should not allow re-use... XXX FIXME!?
 void Aggregate::clear(void)
 {
-	_solutions.clear();
 	while (not _frame_stack.empty()) _frame_stack.pop();
 	while (not _odo_sections.empty()) _odo_sections.pop();
 	while (not _odo_stack.empty()) _odo_stack.pop();
@@ -59,7 +58,7 @@ void Aggregate::clear(void)
 /// pol_pairs is a list of polarization pairs, i.e.
 /// match pairs of ConnectorDir pairs (from, to) which
 /// are to be connected.
-Handle Aggregate::aggregate(const HandleSet& nuclei,
+void Aggregate::aggregate(const HandleSet& nuclei,
                             GenerateCallback& cb)
 {
 	clear();
@@ -79,22 +78,6 @@ Handle Aggregate::aggregate(const HandleSet& nuclei,
 		recurse();
 		pop_frame();
 	}
-
-	logger().fine("Finished; found %lu solutions\n", _solutions.size());
-
-	// Ugh. This is kind-of unpleasant, but for now we will use SetLink
-	// to return results. This obviously fails to scale if the section is
-	// large.
-	HandleSeq solns;
-	for (const auto& sol : _solutions)
-	{
-		HandleSeq sects;
-		for (const Handle& sect : sol)
-			sects.push_back(sect);
-
-		solns.push_back(createLink(std::move(sects), SET_LINK));
-	}
-	return createLink(std::move(solns), SET_LINK);
 }
 
 /// Breadth-first recursion.
@@ -272,7 +255,13 @@ bool Aggregate::do_step(void)
 	// Next time, we will turn just the last wheel.
 	_odo._step = _odo._size - 1;
 
-	check_for_solution();
+	logger().fine("Stepped odo: open-points=%lu open-sect=%lu lkg=%lu",
+		_frame._open_points.size(), _frame._open_sections.size(),
+		_frame._linkage.size());
+
+	// If we found a solution, let the callback accumulate it.
+	if (0 == _frame._open_sections.size())
+		_cb->solution(_frame);
 
 	if (not _cb->step(_frame))
 	{
@@ -305,37 +294,6 @@ bool Aggregate::step_odometer(void)
 	}
 
 	return did_step;
-}
-
-/// False means halt, no more solutions possible along this path.
-void Aggregate::check_for_solution(void)
-{
-	logger().fine("--------- Check for solution -------------");
-	logger().fine("Current state: open-points=%lu open-sect=%lu lkg=%lu",
-		_frame._open_points.size(), _frame._open_sections.size(),
-		_frame._linkage.size());
-
-	// If there are no more sections, we are done.
-	if (0 == _frame._open_sections.size())
-	{
-		size_t nsolns = _solutions.size();
-		_solutions.insert(_frame._linkage);
-		size_t news = _solutions.size();
-		logger().fine("====================================");
-		if (nsolns != news)
-		{
-			logger().fine("Obtained new solution %lu of size %lu:",
-			       news, _frame._linkage.size());
-			for (const Handle& lkg : _frame._linkage)
-				print_section(lkg);
-		}
-		else
-		{
-			logger().fine("Rediscovered solution, still have %lu size=%lu",
-			        news, _frame._linkage.size());
-		}
-		logger().fine("====================================");
-	}
 }
 
 #define al _as->add_link

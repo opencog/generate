@@ -94,7 +94,9 @@ public:
 	/// The default below allows infinite recursion.
 	virtual bool step(const Frame&) { return true; }
 
-	virtual bool solution(const Frame&) = 0;
+	/// Called when a solution is found. A solution is a linkage,
+	/// with no open connectors.
+	virtual void solution(const Frame&) = 0;
 };
 
 
