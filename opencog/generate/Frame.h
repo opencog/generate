@@ -30,6 +30,29 @@ namespace opencog
  *  @{
  */
 
+/// Current traversal state
+struct Frame
+{
+	/// Points that are unconnected
+	HandleSet _open_points;
+
+	/// Sections with unconnected connectors.
+	HandleSet _open_sections;
+
+	/// Completed links.
+	HandleSet _linkage;
+
+	/// The depth of the odometer stack, and the odometer wheel
+	/// that this frame is isolating. State earlier than this is
+	/// in earlier frames, and later state is in later frames.
+	size_t _nodo;
+	size_t _wheel;
+
+	void print(void) const;
+
+	static void print_section(const Handle&);
+};
+
 /// Odometer for breadth-wise aggregation
 struct Odometer
 {
@@ -56,29 +79,9 @@ struct Odometer
 
 	/// The correspoding frame-stack depth, when this odo was created.
 	size_t _frame_depth;
-};
 
-/// Current traversal state
-struct Frame
-{
-	/// Points that are unconnected
-	HandleSet _open_points;
-	
-	/// Sections with unconnected connectors.
-	HandleSet _open_sections;
-
-	/// Completed links.
-	HandleSet _linkage;
-
-	/// The depth of the odometer stack, and the odometer wheel
-	/// that this frame is isolating. State earlier than this is
-	/// in earlier frames, and later state is in later frames.
-	size_t _nodo;
-	size_t _wheel;
-
-	void print(void) const;
-
-	static void print_section(const Handle&);
+	void print_odometer(const Frame&) const;
+	void print_wheel(const Frame&, size_t) const;
 };
 
 /** @}*/

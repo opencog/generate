@@ -67,3 +67,50 @@ void Frame::print(void) const
 	for (const Handle& lkg : _linkage)
 		print_section(lkg);
 }
+
+// =================================================================
+
+void Odometer::print_wheel(const Frame& frm, size_t i) const
+{
+	bool sect_open = true;
+	const Handle& fm_sect = _sections[i];
+	if (frm._open_sections.find(fm_sect) == frm._open_sections.end())
+		sect_open = false;
+
+	const Handle& disj = fm_sect->getOutgoingAtom(1);
+	const Handle& fm_con = disj->getOutgoingAtom(_from_index[i]);
+
+	bool conn_open = (fm_con->get_type() == CONNECTOR);
+	if (conn_open)
+		logger().fine("    wheel %lu: %s : %s\t: %s -> %s (sect %s; conn %s)",
+			i,
+			_sections[i]->getOutgoingAtom(0)->get_name().c_str(),
+			fm_con->getOutgoingAtom(0)->get_name().c_str(),
+			fm_con->getOutgoingAtom(1)->get_name().c_str(),
+			_to_connectors[i]->getOutgoingAtom(1)->get_name().c_str(),
+			sect_open ? "open" : "closed",
+			conn_open ? "open" : "closed"
+		);
+	else
+	{
+		const Handle& lnkset = fm_con->getOutgoingAtom(1);
+		logger().fine("    wheel %lu: %s : %s\t: %s -> %s (sect %s; conn %s)",
+			i,
+			_sections[i]->getOutgoingAtom(0)->get_name().c_str(),
+			fm_con->getOutgoingAtom(0)->get_name().c_str(),
+			lnkset->getOutgoingAtom(0)->get_name().c_str(),
+			lnkset->getOutgoingAtom(1)->get_name().c_str(),
+			sect_open ? "open" : "closed",
+			conn_open ? "open" : "closed"
+		);
+	}
+}
+
+void Odometer::print_odometer(const Frame& frm) const
+{
+	logger().fine("Odometer State: length %lu", _size);
+	for (size_t i=0; i<_size; i++)
+		print_wheel(frm, i);
+}
+
+// ========================== END OF FILE ==========================

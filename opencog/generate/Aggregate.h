@@ -60,8 +60,6 @@ private:
 	bool init_odometer(void);
 	bool step_odometer(void);
 	bool do_step(void);
-	void print_wheel(size_t) const;
-	void print_odometer(void) const;
 
 	void recurse(void);
 
