@@ -50,8 +50,6 @@ private:
 	std::stack<HandleSeq> _odo_sections;
 	void push_frame();
 	void pop_frame();
-	void print_section(const Handle&) const;
-	void print_frame(const Frame&) const;
 
 	std::stack<Odometer> _odo_stack;
 	void push_odo();

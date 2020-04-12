@@ -75,6 +75,10 @@ struct Frame
 	/// in earlier frames, and later state is in later frames.
 	size_t _nodo;
 	size_t _wheel;
+
+	void print(void) const;
+
+	static void print_section(const Handle&);
 };
 
 /** @}*/

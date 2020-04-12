@@ -312,8 +312,8 @@ HandlePair Aggregate::connect_section(const Handle& fm_sect,
 	// logger().fine("Connect %s\nto %s",
 	//	fm_sect->to_string().c_str(), to_sect->to_string().c_str());
 	logger().fine("Connect fm-offset=%lu:", offset);
-	print_section(fm_sect);
-	print_section(to_sect);
+	Frame::print_section(fm_sect);
+	Frame::print_section(to_sect);
 
 	const Handle& fm_point = fm_sect->getOutgoingAtom(0);
 	const Handle& to_point = to_sect->getOutgoingAtom(0);
@@ -417,7 +417,7 @@ void Aggregate::pop_frame(void)
 	logger().fine("---- Pop: Frame stack depth now %lu npts=%lu open=%lu lkg=%lu",
 	     _frame_stack.size(), _frame._open_points.size(),
 	     _frame._open_sections.size(), _frame._linkage.size());
-	print_frame(_frame);
+	_frame.print();
 }
 
 /// Push the odometer state.
@@ -446,44 +446,6 @@ void Aggregate::pop_odo(void)
 
 // =================================================================
 // Debug printing utilities.
-// Current printing format makes assumptions about connectors
-// which will be invalid, in general. XXX FIMXE, someday.
-
-void Aggregate::print_section(const Handle& section) const
-{
-	logger().fine("    %s:",
-		section->getOutgoingAtom(0)->get_name().c_str());
-	const HandleSeq& conseq = section->getOutgoingAtom(1)->getOutgoingSet();
-	for (const Handle& con : conseq)
-	{
-		if (CONNECTOR == con->get_type())
-			logger().fine("      %s%s",
-				con->getOutgoingAtom(0)->get_name().c_str(),
-				con->getOutgoingAtom(1)->get_name().c_str());
-		else
-			logger().fine("      %s - %s - %s",
-				con->getOutgoingAtom(1)->getOutgoingAtom(0)->get_name().c_str(),
-				con->getOutgoingAtom(0)->get_name().c_str(),
-				con->getOutgoingAtom(1)->getOutgoingAtom(1)->get_name().c_str());
-	}
-}
-
-void Aggregate::print_frame(const Frame& frm) const
-{
-	logger().fine("Frame:");
-	std::string pts;
-	for (const Handle& pt : frm._open_points)
-		pts += pt->get_name() + ", ";
-	logger().fine("    pts: %s", pts.c_str());
-
-	logger().fine("  Open:");
-	for (const Handle& open : frm._open_sections)
-		print_section(open);
-
-	logger().fine("  Closed:");
-	for (const Handle& lkg : frm._linkage)
-		print_section(lkg);
-}
 
 void Aggregate::print_wheel(size_t i) const
 {

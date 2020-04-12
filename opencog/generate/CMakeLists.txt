@@ -4,6 +4,7 @@ ADD_LIBRARY(generate SHARED
 	Aggregate
 	BasicParameters
 	Dictionary
+	Frame
 	RandomCallback
 	SimpleCallback
 	SolutionCallback

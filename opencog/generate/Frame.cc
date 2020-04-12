@@ -27,11 +27,43 @@
 
 using namespace opencog;
 
-Frame::Frame(AtomSpace* as)
-	: _as(as)
+// =================================================================
+// Debug printing utilities.
+// Current printing format makes assumptions about connectors
+// which will be invalid, in general. XXX FIMXE, someday.
+
+void Frame::print_section(const Handle& section)
 {
+	logger().fine("    %s:",
+		section->getOutgoingAtom(0)->get_name().c_str());
+	const HandleSeq& conseq = section->getOutgoingAtom(1)->getOutgoingSet();
+	for (const Handle& con : conseq)
+	{
+		if (CONNECTOR == con->get_type())
+			logger().fine("      %s%s",
+				con->getOutgoingAtom(0)->get_name().c_str(),
+				con->getOutgoingAtom(1)->get_name().c_str());
+		else
+			logger().fine("      %s - %s - %s",
+				con->getOutgoingAtom(1)->getOutgoingAtom(0)->get_name().c_str(),
+				con->getOutgoingAtom(0)->get_name().c_str(),
+				con->getOutgoingAtom(1)->getOutgoingAtom(1)->get_name().c_str());
+	}
 }
 
-Frame::~Frame()
+void Frame::print(void) const
 {
+	logger().fine("Frame:");
+	std::string pts;
+	for (const Handle& pt : _open_points)
+		pts += pt->get_name() + ", ";
+	logger().fine("    pts: %s", pts.c_str());
+
+	logger().fine("  Open:");
+	for (const Handle& open : _open_sections)
+		print_section(open);
+
+	logger().fine("  Closed:");
+	for (const Handle& lkg : _linkage)
+		print_section(lkg);
 }
