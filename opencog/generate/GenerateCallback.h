@@ -88,11 +88,13 @@ public:
 
 	/// Called after each successful step of the odometer.
 	/// Return `true` to continue stepping, else false.
-	/// Returning false will abort the odometer at it's
-	/// current level, and pop it to an earlier level.
+	/// Returning false will abort the current odometer.
+	/// Traversal will resume at an earlier level.
 	///
 	/// The default below allows infinite recursion.
 	virtual bool step(const Frame&) { return true; }
+
+	virtual bool solution(const Frame&) = 0;
 };
 
 

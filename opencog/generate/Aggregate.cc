@@ -308,7 +308,7 @@ bool Aggregate::step_odometer(void)
 }
 
 /// False means halt, no more solutions possible along this path.
-bool Aggregate::check_for_solution(void)
+void Aggregate::check_for_solution(void)
 {
 	logger().fine("--------- Check for solution -------------");
 	logger().fine("Current state: open-points=%lu open-sect=%lu lkg=%lu",
@@ -335,9 +335,7 @@ bool Aggregate::check_for_solution(void)
 			        news, _frame._linkage.size());
 		}
 		logger().fine("====================================");
-		return false;
 	}
-	return true;
 }
 
 #define al _as->add_link

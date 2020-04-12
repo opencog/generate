@@ -68,7 +68,7 @@ private:
 	void print_wheel(size_t) const;
 	void print_odometer(void) const;
 
-	bool check_for_solution(void);
+	void check_for_solution(void);
 
 	void recurse(void);
 

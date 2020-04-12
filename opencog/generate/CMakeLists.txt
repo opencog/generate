@@ -6,6 +6,7 @@ ADD_LIBRARY(generate SHARED
 	Dictionary
 	RandomCallback
 	SimpleCallback
+	SolutionCallback
 )
 
 TARGET_LINK_LIBRARIES(generate
@@ -25,5 +26,6 @@ INSTALL(FILES
 	RandomCallback.h
 	RandomParameters.h
 	SimpleCallback.h
+	SolutionCallback.h
 	DESTINATION "include/opencog/generate"
 )

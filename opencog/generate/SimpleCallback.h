@@ -23,7 +23,7 @@
 #define _OPENCOG_SIMPLE_CALLBACK_H
 
 #include <opencog/generate/Dictionary.h>
-#include <opencog/generate/GenerateCallback.h>
+#include <opencog/generate/SolutionCallback.h>
 
 namespace opencog
 {
@@ -43,11 +43,8 @@ namespace opencog
 /// the lexis has been designed to have only a finite number of possible
 /// solutions.
 
-class SimpleCallback : public GenerateCallback
+class SimpleCallback : public SolutionCallback
 {
-protected:
-	AtomSpace* _as;
-
 private:
 	Dictionary _dict;
 

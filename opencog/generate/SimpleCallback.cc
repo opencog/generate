@@ -19,8 +19,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <random>
-
 #include <opencog/atoms/base/Link.h>
 
 #include "SimpleCallback.h"
@@ -28,7 +26,7 @@
 using namespace opencog;
 
 SimpleCallback::SimpleCallback(AtomSpace* as, const Dictionary& dict)
-	: GenerateCallback(as), _as(as), _dict(dict)
+	: SolutionCallback(as), _dict(dict)
 {
 }
 
