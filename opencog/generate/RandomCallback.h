@@ -92,7 +92,7 @@ public:
 	virtual void push_frame(const Frame&);
 	virtual void pop_frame(const Frame&);
 
-	virtual bool recurse(const Frame&);
+	virtual bool step(const Frame&);
 };
 
 

@@ -202,7 +202,7 @@ void RandomCallback::pop_frame(const Frame& frm)
 	_opensel = _opensel_stack.top(); _opensel_stack.pop();
 }
 
-bool RandomCallback::recurse(const Frame& frm)
+bool RandomCallback::step(const Frame& frm)
 {
 	return true;
 }
