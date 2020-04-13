@@ -114,6 +114,10 @@ void Dictionary::add_to_lexis(const Handle& sect)
 /// of sections holding that connector. This will sort that list, from
 /// greatest to least, based on the FloatValue located at `predicate`
 /// on the section.
+///
+/// XXX FIXME ... this method is not needed, not in this form, and
+/// should probably be deleted.
+///
 void Dictionary::sort_lexis(const Handle& predicate)
 {
 	struct {

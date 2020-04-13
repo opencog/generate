@@ -56,6 +56,9 @@ Handle GenerateSCM::do_aggregate(AtomSpace* as, Handle root)
 	Handle any = an(CONNECTOR_DIR_NODE, "*");
 	dict.add_pole_pair(any, any);
 
+	// OK, a problem here is that junk sections get added.
+	// e.g. sections that have partly-connected stuff,
+	// left over from whatever the hack.
 	HandleSet lex;
 	as->get_handleset_by_type(lex, SECTION);
 	dict.add_to_lexis(lex);
