@@ -22,6 +22,11 @@
 #include <opencog/guile/SchemeModule.h>
 #include <opencog/guile/SchemePrimitive.h>
 
+#include <opencog/generate/Aggregate.h>
+#include <opencog/generate/Dictionary.h>
+#include <opencog/generate/BasicParameters.h>
+#include <opencog/generate/RandomCallback.h>
+
 using namespace opencog;
 namespace opencog {
 
@@ -35,16 +40,35 @@ class GenerateSCM : public ModuleWrap
 protected:
 	virtual void init();
 
-	Handle do_aggregate(Handle);
+	Handle do_aggregate(AtomSpace* as, Handle);
 
 public:
 	GenerateSCM();
 };
 
+#define al as->add_link
+#define an as->add_node
 
-Handle GenerateSCM::do_aggregate(Handle root)
+Handle GenerateSCM::do_aggregate(AtomSpace* as, Handle root)
 {
-	return root;
+	// Everything below here is WRONG!!!
+	Dictionary dict(as);
+	Handle any = an(CONNECTOR_DIR_NODE, "*");
+	dict.add_pole_pair(any, any);
+
+	HandleSet lex;
+	as->get_handleset_by_type(lex, SECTION);
+	dict.add_to_lexis(lex);
+
+	Handle weights = an(PREDICATE_NODE, "weights");
+	BasicParameters basic;
+	RandomCallback cb(as, dict, basic);
+	cb.set_weight_key(weights);
+	Aggregate ag(as);
+	ag.aggregate({root}, cb);
+
+	Handle result = cb.get_solutions();
+	return result;
 }
 
 } /*end of namespace opencog*/
@@ -65,6 +89,6 @@ void opencog_generate_init(void);
 
 void opencog_generate_init(void)
 {
-    static GenerateSCM generate_scm;
-    generate_scm.module_init();
+	 static GenerateSCM generate_scm;
+	 generate_scm.module_init();
 }
