@@ -116,7 +116,10 @@ void BasicNetworkUTest::test_network()
 
 	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
 
-	printf("result is  %s\n", result->to_string().c_str());
+	// printf("result is %s\n", result->to_string().c_str());
+	printf("have %lu results\n", result->get_arity());
+
+	TSM_ASSERT("Expected more results!", 10 < result->get_arity());
 
 	logger().debug("END TEST: %s", __FUNCTION__);
 }
