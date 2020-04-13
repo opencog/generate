@@ -60,6 +60,12 @@ Handle GenerateSCM::do_aggregate(AtomSpace* as, Handle root)
 	as->get_handleset_by_type(lex, SECTION);
 	dict.add_to_lexis(lex);
 
+#if 0
+logger().set_print_to_stdout_flag(true);
+logger().set_timestamp_flag(false);
+logger().set_level(Logger::FINE);
+#endif
+
 	Handle weights = an(PREDICATE_NODE, "weights");
 	BasicParameters basic;
 	RandomCallback cb(as, dict, basic);
@@ -68,6 +74,7 @@ Handle GenerateSCM::do_aggregate(AtomSpace* as, Handle root)
 	ag.aggregate({root}, cb);
 
 	Handle result = cb.get_solutions();
+	result = as->add_atom(result);
 	return result;
 }
 
