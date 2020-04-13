@@ -48,9 +48,9 @@ public:
 	/// will always increase the size of the network.
 	virtual bool connect_existing(const Frame&) = 0;
 
-	/// Return true to continue stepping the odometer. Called after each
-	/// successful odomter step.  Returning false will abort the current
-	/// odometer.
+	/// Return true to continue stepping the odometer. Called before
+	/// taking an odometer step.  Returning false will abort the
+	/// current odometer.
 	virtual bool step(const Frame&) = 0;
 
 	/// Maximum number of solutions to accept. Search is halted after

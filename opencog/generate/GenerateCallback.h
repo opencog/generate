@@ -86,8 +86,8 @@ public:
 	virtual void push_odometer(const Odometer&) {}
 	virtual void pop_odometer(const Odometer&) {}
 
-	/// Called after each successful step of the odometer.
-	/// Return `true` to continue stepping, else false.
+	/// Called before taking a step of the odometer.
+	/// Return `true` to take the step, else false.
 	/// Returning false will abort the current odometer.
 	/// Traversal will resume at an earlier level.
 	///

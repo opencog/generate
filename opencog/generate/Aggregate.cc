@@ -87,6 +87,14 @@ void Aggregate::recurse(void)
 	// Nothing to do.
 	if (0 == _frame._open_sections.size()) return;
 
+	// Halt recursion, if need be.
+	if (not _cb->step(_frame))
+	{
+		logger().fine("Recursion halted at frame depth=%lu odo level=%lu",
+			_frame_stack.size(), _odo_stack.size());
+		return;
+	}
+
 	logger().fine("Enter recurse");
 
 	// Initialize a brand-new odometer at the next recursion level.
@@ -263,18 +271,18 @@ bool Aggregate::do_step(void)
 	if (0 == _frame._open_sections.size())
 		_cb->solution(_frame);
 
-	if (not _cb->step(_frame))
-	{
-		logger().fine("Odometer stepping halted at depth %lu",
-			_frame_stack.size());
-		return false;
-	}
-
 	return true;
 }
 
 bool Aggregate::step_odometer(void)
 {
+	if (not _cb->step(_frame))
+	{
+		logger().fine("Odometer halted at frame depth=%lu odo stack=%lu",
+			_frame_stack.size(), _odo_stack.size());
+		return false;
+	}
+
 	// Total rollover
 	if (_odo._size < _odo._step) return false;
 
