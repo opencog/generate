@@ -333,3 +333,5 @@ these requires at least some basic familiarity with the AtomSpace
 [Link Grammar](https://www.abisource.com/projects/link-grammar/)
 is also useful, as all initial examples emulate Link-Grammar type
 natural-language parse graphs.
+
+There are more examples in the [examples](examples) directory.

@@ -1,5 +1,7 @@
 Version 0.0.6 (12 April 2020)
  * Beginnings of the random network explorer.
+ * Scaffolding for guile scheme bindings
+ * Export to GML (Graph Modelling Language)
 
 Version 0.0.5 (1 April 2020)
  * More unit tests and fixes
