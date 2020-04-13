@@ -68,3 +68,5 @@
 (cog-set-value! v4 weights (FloatValue (/ 1.0 4)))
 (cog-set-value! v5 weights (FloatValue (/ 1.0 5)))
 (cog-set-value! v6 weights (FloatValue (/ 1.0 6)))
+
+*unspecified*
