@@ -33,6 +33,9 @@ BasicParameters::BasicParameters()
 
 	// Max diameter of 10
 	max_depth = 10;
+
+	// Maximm number of solutions
+	max_solutions = 100;
 }
 
 BasicParameters::~BasicParameters()

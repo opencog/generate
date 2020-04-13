@@ -52,6 +52,10 @@ public:
 	/// successful odomter step.  Returning false will abort the current
 	/// odometer.
 	virtual bool step(const Frame&) = 0;
+
+	/// Maximum number of solutions to accept. Search is halted after
+	/// this number is reached.
+	size_t max_solutions = -1;
 };
 
 

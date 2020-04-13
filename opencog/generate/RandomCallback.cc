@@ -31,6 +31,7 @@ RandomCallback::RandomCallback(AtomSpace* as, const Dictionary& dict,
                                RandomParameters& parms)
 	: GenerateCallback(as), _as(as), _dict(dict), _parms(&parms)
 {
+	_num_solutions_found = 0;
 }
 
 RandomCallback::~RandomCallback() {}
@@ -200,10 +201,12 @@ void RandomCallback::pop_frame(const Frame& frm)
 
 bool RandomCallback::step(const Frame& frm)
 {
+	if (_parms->max_solutions < _num_solutions_found) return false;
 	return _parms->step(frm);
 }
 
 void RandomCallback::solution(const Frame& frm)
 {
+	_num_solutions_found++;
 	record_solution(frm);
 }
