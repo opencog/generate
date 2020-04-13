@@ -5,6 +5,7 @@
 ; See https://en.wikipedia.org/wiki/Graph_Modelling_Language
 ;
 
+(use-modules (srfi srfi-1))
 (use-modules (opencog) (opencog uuid))
 
 (define (graph-to-nodes GRAPH)

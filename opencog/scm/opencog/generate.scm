@@ -10,6 +10,11 @@
 	(string-append opencog-ext-path-generate "libguile-generate")
 	"opencog_generate_init")
 
+(export
+	cog-aggregate
+)
+
+(include-from-path "opencog/generate/gml-export.scm")
 
 ; Documentation for the functions implemented as C++ code
 (set-procedure-property! cog-aggregate 'documentation
