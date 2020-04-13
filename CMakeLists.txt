@@ -1,9 +1,9 @@
 #
 # Master Opencog CMake file.
 #
-# Need to have cmake-2.8.8 in order to be able to check the compiler
-# version.
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.8)
+# We need at least version 3.13 to get TARGET_LINK_DIRECTORIES
+MESSAGE("Found CMake version ${CMAKE_VERSION}")
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
 
 PROJECT(generate)
 
@@ -80,6 +80,8 @@ ENDIF (GUILE_FOUND AND GMP_LIBRARY AND GMP_INCLUDE_DIR)
 
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR} ${CMAKE_BINARY_DIR}
 	${COGUTIL_INCLUDE_DIR})
+
+INCLUDE("${ATOMSPACE_DATA_DIR}/cmake/OpenCogGuile.cmake")
 
 # -------------------------------------------------
 # Install configuration

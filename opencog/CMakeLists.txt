@@ -1,2 +1,3 @@
 
 ADD_SUBDIRECTORY (generate)
+ADD_SUBDIRECTORY (guile)
