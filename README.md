@@ -296,23 +296,24 @@ design choices:
   I have no desire to reinvent any wheels, here.
 
 
-# Version 0.0.5
+# Version 0.0.6
 The current code implements a breadth-first aggregation algorithm.
-It passes all unit tests for unambiguous graphs compsed of trees
-and cycles. See [opencog/generate/README](opencog/generate/)
-for algo details.
+It provides two search modes: a deterministic explorer that will
+exhaustively generate all finite "unambiguous" graphs, and an
+early prototype of random network, useful for controlling infinite
+recursion.  It passes all unit tests. See
+[opencog/generate/README](opencog/generate/) for algo details.
 
-"Unambiguous graphs" are those graphs where each link type occurs
-at most once in each graph. If the same link type can make multiple
-connections, then each of these connections are explorable, leading
-to a potential combinatoric explosion.
+The deterministic explorer is works well, and is effectively complete,
+as long as the grammar is finite: i.e. will not generate an infinite
+nuymber of graphs. The random explorer is an early prototype.
 
-It's missing various key features; these come next in the design.
-This includes work on weighted/ranked selection, random selection,
-and some efforts to mitigate combinatoric explosion.  More
-sophisticated algos are possible, but these remain uncontemplated.
+Various key features are missing; these come next in the design.
+This includes controlling infinite recurion in the deterministic
+explorer, and providing closer control and more tunable parameters in
+the random explorer.
 
-Other missing features are listed in the github issues list.
+Some missing features are listed in the github issues list.
 
 ## Building & testing
 The code here presumes the [AtomSpace](https://github.com/opencog/atomspace)
