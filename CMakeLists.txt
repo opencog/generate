@@ -84,6 +84,21 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR} ${CMAKE_BINARY_DIR}
 INCLUDE("${ATOMSPACE_DATA_DIR}/cmake/OpenCogGuile.cmake")
 
 # -------------------------------------------------
+# Library configuration
+
+# RPATH handling (see https://cmake.org/Wiki/CMake_RPATH_handling)
+# Note: RPATH only supported under Linux!
+# The idea here is that during unit tests, we use the libraries in
+# the build directories, and NOT the system directories. But that
+# means that, during install, the paths have to be tweaked.
+SET(CMAKE_SKIP_BUILD_RPATH FALSE)
+SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+SET(CMAKE_INSTALL_RPATH
+   "${CMAKE_INSTALL_PREFIX}/lib/opencog"
+   "${CMAKE_INSTALL_PREFIX}/lib/opencog/modules")
+SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+# -------------------------------------------------
 # Install configuration
 
 # Only list install files that have actually changed.

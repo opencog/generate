@@ -7,7 +7,7 @@
 (use-modules (opencog))
 (use-modules (opencog generate-config))
 (load-extension
-	(string-append opencog-ext-path-exec "libguile-generate")
+	(string-append opencog-ext-path-generate "libguile-generate")
 	"opencog_generate_init")
 
 
