@@ -77,7 +77,10 @@ Handle RandomCallback::select_from_lexis(const Frame& frame,
 	for (const Handle& sect: to_sects)
 	{
 		FloatValuePtr fvp(FloatValueCast(sect->getValue(_weight_key)));
-		pdf.push_back(fvp->value()[0]);
+		if (fvp)
+			pdf.push_back(fvp->value()[0]);
+		else
+			pdf.push_back(0.0);
 	}
 	std::discrete_distribution<size_t> dist(pdf.begin(), pdf.end());
 	_distmap.emplace(std::make_pair(to_con, dist));
