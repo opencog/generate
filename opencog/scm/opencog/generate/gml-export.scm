@@ -34,9 +34,25 @@
 )
 
 (define (graph-to-edges GRAPH)
-	; A list of just the edges
+
+	; The set of edges we've seen so far...
+	(define is-duplicate? (make-atom-set))
+
+	; Filter - remove edges we've seen already, but keep the duplictes.
+	(define (filter-dupe elist)
+		(filter-map (lambda (edge)
+				(not (is-duplicate? edge)))
+			elist))
+
+	; A list of just the edges. The `(gdr sect)` is the disjunct.
+	; We do two fancy things here: we de-duplicate edges reported
+	; in other sections; however, if a given section has the same
+	; edge several times, we allow that.
 	(define edge-list
-		(append-map (lambda (sect) (cog-outgoing-set (gdr sect)))
+		(append-map
+			(lambda (sect)
+				; Remove unwanted edges from the list.
+				(filter-dupe (cog-outgoing-set (gdr sect))))
 			(cog-outgoing-set GRAPH)))
 
 	(fold
@@ -53,9 +69,8 @@
 				str
 			)))
 		""
-		; A list of the unique points in the set.
-		; This deletes half, since undirected edges show up twice...
-		(delete-dup-atoms edge-list)
+		; A list of the edges in the set.
+		edge-list
 	)
 )
 
