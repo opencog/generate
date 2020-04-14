@@ -48,10 +48,14 @@
 		(define duper?
 			(if (null? duper-list) (make-atom-set) (car duper-list)))
 
+		; The rest of the de-duplicator list
+		(define duper-rest
+			(if (null? duper-list) '() (cdr duper-list)))
+
 		; Oh dear, if there wasn't one, then save it.
 		; Append, so that its in the n'th place.
 		(if (null? duper-list)
-			(set! dupe-sets (append dupe-sets duper?)))
+			(set! dupe-sets (append dupe-sets (list duper?))))
 
 		(if (null? elist)
 			result
@@ -60,9 +64,9 @@
 				(append
 					(filter-map
 						(lambda (edge) (not (duper? edge)))
-						elist
-						(cdr duper-list))
-					result))))
+						elist)
+					result)
+				duper-rest)))
 
 	; A list of just the edges. The `(gdr sect)` is the disjunct.
 	; We do two fancy things here: we de-duplicate edges reported
