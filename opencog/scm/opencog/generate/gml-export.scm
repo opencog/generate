@@ -18,7 +18,7 @@
 		(lambda (point str)
 			(string-concatenate (list
 				"\tnode [\n"
-				"\t\t\tid "
+				"\t\tid "
 				(format #f "~D" (cog-assign-uuid point))
 				"\n"
 				"\t\tlabel \""
@@ -67,11 +67,16 @@
 	to a UTF-8 encoded text string in GML - Graph Modeling Language
    format.
 "
+	(define graph-id 0)
 	(fold
 		(lambda (grph str)
+			(set! graph-id (+ 1 graph-id))
 			(string-concatenate (list
 				"graph [\n"
-				"\tlabel \"placeholder label\"\n"
+				"\tcomment \"Created by opencog generate\"\n"
+				"\tdirected 1\n"
+				(format #f "\tlabel \"placeholder ~D\"\n" graph-id)
+				(format #f "\tid ~D\n" graph-id)
 				(graph-to-nodes grph)
 				(graph-to-edges grph)
 				"]\n"
