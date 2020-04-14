@@ -35,19 +35,33 @@
 
 (define (graph-to-edges GRAPH)
 
-	; The set of edges we've seen so far...
+	; The list of de-duplication sets.
+	(define dupe-sets '())
 	(define is-duplicate? (make-atom-set))
 
-	; Filter - remove edges we've seen already, but keep the duplicates.
-	(define (filter-dupe elist result)
-		(if (eq? elist '())
+	; Filter - remove edges we've seen already,
+	; but keep the duplicates. This is done recursively
+	(define (filter-dupe elist result duper-list)
+
+		; Find the de-duplicator for n edges. It will be
+		; the first one in the passed list, if any.
+		(define duper?
+			(if (null? duper-list) (make-atom-set) (car duper-list)))
+
+		; Oh dear, if there wasn't one, then save it.
+		; Append, so that its in the n'th place.
+		(if (null? duper-list)
+			(set! dupe-sets (append dupe-sets duper?)))
+
+		(if (null? elist)
 			result
 			(filter-dupe
 				(keep-duplicate-atoms elist)
 				(append
 					(filter-map
-						(lambda (edge) (not (is-duplicate? edge)))
-						elist)
+						(lambda (edge) (not (duper? edge)))
+						elist
+						(cdr duper-list))
 					result))))
 
 	; A list of just the edges. The `(gdr sect)` is the disjunct.
@@ -58,7 +72,10 @@
 		(append-map
 			(lambda (sect)
 				; Remove unwanted edges from the list.
-				(filter-dupe (cog-outgoing-set (gdr sect))))
+				(filter-dupe
+					(cog-outgoing-set (gdr sect))
+					'()
+					dupe-sets))
 			(cog-outgoing-set GRAPH)))
 
 	(fold
@@ -75,7 +92,7 @@
 				str
 			)))
 		""
-		; A list of the edges in the set.
+		; A list of the edges we want to draw.
 		edge-list
 	)
 )
