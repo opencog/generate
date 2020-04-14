@@ -39,14 +39,10 @@ RandomCallback::~RandomCallback() {}
 static std::random_device seed;
 static std::mt19937 rangen(seed());
 
-// Pick one out of the sequence.
-static inline Handle uniform_choice(const HandleSeq& lst)
+Handle RandomCallback::make_unique_section(const Handle& sect)
 {
-	std::uniform_int_distribution<> dist(0, lst.size()-1);
-	int sno = dist(rangen);
-	return lst[sno];
+	return sect;
 }
-
 
 /// Return a section containing `to_con`.
 /// Pick a new section from the lexis.
@@ -65,7 +61,7 @@ Handle RandomCallback::select_from_lexis(const Frame& frame,
 	if (_distmap.end() != curit)
 	{
 		auto dist = curit->second;
-		return to_sects[dist(rangen)];
+		return make_unique_section(to_sects[dist(rangen)]);
 	}
 
 	// Create a discrete distribution. This will randomly pick an
@@ -85,7 +81,7 @@ Handle RandomCallback::select_from_lexis(const Frame& frame,
 	std::discrete_distribution<size_t> dist(pdf.begin(), pdf.end());
 	_distmap.emplace(std::make_pair(to_con, dist));
 
-	return to_sects[dist(rangen)];
+	return make_unique_section(to_sects[dist(rangen)]);
 }
 
 /// Return a section containing `to_con`.

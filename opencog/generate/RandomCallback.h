@@ -49,9 +49,10 @@ private:
 
 	// -------------------------------------------
 	// Lexical selection
-	virtual Handle select_from_lexis(const Frame&,
-	                                 const Handle&, size_t,
-	                                 const Handle&);
+	Handle select_from_lexis(const Frame&,
+	                         const Handle&, size_t,
+	                         const Handle&);
+	Handle make_unique_section(const Handle&);
 
 	// Cached normalized weighted chooser. Map of all
 	// sections in the dictionary that contain this to-connector.
@@ -59,9 +60,9 @@ private:
 	std::map<Handle, std::discrete_distribution<size_t>> _distmap;
 
 	// -------------------------------------------
-	virtual Handle select_from_open(const Frame&,
-	                                const Handle&, size_t,
-	                                const Handle&);
+	Handle select_from_open(const Frame&,
+	                        const Handle&, size_t,
+	                        const Handle&);
 	struct OpenSelections
 	{
 		HandleSeqMap _opensect;
