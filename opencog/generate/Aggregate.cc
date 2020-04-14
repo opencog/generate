@@ -27,6 +27,7 @@
 
 #include "Aggregate.h"
 #include "GenerateCallback.h"
+#include "LinkStyle.h"
 
 using namespace opencog;
 
@@ -71,10 +72,14 @@ void Aggregate::aggregate(const HandleSet& nuclei,
 
 	HandleSeq sections = nucleus->getIncomingSetByType(SECTION);
 
+	// Link style should be configurable, part of the callback.
+	// so thi is a hack for now, XXX FIXME.
+	LinkStyle lsu(_as);
 	for (const Handle& sect : sections)
 	{
+		Handle usect(lsu.create_unique_section(sect));
 		push_frame();
-		_frame._open_sections.insert(sect);
+		_frame._open_sections.insert(usect);
 		recurse();
 		pop_frame();
 	}
