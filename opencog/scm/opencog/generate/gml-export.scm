@@ -33,14 +33,28 @@
 	)
 )
 
+; Export the edge list in the graph.
+; This is trickier than it seems, for several reasons. First, every
+; edge occurs twice: once in the from-section, and once in the
+; to-section. Thus we have to de-duplicate these, as we don't want to
+; draw two edges when there is actually only one.  Second, it can
+; happen that there are two (or more) parallel edges between two
+; vertexes. Thus, we want to deduplicate those also, while correctly
+; exposing the parallelism. Thus, we have to maintain a list of
+; de-duplicators: one that knows how to de-dupe single edges, and
+; a second one that knows how to de-dupe double-edges, a third that
+; will dedupe triple-edges, and so on. The code below works, but
+; might be hard to understand because of this.
 (define (graph-to-edges GRAPH)
 
 	; The list of de-duplication sets.
+	; The n'th item in this list is a function that knows how to
+	; deduplicate n parallel edges.
 	(define dupe-sets '())
 	(define is-duplicate? (make-atom-set))
 
 	; Filter - remove edges we've seen already,
-	; but keep the duplicates. This is done recursively
+	; but keep the duplicates. This is tail-recursive.
 	(define (filter-dupe elist result duper-list)
 
 		; Find the de-duplicator for n edges. It will be
@@ -48,7 +62,7 @@
 		(define duper?
 			(if (null? duper-list) (make-atom-set) (car duper-list)))
 
-		; The rest of the de-duplicator list
+		; The rest of the de-duplicator list.
 		(define duper-rest
 			(if (null? duper-list) '() (cdr duper-list)))
 
@@ -57,6 +71,7 @@
 		(if (null? duper-list)
 			(set! dupe-sets (append dupe-sets (list duper?))))
 
+		; At last -- the tail recursion.
 		(if (null? elist)
 			result
 			(filter-dupe
