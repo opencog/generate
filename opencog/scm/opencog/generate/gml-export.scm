@@ -38,11 +38,17 @@
 	; The set of edges we've seen so far...
 	(define is-duplicate? (make-atom-set))
 
-	; Filter - remove edges we've seen already, but keep the duplictes.
-	(define (filter-dupe elist)
-		(filter-map (lambda (edge)
-				(not (is-duplicate? edge)))
-			elist))
+	; Filter - remove edges we've seen already, but keep the duplicates.
+	(define (filter-dupe elist result)
+		(if (eq? elist '())
+			result
+			(filter-dupe
+				(keep-duplicate-atoms elist)
+				(append
+					(filter-map
+						(lambda (edge) (not (is-duplicate? edge)))
+						elist)
+					result))))
 
 	; A list of just the edges. The `(gdr sect)` is the disjunct.
 	; We do two fancy things here: we de-duplicate edges reported
