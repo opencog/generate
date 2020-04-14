@@ -3,7 +3,7 @@
 ADD_LIBRARY(generate SHARED
 	Aggregate
 	BasicParameters
-	CollectSolutions
+	CollectStyle
 	Dictionary
 	Frame
 	LinkStyle
@@ -23,7 +23,7 @@ INSTALL(TARGETS generate
 INSTALL(FILES
 	Aggregate.h
 	BasicParameters.h
-	CollectSolutions.h
+	CollectStyle.h
 	Dictionary.h
 	Frame.h
 	GenerateCallback.h

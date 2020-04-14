@@ -22,7 +22,7 @@
 #ifndef _OPENCOG_RANDOM_CALLBACK_H
 #define _OPENCOG_RANDOM_CALLBACK_H
 
-#include <opencog/generate/CollectSolutions.h>
+#include <opencog/generate/CollectStyle.h>
 #include <opencog/generate/Dictionary.h>
 #include <opencog/generate/GenerateCallback.h>
 #include <opencog/generate/LinkStyle.h>
@@ -42,7 +42,7 @@ namespace opencog
 class RandomCallback :
 	public GenerateCallback,
 	public LinkStyle,
-	public CollectSolutions
+	public CollectStyle
 {
 private:
 	Dictionary _dict;

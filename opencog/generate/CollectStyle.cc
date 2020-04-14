@@ -1,5 +1,5 @@
 /*
- * opencog/generate/CollectSolutions.cc
+ * opencog/generate/CollectStyle.cc
  *
  * Copyright (C) 2020 Linas Vepstas <linasvepstas@gmail.com>
  *
@@ -21,17 +21,20 @@
 
 #include <opencog/atoms/base/Link.h>
 
-#include "CollectSolutions.h"
+#include "CollectStyle.h"
 
 using namespace opencog;
 
-CollectSolutions::CollectSolutions(void)
+CollectStyle::CollectStyle(void)
 {
 }
 
-CollectSolutions::~CollectSolutions() {}
+CollectStyle::~CollectStyle() {}
 
-void CollectSolutions::record_solution(const Frame& frm)
+/// In this "style" of recording a result, we just tack it onto
+/// a C++ container holding the solutions. Other "styles" are
+/// possible; we could report them elsewehre, too...
+void CollectStyle::record_solution(const Frame& frm)
 {
 	size_t nsolns = _solutions.size();
 	_solutions.insert(frm._linkage);
@@ -54,7 +57,9 @@ void CollectSolutions::record_solution(const Frame& frm)
 
 /// XXX FIXME ... maybe should attach to a MemberLink or something?
 /// This obviously fails to scale if the section is large.
-Handle CollectSolutions::get_solutions(void)
+/// That would be considered to be a different "style" and would
+/// almost surely be better than using SetLinks...
+Handle CollectStyle::get_solutions(void)
 {
 	HandleSeq solns;
 	for (const auto& sol : _solutions)

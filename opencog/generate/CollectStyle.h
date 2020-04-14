@@ -1,5 +1,5 @@
 /*
- * opencog/generate/CollectSolutions.h
+ * opencog/generate/CollectStyle.h
  *
  * Copyright (C) 2020 Linas Vepstas <linasvepstas@gmail.com>
  *
@@ -19,8 +19,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _OPENCOG_COLLECT_SOLUTIONS_H
-#define _OPENCOG_COLLECT_SOLUTIONS_H
+#ifndef _OPENCOG_COLLECT_STYLE_H
+#define _OPENCOG_COLLECT_STYLE_H
 
 #include <opencog/generate/Frame.h>
 
@@ -30,17 +30,18 @@ namespace opencog
  *  @{
  */
 
-/// Record completed networks.
+/// Record completed networks. This is one possible "style" of
+/// recording results; other styles are possible.
 
-class CollectSolutions
+class CollectStyle
 {
 protected:
 	/// Accumulated set of fully-grounded solutions.
 	std::set<HandleSet> _solutions;
 
 public:
-	CollectSolutions(void);
-	~CollectSolutions();
+	CollectStyle(void);
+	~CollectStyle();
 
 	void record_solution(const Frame&);
 
@@ -52,4 +53,4 @@ public:
 /** @}*/
 }  // namespace opencog
 
-#endif // _OPENCOG_COLLECT_SOLUTIONS_H
+#endif // _OPENCOG_COLLECT_STYLE_H

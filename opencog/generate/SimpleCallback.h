@@ -22,7 +22,7 @@
 #ifndef _OPENCOG_SIMPLE_CALLBACK_H
 #define _OPENCOG_SIMPLE_CALLBACK_H
 
-#include <opencog/generate/CollectSolutions.h>
+#include <opencog/generate/CollectStyle.h>
 #include <opencog/generate/Dictionary.h>
 #include <opencog/generate/GenerateCallback.h>
 #include <opencog/generate/LinkStyle.h>
@@ -48,7 +48,7 @@ namespace opencog
 class SimpleCallback :
 	public GenerateCallback,
 	public LinkStyle,
-	public CollectSolutions
+	public CollectStyle
 {
 private:
 	Dictionary _dict;
