@@ -20,6 +20,7 @@
  */
 
 #include <random>
+#include <uuid/uuid.h>
 
 #include <opencog/atoms/base/Link.h>
 
@@ -39,9 +40,39 @@ RandomCallback::~RandomCallback() {}
 static std::random_device seed;
 static std::mt19937 rangen(seed());
 
+/// Given a generic section, create a unique instance of it.
+/// As "puzzle pieces" are assembled, each new usage represents a
+/// "different location" in the puzzle, and so we create a unique
+/// instance for each location.
+///
+/// This assumes that the section point is a node, so that we
+/// generate a unique string for that node.
 Handle RandomCallback::make_unique_section(const Handle& sect)
 {
-	return sect;
+	uuid_t uu;
+	uuid_generate(uu);
+	char idstr[37];
+	uuid_unparse(uu, idstr);
+
+	Handle point = sect->getOutgoingAtom(0);
+	Handle disj = sect->getOutgoingAtom(1);
+
+	if (not point->is_node())
+		throw RuntimeException(TRACE_INFO,
+			"Expection a Node for the section point, got %s",
+				point->to_string().c_str());
+
+	// Create a unique instance of the section.
+	Handle usect(
+		_as->add_link(SECTION,
+			_as->add_node(point->get_type(),
+			              point->get_name() + "@" + idstr),
+			disj));
+
+	// Record it's original type.
+	_as->add_link(INHERITANCE_LINK, usect, sect);
+
+	return usect;
 }
 
 /// Return a section containing `to_con`.
