@@ -67,40 +67,47 @@ Handle SimpleCallback::select_from_lexis(const Frame& frame,
 	return create_unique_section(to_sects[curit]);
 }
 
+Handle SimpleCallback::check_self(const HandleSeq& to_sects,
+                                  const Handle& fm_sect,
+                                  const Handle& to_con,
+                                  size_t fit)
+{
+	bool disallow_self = true;
+
+	// We've iterated to the end; we're done.
+	if (to_sects.size() <= fit)
+		return Handle::UNDEFINED;
+
+	// Increment and save.
+	_opensel._openit[to_con] ++;
+
+	// If we allow self-connections, then return whatever.
+	if (not disallow_self) return to_sects[fit];
+
+	// Make sure we are not self-connecting...
+	while (true)
+	{
+		Handle tosect(to_sects[fit]);
+		if (tosect != fm_sect) return tosect;
+		fit ++;
+		_opensel._openit[to_con] = fit;
+		if (to_sects.size() <= fit) return Handle::UNDEFINED;
+	}
+}
+
 /// Return a section containing `to_con`.
 /// Try to attach to an existing open section.
 Handle SimpleCallback::select_from_open(const Frame& frame,
                                const Handle& fm_sect, size_t offset,
                                const Handle& to_con)
 {
-	bool disallow_self = true;
-
 	// Do we have an iterator (a future/promise) for the to-connector
 	// in the current frame? If so, then return that and increment.
 	unsigned fit = _opensel._openit.get(to_con, 0);
 	if (0 < fit)
 	{
 		const HandleSeq& to_sects = _opensel._opensect[to_con];
-
-		// We've iterated to the end; we're done.
-		if (to_sects.size() <= fit)
-			return Handle::UNDEFINED;
-
-		// Increment and save.
-		_opensel._openit[to_con] ++;
-
-		// If we allow self-connections, then return whatever.
-		if (not disallow_self) return to_sects[fit];
-
-		// Make sure we are not self-connecting...
-		while (true)
-		{
-			Handle tosect(to_sects[fit]);
-			if (tosect != fm_sect) return tosect;
-			fit ++;
-			_opensel._openit[to_con] = fit;
-			if (to_sects.size() <= fit) return Handle::UNDEFINED;
-		}
+		return check_self(to_sects, fm_sect, to_con, fit);
 	}
 
 	// Set up an iterator, if possible.
@@ -114,30 +121,12 @@ Handle SimpleCallback::select_from_open(const Frame& frame,
 		}
 	}
 
+	// There aren't any open sections ...
+	if (0 == to_sects.size()) return Handle::UNDEFINED;
+
 	// Start iterating over the sections that contain to_con.
-	if (0 < to_sects.size())
-	{
-		_opensel._openit[to_con] = 1;
-
-		// If we allow self-connections, then return whatever.
-		if (not disallow_self) return to_sects[0];
-
-		// Make sure we are not self-connecting...
-		unsigned fit = 1;
-		while (true)
-		{
-			Handle tosect(to_sects[fit]);
-			if (tosect != fm_sect) return tosect;
-			fit ++;
-			_opensel._openit[to_con] = fit;
-			if (to_sects.size() <= fit) return Handle::UNDEFINED;
-		}
-	}
-
-	// If we are here, there were no existing open sections.
-	// Return and do something else. (Currently, this means
-	// that the lexis will be used).
-	return Handle::UNDEFINED;
+	_opensel._openit[to_con] = 0;
+	return check_self(to_sects, fm_sect, to_con, 0);
 }
 
 /// Return a section containing `to_con`.

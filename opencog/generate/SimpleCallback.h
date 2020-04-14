@@ -55,9 +55,9 @@ private:
 
 	// -------------------------------------------
 	// Lexical selection
-	virtual Handle select_from_lexis(const Frame&,
-	                                 const Handle&, size_t,
-	                                 const Handle&);
+	Handle select_from_lexis(const Frame&,
+	                         const Handle&, size_t,
+	                         const Handle&);
 
 	// Iterator, pointing from a to-connector, to a list of
 	// all sections in the dictionary that contain this to-connector.
@@ -68,9 +68,11 @@ private:
 	std::stack<HandleUCounter> _lexlit_stack;
 
 	// -------------------------------------------
-	virtual Handle select_from_open(const Frame&,
-	                                const Handle&, size_t,
-	                                const Handle&);
+	Handle select_from_open(const Frame&,
+	                        const Handle&, size_t,
+	                        const Handle&);
+	Handle check_self(const HandleSeq&, const Handle&,
+	                  const Handle&, size_t);
 	struct OpenSelections
 	{
 		HandleSeqMap _opensect;
