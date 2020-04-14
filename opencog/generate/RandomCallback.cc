@@ -82,7 +82,13 @@ Handle RandomCallback::select_from_lexis(const Frame& frame,
 }
 
 /// Return a section containing `to_con`.
-/// Try to attach to an existing open section.
+///
+/// Examine the set of currently-unconnected connectors. If any of
+/// them are connectable to `to_con`, then randomly pick one of the
+/// sections, and return that. Otherwise return the undefined handle.
+///
+/// This disallows self-connections (the from and to-sections being the
+/// same) unless the paramters allow it.
 Handle RandomCallback::select_from_open(const Frame& frame,
                                const Handle& fm_sect, size_t offset,
                                const Handle& to_con)
@@ -124,6 +130,28 @@ Handle RandomCallback::select_from_open(const Frame& frame,
 	// Oh no, dead end!
 	if (0 == to_sects.size()) return Handle::UNDEFINED;
 
+	bool disallow_self = true;
+
+	// If only one is possible, then return just that.
+	if (1 == to_sects.size())
+	{
+		if (disallow_self and to_sects[0] != fm_sect)
+			return to_sects[0];
+		return Handle::UNDEFINED;
+	}
+
+	// If all of the choices link back to self, and self-connections
+	// are disallowed, then no connection is possible.
+	if (disallow_self)
+	{
+		bool only_self = true;
+		for (const Handle& sect : to_sects)
+		{
+			if (sect != fm_sect) { only_self = false; break; }
+		}
+		if (only_self) return Handle::UNDEFINED;
+	}
+
 	// Create a discrete distribution.
 	// Argh ... XXX FIXME ... the aggregator does NOT copy
 	// values onto the assembled linkage, and so these will
@@ -145,7 +173,14 @@ Handle RandomCallback::select_from_open(const Frame& frame,
 	std::discrete_distribution<size_t> dist(pdf.begin(), pdf.end());
 	_opensel._opendi.emplace(std::make_pair(to_con, dist));
 
-	return to_sects[dist(rangen)];
+	if (not disallow_self)
+		return to_sects[dist(rangen)];
+
+	while (true)
+	{
+		Handle choice(to_sects[dist(rangen)]);
+		if (choice != fm_sect) return choice;
+	}
 }
 
 /// Return a section containing `to_con`.
