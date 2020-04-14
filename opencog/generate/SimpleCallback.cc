@@ -73,6 +73,8 @@ Handle SimpleCallback::select_from_open(const Frame& frame,
                                const Handle& fm_sect, size_t offset,
                                const Handle& to_con)
 {
+	bool disallow_self = true;
+
 	// Do we have an iterator (a future/promise) for the to-connector
 	// in the current frame? If so, then return that and increment.
 	unsigned fit = _opensel._openit.get(to_con, 0);
@@ -86,7 +88,19 @@ Handle SimpleCallback::select_from_open(const Frame& frame,
 
 		// Increment and save.
 		_opensel._openit[to_con] ++;
-		return to_sects[fit];
+
+		// If we allow self-connections, then return whatever.
+		if (not disallow_self) return to_sects[fit];
+
+		// Make sure we are not self-connecting...
+		while (true)
+		{
+			Handle tosect(to_sects[fit]);
+			if (tosect != fm_sect) return tosect;
+			fit ++;
+			_opensel._openit[to_con] = fit;
+			if (to_sects.size() <= fit) return Handle::UNDEFINED;
+		}
 	}
 
 	// Set up an iterator, if possible.
@@ -104,7 +118,20 @@ Handle SimpleCallback::select_from_open(const Frame& frame,
 	if (0 < to_sects.size())
 	{
 		_opensel._openit[to_con] = 1;
-		return to_sects[0];
+
+		// If we allow self-connections, then return whatever.
+		if (not disallow_self) return to_sects[0];
+
+		// Make sure we are not self-connecting...
+		unsigned fit = 1;
+		while (true)
+		{
+			Handle tosect(to_sects[fit]);
+			if (tosect != fm_sect) return tosect;
+			fit ++;
+			_opensel._openit[to_con] = fit;
+			if (to_sects.size() <= fit) return Handle::UNDEFINED;
+		}
 	}
 
 	// If we are here, there were no existing open sections.
