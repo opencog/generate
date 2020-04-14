@@ -26,7 +26,7 @@
 using namespace opencog;
 
 SimpleCallback::SimpleCallback(AtomSpace* as, const Dictionary& dict)
-	: GenerateCallback(as), _as(as), _dict(dict)
+	: GenerateCallback(as), LinkStyle(as), _dict(dict)
 {
 }
 
@@ -52,7 +52,7 @@ Handle SimpleCallback::select_from_lexis(const Frame& frame,
 
 		// Start it up.
 		_lexlit[to_con] = 1;
-		return to_sects[0];
+		return create_unique_section(to_sects[0]);
 	}
 
 	if (to_sects.size() <= curit)
@@ -64,7 +64,7 @@ Handle SimpleCallback::select_from_lexis(const Frame& frame,
 
 	// Increment and save.
 	_lexlit[to_con] ++;
-	return to_sects[curit];
+	return create_unique_section(to_sects[curit]);
 }
 
 /// Return a section containing `to_con`.
@@ -117,8 +117,8 @@ Handle SimpleCallback::select_from_open(const Frame& frame,
 /// First try to attach to an existing open section.
 /// If that fails, then pick a new section from the lexis.
 Handle SimpleCallback::select(const Frame& frame,
-                               const Handle& fm_sect, size_t offset,
-                               const Handle& to_con)
+                              const Handle& fm_sect, size_t offset,
+                              const Handle& to_con)
 {
 	// See if we can find other open connectors to connect to.
 	Handle open_sect = select_from_open(frame, fm_sect, offset, to_con);
@@ -138,15 +138,11 @@ Handle SimpleCallback::select(const Frame& frame,
 /// end-points. Recall SetLinks are unordered links, so neither point
 /// can be identified as head or tail.
 Handle SimpleCallback::make_link(const Handle& fm_con,
-                                  const Handle& to_con,
-                                  const Handle& fm_pnt,
-                                  const Handle& to_pnt)
+                                 const Handle& to_con,
+                                 const Handle& fm_pnt,
+                                 const Handle& to_pnt)
 {
-	// Create the actual link to use.
-	Handle linkty = fm_con->getOutgoingAtom(0);
-	Handle edg = _as->add_link(SET_LINK, fm_pnt, to_pnt);
-	Handle lnk = _as->add_link(EVALUATION_LINK, linkty, edg);
-	return lnk;
+	return create_undirected_link(fm_con, to_con, fm_pnt, to_pnt);
 }
 
 void SimpleCallback::push_frame(const Frame& frm)
