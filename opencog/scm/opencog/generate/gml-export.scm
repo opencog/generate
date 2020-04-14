@@ -62,7 +62,7 @@
 			(filter-dupe
 				(keep-duplicate-atoms elist)
 				(append
-					(filter-map
+					(filter
 						(lambda (edge) (not (duper? edge)))
 						elist)
 					result)
