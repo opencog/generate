@@ -6,6 +6,7 @@ ADD_LIBRARY(generate SHARED
 	CollectSolutions
 	Dictionary
 	Frame
+	LinkStyle
 	RandomCallback
 	SimpleCallback
 )
@@ -26,6 +27,7 @@ INSTALL(FILES
 	Dictionary.h
 	Frame.h
 	GenerateCallback.h
+	LinkStyle.h
 	RandomCallback.h
 	RandomParameters.h
 	SimpleCallback.h
