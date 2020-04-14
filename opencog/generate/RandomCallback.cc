@@ -34,6 +34,14 @@ RandomCallback::RandomCallback(AtomSpace* as, const Dictionary& dict,
 	_dict(dict), _parms(&parms)
 {
 	_num_solutions_found = 0;
+
+	max_solutions = 100;
+
+	// Not interested in networks larger than 20 nodes.
+	max_network_size = 20;
+
+	// Max diameter of 10
+	max_depth = 10;
 }
 
 RandomCallback::~RandomCallback() {}
@@ -130,7 +138,7 @@ Handle RandomCallback::select_from_open(const Frame& frame,
 	// Oh no, dead end!
 	if (0 == to_sects.size()) return Handle::UNDEFINED;
 
-	bool disallow_self = not _parms->allow_self_connections;
+	bool disallow_self = not allow_self_connections;
 
 	// If only one is possible, then return just that.
 	if (1 == to_sects.size())
@@ -228,8 +236,11 @@ void RandomCallback::pop_frame(const Frame& frm)
 
 bool RandomCallback::step(const Frame& frm)
 {
-	if (_parms->max_solutions < _num_solutions_found) return false;
-	return _parms->step(frm);
+	if (max_solutions < _num_solutions_found) return false;
+	if (max_network_size < frm._linkage.size()) return false;
+	if (max_depth < frm._nodo) return false;
+	return true;
+	// return _parms->step(frm);
 }
 
 void RandomCallback::solution(const Frame& frm)

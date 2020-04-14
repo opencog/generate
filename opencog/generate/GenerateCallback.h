@@ -97,6 +97,31 @@ public:
 	/// Called when a solution is found. A solution is a linkage,
 	/// with no open connectors.
 	virtual void solution(const Frame&) = 0;
+
+	// ---------------------------------------------------------------
+	/// Generic Parameters
+	/// These are parameters that all callback systems might reasonably
+	/// want to consult, when determining behavior.
+	// (Should these be moved to thier own class???)
+
+	/// Maximum number of solutions to accept. Search is halted after
+	/// this number is reached.
+	size_t max_solutions = -1;
+
+	/// Allow connectors on an open section to connect back onto
+	/// themselves (if the other mating rules allow the two connectors
+	/// to connect).
+	bool allow_self_connections = false;
+
+	/// Maximum size of the generated network. Exploration of networks
+	/// larger than this will not be attempted.
+	size_t max_network_size = -1;
+
+	/// Maximum depth to explore from the starting point. This is
+	/// counted in terms of the maximum depth of the stack of
+	/// odometers. This is maximum diameter of the network, as measured
+	/// from the starting point.
+	size_t max_depth = -1;
 };
 
 

@@ -52,15 +52,6 @@ public:
 	/// taking an odometer step.  Returning false will abort the
 	/// current odometer.
 	virtual bool step(const Frame&) = 0;
-
-	/// Maximum number of solutions to accept. Search is halted after
-	/// this number is reached.
-	size_t max_solutions = -1;
-
-	/// Allow connectors on an open section to connect back onto
-	/// themselves (if the other mating rules allow the two connectors
-	/// to connect).
-	bool allow_self_connections = false;
 };
 
 

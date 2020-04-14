@@ -27,19 +27,6 @@ BasicParameters::BasicParameters()
 {
 	// Try to close existing connectors .. most of the time.
 	join_existing = 0.7;
-
-	// Not interested in networks larger than 20 nodes.
-	max_network_size = 20;
-
-	// Max diameter of 10
-	max_depth = 10;
-
-	// Maximm number of solutions
-	max_solutions = 100;
-
-	// Don't allow self-connections. This is usually the desirable
-	// default.
-	allow_self_connections = false;
 }
 
 BasicParameters::~BasicParameters()
@@ -61,6 +48,5 @@ bool BasicParameters::connect_existing(const Frame& frm)
 
 bool BasicParameters::step(const Frame& frm)
 {
-	return (frm._linkage.size() < max_network_size)
-		and (frm._nodo < max_depth);
+	return true;
 }
