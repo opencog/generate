@@ -88,7 +88,7 @@ Handle RandomCallback::select_from_lexis(const Frame& frame,
 /// sections, and return that. Otherwise return the undefined handle.
 ///
 /// This disallows self-connections (the from and to-sections being the
-/// same) unless the paramters allow it.
+/// same) unless the parameters allow it.
 Handle RandomCallback::select_from_open(const Frame& frame,
                                const Handle& fm_sect, size_t offset,
                                const Handle& to_con)
@@ -130,7 +130,7 @@ Handle RandomCallback::select_from_open(const Frame& frame,
 	// Oh no, dead end!
 	if (0 == to_sects.size()) return Handle::UNDEFINED;
 
-	bool disallow_self = true;
+	bool disallow_self = not _parms->allow_self_connections;
 
 	// If only one is possible, then return just that.
 	if (1 == to_sects.size())

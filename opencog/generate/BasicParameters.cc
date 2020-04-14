@@ -36,6 +36,10 @@ BasicParameters::BasicParameters()
 
 	// Maximm number of solutions
 	max_solutions = 100;
+
+	// Don't allow self-connections. This is usually the desirable
+	// default.
+	allow_self_connections = false;
 }
 
 BasicParameters::~BasicParameters()
