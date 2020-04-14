@@ -29,8 +29,9 @@
 using namespace opencog;
 
 RandomCallback::RandomCallback(AtomSpace* as, const Dictionary& dict,
-                               RandomParameters& parms)
-	: GenerateCallback(as), _as(as), _dict(dict), _parms(&parms)
+                               RandomParameters& parms) :
+	GenerateCallback(as), LinkStyle(as),
+	_as(as), _dict(dict), _parms(&parms)
 {
 	_num_solutions_found = 0;
 }
@@ -39,41 +40,6 @@ RandomCallback::~RandomCallback() {}
 
 static std::random_device seed;
 static std::mt19937 rangen(seed());
-
-/// Given a generic section, create a unique instance of it.
-/// As "puzzle pieces" are assembled, each new usage represents a
-/// "different location" in the puzzle, and so we create a unique
-/// instance for each location.
-///
-/// This assumes that the section point is a node, so that we
-/// generate a unique string for that node.
-Handle RandomCallback::make_unique_section(const Handle& sect)
-{
-	uuid_t uu;
-	uuid_generate(uu);
-	char idstr[37];
-	uuid_unparse(uu, idstr);
-
-	Handle point = sect->getOutgoingAtom(0);
-	Handle disj = sect->getOutgoingAtom(1);
-
-	if (not point->is_node())
-		throw RuntimeException(TRACE_INFO,
-			"Expection a Node for the section point, got %s",
-				point->to_string().c_str());
-
-	// Create a unique instance of the section.
-	Handle usect(
-		_as->add_link(SECTION,
-			_as->add_node(point->get_type(),
-			              point->get_name() + "@" + idstr),
-			disj));
-
-	// Record it's original type.
-	_as->add_link(INHERITANCE_LINK, usect, sect);
-
-	return usect;
-}
 
 /// Return a section containing `to_con`.
 /// Pick a new section from the lexis.
@@ -92,7 +58,7 @@ Handle RandomCallback::select_from_lexis(const Frame& frame,
 	if (_distmap.end() != curit)
 	{
 		auto dist = curit->second;
-		return make_unique_section(to_sects[dist(rangen)]);
+		return create_unique_section(to_sects[dist(rangen)]);
 	}
 
 	// Create a discrete distribution. This will randomly pick an
@@ -112,7 +78,7 @@ Handle RandomCallback::select_from_lexis(const Frame& frame,
 	std::discrete_distribution<size_t> dist(pdf.begin(), pdf.end());
 	_distmap.emplace(std::make_pair(to_con, dist));
 
-	return make_unique_section(to_sects[dist(rangen)]);
+	return create_unique_section(to_sects[dist(rangen)]);
 }
 
 /// Return a section containing `to_con`.
@@ -206,15 +172,11 @@ Handle RandomCallback::select(const Frame& frame,
 /// end-points. Recall SetLinks are unordered links, so neither point
 /// can be identified as head or tail.
 Handle RandomCallback::make_link(const Handle& fm_con,
-                                  const Handle& to_con,
-                                  const Handle& fm_pnt,
-                                  const Handle& to_pnt)
+                                 const Handle& to_con,
+                                 const Handle& fm_pnt,
+                                 const Handle& to_pnt)
 {
-	// Create the actual link to use.
-	Handle linkty = fm_con->getOutgoingAtom(0);
-	Handle edg = _as->add_link(SET_LINK, fm_pnt, to_pnt);
-	Handle lnk = _as->add_link(EVALUATION_LINK, linkty, edg);
-	return lnk;
+	return create_undirected_link (fm_con, to_con, fm_pnt, to_pnt);
 }
 
 void RandomCallback::push_frame(const Frame& frm)

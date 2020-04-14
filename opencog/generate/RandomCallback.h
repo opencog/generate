@@ -22,9 +22,10 @@
 #ifndef _OPENCOG_RANDOM_CALLBACK_H
 #define _OPENCOG_RANDOM_CALLBACK_H
 
+#include <opencog/generate/CollectSolutions.h>
 #include <opencog/generate/Dictionary.h>
 #include <opencog/generate/GenerateCallback.h>
-#include <opencog/generate/CollectSolutions.h>
+#include <opencog/generate/LinkStyle.h>
 #include <opencog/generate/RandomParameters.h>
 
 namespace opencog
@@ -38,7 +39,10 @@ namespace opencog
 /// a stochastic, random selection process.
 ///
 
-class RandomCallback : public GenerateCallback, public CollectSolutions
+class RandomCallback :
+	public GenerateCallback,
+	public LinkStyle,
+	public CollectSolutions
 {
 private:
 	AtomSpace* _as;
@@ -52,7 +56,6 @@ private:
 	Handle select_from_lexis(const Frame&,
 	                         const Handle&, size_t,
 	                         const Handle&);
-	Handle make_unique_section(const Handle&);
 
 	// Cached normalized weighted chooser. Map of all
 	// sections in the dictionary that contain this to-connector.
