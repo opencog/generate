@@ -68,6 +68,8 @@ private:
 	std::stack<HandleUCounter> _lexlit_stack;
 
 	// -------------------------------------------
+	bool _disallow_self;
+
 	Handle select_from_open(const Frame&,
 	                        const Handle&, size_t,
 	                        const Handle&);
@@ -89,6 +91,11 @@ private:
 public:
 	SimpleCallback(AtomSpace*, const Dictionary&);
 	virtual ~SimpleCallback();
+
+	/// Allow links that close in upon themselves.
+	void allow_self_connections(bool self) {
+		_disallow_self = not self;
+	}
 
 	virtual HandleSeq joints(const Handle& con) {
 		return _dict.joints(con);

@@ -28,6 +28,7 @@ using namespace opencog;
 SimpleCallback::SimpleCallback(AtomSpace* as, const Dictionary& dict)
 	: GenerateCallback(as), LinkStyle(as), _dict(dict)
 {
+	_disallow_self = true;
 }
 
 SimpleCallback::~SimpleCallback() {}
@@ -72,8 +73,6 @@ Handle SimpleCallback::check_self(const HandleSeq& to_sects,
                                   const Handle& to_con,
                                   size_t fit)
 {
-	bool disallow_self = true;
-
 	// We've iterated to the end; we're done.
 	if (to_sects.size() <= fit)
 		return Handle::UNDEFINED;
@@ -82,7 +81,7 @@ Handle SimpleCallback::check_self(const HandleSeq& to_sects,
 	_opensel._openit[to_con] ++;
 
 	// If we allow self-connections, then return whatever.
-	if (not disallow_self) return to_sects[fit];
+	if (not _disallow_self) return to_sects[fit];
 
 	// Make sure we are not self-connecting...
 	while (true)
