@@ -45,7 +45,6 @@ class RandomCallback :
 	public CollectSolutions
 {
 private:
-	AtomSpace* _as;
 	Dictionary _dict;
 	RandomParameters* _parms;
 	Handle _weight_key;

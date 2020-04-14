@@ -31,7 +31,7 @@ using namespace opencog;
 RandomCallback::RandomCallback(AtomSpace* as, const Dictionary& dict,
                                RandomParameters& parms) :
 	GenerateCallback(as), LinkStyle(as),
-	_as(as), _dict(dict), _parms(&parms)
+	_dict(dict), _parms(&parms)
 {
 	_num_solutions_found = 0;
 }
