@@ -89,6 +89,44 @@ Handle RandomCallback::select_from_lexis(const Frame& frame,
 	return create_unique_section(to_sects[dist(rangen)]);
 }
 
+Handle RandomCallback::check_self(const HandleSeq& to_sects,
+                                  const Handle& fm_sect,
+                                  std::discrete_distribution<size_t>& dist)
+{
+	bool disallow_self = not allow_self_connections;
+
+	// If only one is possible, then return just that.
+	if (1 == to_sects.size())
+	{
+		if (disallow_self and *to_sects[0] == *fm_sect)
+			return Handle::UNDEFINED;
+		return to_sects[0];
+	}
+
+	// If all of the choices link back to self, and self-connections
+	// are disallowed, then no connection is possible.
+	if (disallow_self)
+	{
+		bool only_self = true;
+		for (const Handle& sect : to_sects)
+		{
+			if (*sect != *fm_sect) { only_self = false; break; }
+		}
+		if (only_self) return Handle::UNDEFINED;
+	}
+
+	if (allow_self_connections)
+		return to_sects[dist(rangen)];
+
+	// This loop gauranteed to terminate, because check above
+	// verified that there is at least one choice.
+	while (true)
+	{
+		Handle choice(to_sects[dist(rangen)]);
+		if (*choice != *fm_sect) return choice;
+	}
+}
+
 /// Return a section containing `to_con`.
 ///
 /// Examine the set of currently-unconnected connectors. If any of
@@ -118,7 +156,7 @@ Handle RandomCallback::select_from_open(const Frame& frame,
 	{
 		const HandleSeq& to_sects = tosit->second;
 		auto dist = curit->second;
-		return to_sects[dist(rangen)];
+		return check_self(to_sects, fm_sect, dist);
 	}
 
 	// Create a list of connectable sections
@@ -137,28 +175,6 @@ Handle RandomCallback::select_from_open(const Frame& frame,
 
 	// Oh no, dead end!
 	if (0 == to_sects.size()) return Handle::UNDEFINED;
-
-	bool disallow_self = not allow_self_connections;
-
-	// If only one is possible, then return just that.
-	if (1 == to_sects.size())
-	{
-		if (disallow_self and *to_sects[0] == *fm_sect)
-			return Handle::UNDEFINED;
-		return to_sects[0];
-	}
-
-	// If all of the choices link back to self, and self-connections
-	// are disallowed, then no connection is possible.
-	if (disallow_self)
-	{
-		bool only_self = true;
-		for (const Handle& sect : to_sects)
-		{
-			if (*sect != *fm_sect) { only_self = false; break; }
-		}
-		if (only_self) return Handle::UNDEFINED;
-	}
 
 	// Create a discrete distribution.
 	// Argh ... XXX FIXME ... the aggregator does NOT copy
@@ -181,16 +197,7 @@ Handle RandomCallback::select_from_open(const Frame& frame,
 	std::discrete_distribution<size_t> dist(pdf.begin(), pdf.end());
 	_opensel._opendi.emplace(std::make_pair(to_con, dist));
 
-	if (allow_self_connections)
-		return to_sects[dist(rangen)];
-
-	// This loop gauranteed to terminate, because check above
-	// verified that there is at least one choice.
-	while (true)
-	{
-		Handle choice(to_sects[dist(rangen)]);
-		if (*choice != *fm_sect) return choice;
-	}
+	return check_self(to_sects, fm_sect, dist);
 }
 
 /// Return a section containing `to_con`.

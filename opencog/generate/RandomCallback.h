@@ -65,6 +65,8 @@ private:
 	Handle select_from_open(const Frame&,
 	                        const Handle&, size_t,
 	                        const Handle&);
+	Handle check_self(const HandleSeq&, const Handle&,
+	                  std::discrete_distribution<size_t>&);
 	struct OpenSelections
 	{
 		HandleSeqMap _opensect;
