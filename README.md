@@ -332,13 +332,4 @@ Building and testing works exactly the same way as the AtomSpace; build
 that, and then build the stuff here in the same way.
 
 ## Examples
-To understand how to use this, take a look at the [tests
-directory](tests/generate) and the files `dict-helloworld.scm`, then
-`dict-tree.scm`, `dict-loop.scm` and then the others. Understanding
-these requires at least some basic familiarity with the AtomSpace
-(see the tutorial-examples there). Some general understanding of
-[Link Grammar](https://www.abisource.com/projects/link-grammar/)
-is also useful, as all initial examples emulate Link-Grammar type
-natural-language parse graphs.
-
-There are more examples in the [examples](examples) directory.
+Jump to the [examples](examples) directory!

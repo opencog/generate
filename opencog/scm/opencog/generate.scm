@@ -11,15 +11,19 @@
 	"opencog_generate_init")
 
 (export
-	cog-aggregate
+	cog-random-aggregate
 )
 
 (include-from-path "opencog/generate/gml-export.scm")
 
 ; Documentation for the functions implemented as C++ code
-(set-procedure-property! cog-aggregate 'documentation
+(set-procedure-property! cog-random-aggregate 'documentation
 "
-  cog-aggregate ROOT
+  cog-random-aggregate POLES LEXIS WEIGHT ROOT
 
-    Aggregate a network around ROOT.
+    Aggregate a random network around ROOT, using the sections defined
+    in the LEXIS, selected with weighting given by WEIGHT. The
+    connectable enpoints are given by POLES.
+
+    See the example `basic-network.scm` for more details.
 ")
