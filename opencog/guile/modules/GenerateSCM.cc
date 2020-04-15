@@ -40,7 +40,8 @@ class GenerateSCM : public ModuleWrap
 protected:
 	virtual void init();
 
-	Handle do_random_aggregate(AtomSpace* as, Handle);
+	Handle do_random_aggregate(AtomSpace* as, Handle,
+	                           Handle, Handle, Handle);
 
 public:
 	GenerateSCM();
@@ -52,12 +53,13 @@ public:
 Handle GenerateSCM::do_random_aggregate(AtomSpace* as,
                                         Handle poles,
                                         Handle lexis,
+                                        Handle weight,
                                         Handle root)
 {
 	Dictionary dict(as);
 
 	// Add the poles to the dictionary.
-	HandleSeq poleset = get_incoming_by_type(poles, MEMBER_LINK);
+	HandleSeq poleset = poles->getIncomingSetByType(MEMBER_LINK);
 	for (const Handle& pole_pair : poleset)
 	{
 		if (*pole_pair->getOutgoingAtom(1) != *poles) continue;
@@ -72,15 +74,14 @@ Handle GenerateSCM::do_random_aggregate(AtomSpace* as,
 			dict.add_pole_pair(p1, p0);
 		}
 	}
-	
 
-	// Everything below here is WRONG!!!
-	// OK, a problem here is that junk sections get added.
-	// e.g. sections that have partly-connected stuff,
-	// left over from whatever the hack.
-	HandleSet lex;
-	as->get_handleset_by_type(lex, SECTION);
-	dict.add_to_lexis(lex);
+	// Add the sections to the dictionary.
+	HandleSeq sects = lexis->getIncomingSetByType(MEMBER_LINK);
+	for (const Handle& sect : sects)
+	{
+		if (*sect->getOutgoingAtom(1) != *lexis) continue;
+		dict.add_to_lexis(sect);
+	}
 
 #if 0
 logger().set_print_to_stdout_flag(true);
@@ -88,10 +89,9 @@ logger().set_timestamp_flag(false);
 logger().set_level(Logger::FINE);
 #endif
 
-	Handle weights = an(PREDICATE_NODE, "weights");
 	BasicParameters basic;
 	RandomCallback cb(as, dict, basic);
-	cb.set_weight_key(weights);
+	cb.set_weight_key(weight);
 	Aggregate ag(as);
 	ag.aggregate({root}, cb);
 
@@ -108,8 +108,8 @@ GenerateSCM::GenerateSCM() : ModuleWrap("opencog generate") {}
 /// Thus, all the definitions below happen in that module.
 void GenerateSCM::init(void)
 {
-	define_scheme_primitive("cog-aggregate",
-		&GenerateSCM::do_aggregate, this, "generate");
+	define_scheme_primitive("cog-random-aggregate",
+		&GenerateSCM::do_random_aggregate, this, "generate");
 }
 
 extern "C" {
