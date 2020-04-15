@@ -143,9 +143,9 @@ Handle RandomCallback::select_from_open(const Frame& frame,
 	// If only one is possible, then return just that.
 	if (1 == to_sects.size())
 	{
-		if (disallow_self and to_sects[0] != fm_sect)
-			return to_sects[0];
-		return Handle::UNDEFINED;
+		if (disallow_self and to_sects[0] == fm_sect)
+			return Handle::UNDEFINED;
+		return to_sects[0];
 	}
 
 	// If all of the choices link back to self, and self-connections
@@ -181,9 +181,11 @@ Handle RandomCallback::select_from_open(const Frame& frame,
 	std::discrete_distribution<size_t> dist(pdf.begin(), pdf.end());
 	_opensel._opendi.emplace(std::make_pair(to_con, dist));
 
-	if (not disallow_self)
+	if (allow_self_connections)
 		return to_sects[dist(rangen)];
 
+	// This loop gauranteed to terminate, because check above
+	// verified that there is at least one choice.
 	while (true)
 	{
 		Handle choice(to_sects[dist(rangen)]);
