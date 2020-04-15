@@ -7,9 +7,10 @@ proof. So are plans for movement and motion through 3D space, as well
 as plans for accomplishing some more abstract action: planning a party
 or planning a coordinated disaster relief effort. Biological reaction
 pathways, involving genes, proteins and other molecules, are graphical
-networks as well. What these all have in common is an underlying set
-of allowed (or preferred) moves, changes or state transitions, as
-well as hard and soft constraints on what moves are possible.
+networks as well. So are social networks. What these all have in common
+is an underlying set of allowed (or preferred) attachments, moves,
+changes or state transitions, as well as hard and soft constraints on
+what attachements, moves are possible.
 
 The goal of the code in this repo is to generate such networks, given
 a (weighted) collection of constraints and/or transition rules and/or
@@ -25,7 +26,11 @@ rules of inference, axioms, judgments).
 
 Currently focused on natural language generation; however, the theory
 is generic, and is intended for use on any deduction or induction
-problem.
+problem. The image above was generated with [this example
+code](./examples/export-to-gml.scm); it shows a random network, with
+all links and nodes being of the same type, and the node arity (number
+of connections) being Zipfian-dsitributed (that's why most nodes have
+only one connection, and only one has six connections).
 
 ## Sheaves, germs and syntax
 To accomplish the above, snapshots or instances of the interacting
