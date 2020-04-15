@@ -83,3 +83,27 @@ Handle LinkStyle::create_undirected_link(const Handle& fm_con,
 	Handle lnk = _as->add_link(EVALUATION_LINK, linkty, edg);
 	return lnk;
 }
+
+/// Return a count of the number of links, of type `link_type`,
+/// connecting the two sections. Returns zero if tehy are not nearest
+/// neighbors, otherwise return a count.
+size_t LinkStyle::num_undirected_links(const Handle& fm_sect,
+                                       const Handle& to_sect,
+                                       const Handle& link_type)
+{
+	const Handle& fm_pnt = fm_sect->getOutgoingAtom(0);
+	const Handle& to_pnt = to_sect->getOutgoingAtom(0);
+	Handle edg = _as->get_link(SET_LINK, fm_pnt, to_pnt);
+	if (nullptr == edg) return 0;
+	Handle lnk = _as->get_link(EVALUATION_LINK, link_type, edg);
+	if (nullptr == lnk) return 0;
+
+	const Handle& disj = fm_sect->getOutgoingAtom(1);
+	size_t count = 0;
+	for (const Handle& exli : disj->getOutgoingSet())
+	{
+		if (*exli == *lnk) count++;
+	}
+
+	return count;
+}

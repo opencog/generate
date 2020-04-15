@@ -96,8 +96,8 @@ Handle RandomCallback::select_from_lexis(const Frame& frame,
 /// is not equal to `fm_sect`. This seemingly simple check adds
 /// a little bit of complexity to everything.
 Handle RandomCallback::do_select_one(const HandleSeq& to_sects,
-                                  const Handle& fm_sect,
-                                  std::discrete_distribution<size_t>& dist)
+                                     const Handle& fm_sect,
+                                     std::discrete_distribution<size_t>& dist)
 {
 	bool disallow_self = not allow_self_connections;
 
@@ -214,8 +214,8 @@ Handle RandomCallback::select_from_open(const Frame& frame,
 /// First try to attach to an existing open section.
 /// If that fails, then pick a new section from the lexis.
 Handle RandomCallback::select(const Frame& frame,
-                               const Handle& fm_sect, size_t offset,
-                               const Handle& to_con)
+                              const Handle& fm_sect, size_t offset,
+                              const Handle& to_con)
 {
 	// See if we can find other open connectors to connect to.
 	if (_parms->connect_existing(frame))
@@ -238,7 +238,14 @@ Handle RandomCallback::make_link(const Handle& fm_con,
                                  const Handle& fm_pnt,
                                  const Handle& to_pnt)
 {
-	return create_undirected_link (fm_con, to_con, fm_pnt, to_pnt);
+	return create_undirected_link(fm_con, to_con, fm_pnt, to_pnt);
+}
+
+size_t RandomCallback::num_links(const Handle& fm_sect,
+                                 const Handle& to_sect,
+                                 const Handle& link_type)
+{
+	return num_undirected_links(fm_sect, to_sect, link_type);
 }
 
 void RandomCallback::push_frame(const Frame& frm)

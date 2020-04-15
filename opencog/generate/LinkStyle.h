@@ -45,6 +45,8 @@ public:
 	Handle create_undirected_link(const Handle&, const Handle&,
 	                              const Handle&, const Handle&);
 
+	size_t num_undirected_links(const Handle&, const Handle&,
+	                            const Handle&);
 };
 
 /** @}*/

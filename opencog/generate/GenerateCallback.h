@@ -80,6 +80,14 @@ public:
 	virtual Handle make_link(const Handle& fm_con, const Handle& to_con,
 	                         const Handle& fm_pnt, const Handle& to_pnt) = 0;
 
+	/// Return a count of the number of links between `fm_sect` and
+	/// `to_sect` of type `link_type`. This should return zero if these
+	/// two sections are not nearest neighbors.  Return one, if there
+	/// is exactly one link. Return two or more, if there are "parallel"
+	/// links in place -- if the two sections are multiply-connected.
+	virtual size_t num_links(const Handle& fm_sect, const Handle& to_sect,
+	                         const Handle& link_type) = 0;
+
 	virtual void push_frame(const Frame&) {}
 	virtual void pop_frame(const Frame&) {}
 
@@ -112,6 +120,11 @@ public:
 	/// themselves (if the other mating rules allow the two connectors
 	/// to connect).
 	bool allow_self_connections = false;
+
+	/// The maximum number of links allowed between a pair of sections.
+	/// By default, it is one, as "most" "typical" graphs make sense
+	/// when only one edge connects a pair of vertexes.
+	size_t max_pair_links = 1;
 
 	/// Maximum size of the generated network. Exploration of networks
 	/// larger than this will not be attempted.

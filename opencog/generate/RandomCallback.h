@@ -94,6 +94,8 @@ public:
 
 	virtual Handle make_link(const Handle&, const Handle&,
 	                         const Handle&, const Handle&);
+	virtual size_t num_links(const Handle&, const Handle&,
+	                         const Handle&);
 	virtual void push_frame(const Frame&);
 	virtual void pop_frame(const Frame&);
 
