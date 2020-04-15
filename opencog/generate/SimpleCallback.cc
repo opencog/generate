@@ -86,7 +86,7 @@ Handle SimpleCallback::check_self(const HandleSeq& to_sects,
 	while (true)
 	{
 		Handle tosect(to_sects[fit]);
-		if (tosect != fm_sect) return tosect;
+		if (*tosect != *fm_sect) return tosect;
 		fit ++;
 		_opensel._openit[to_con] = fit;
 		if (to_sects.size() <= fit) return Handle::UNDEFINED;
@@ -115,7 +115,7 @@ Handle SimpleCallback::select_from_open(const Frame& frame,
 		const Handle& conseq = open_sect->getOutgoingAtom(1);
 		for (const Handle& con : conseq->getOutgoingSet())
 		{
-			if (con == to_con) to_sects.push_back(open_sect);
+			if (*con == *to_con) to_sects.push_back(open_sect);
 		}
 	}
 

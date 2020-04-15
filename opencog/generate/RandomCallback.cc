@@ -128,7 +128,7 @@ Handle RandomCallback::select_from_open(const Frame& frame,
 		const Handle& conseq = open_sect->getOutgoingAtom(1);
 		for (const Handle& con : conseq->getOutgoingSet())
 		{
-			if (con == to_con) to_sects.push_back(open_sect);
+			if (*con == *to_con) to_sects.push_back(open_sect);
 		}
 	}
 
@@ -143,7 +143,7 @@ Handle RandomCallback::select_from_open(const Frame& frame,
 	// If only one is possible, then return just that.
 	if (1 == to_sects.size())
 	{
-		if (disallow_self and to_sects[0] == fm_sect)
+		if (disallow_self and *to_sects[0] == *fm_sect)
 			return Handle::UNDEFINED;
 		return to_sects[0];
 	}
@@ -155,7 +155,7 @@ Handle RandomCallback::select_from_open(const Frame& frame,
 		bool only_self = true;
 		for (const Handle& sect : to_sects)
 		{
-			if (sect != fm_sect) { only_self = false; break; }
+			if (*sect != *fm_sect) { only_self = false; break; }
 		}
 		if (only_self) return Handle::UNDEFINED;
 	}
@@ -189,7 +189,7 @@ Handle RandomCallback::select_from_open(const Frame& frame,
 	while (true)
 	{
 		Handle choice(to_sects[dist(rangen)]);
-		if (choice != fm_sect) return choice;
+		if (*choice != *fm_sect) return choice;
 	}
 }
 
