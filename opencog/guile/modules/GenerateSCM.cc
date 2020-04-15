@@ -59,10 +59,11 @@ Handle GenerateSCM::do_random_aggregate(Handle poles,
 
 	// Add the poles to the dictionary.
 	HandleSeq poleset = poles->getIncomingSetByType(MEMBER_LINK);
-	for (const Handle& pole_pair : poleset)
+	for (const Handle& membli : poleset)
 	{
-		if (*pole_pair->getOutgoingAtom(1) != *poles) continue;
+		if (*membli->getOutgoingAtom(1) != *poles) continue;
 
+		const Handle& pole_pair = membli->getOutgoingAtom(0);
 		const Handle& p0 = pole_pair->getOutgoingAtom(0);
 		const Handle& p1 = pole_pair->getOutgoingAtom(1);
 		dict.add_pole_pair(p0, p1);
@@ -76,10 +77,10 @@ Handle GenerateSCM::do_random_aggregate(Handle poles,
 
 	// Add the sections to the dictionary.
 	HandleSeq sects = lexis->getIncomingSetByType(MEMBER_LINK);
-	for (const Handle& sect : sects)
+	for (const Handle& membli : sects)
 	{
-		if (*sect->getOutgoingAtom(1) != *lexis) continue;
-		dict.add_to_lexis(sect);
+		if (*membli->getOutgoingAtom(1) != *lexis) continue;
+		dict.add_to_lexis(membli->getOutgoingAtom(0));
 	}
 
 #if 0

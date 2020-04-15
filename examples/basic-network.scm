@@ -89,7 +89,7 @@
 ; Furthermore, the connections are symmetric (creating undirected
 ; edges.) Thus, the pole-pair set is very simple.
 (define polarity-set (Concept "any to any"))
-(Member (Set (ConnectorDir "*") (ConnectorDir "*")) pole-pair-set)
+(Member (Set (ConnectorDir "*") (ConnectorDir "*")) polarity-set)
 
 ; Be silent when loading this file.
 *unspecified*
