@@ -252,8 +252,8 @@ bool Aggregate::do_step(void)
 		// Replace the from-section with the now-connected section.
 		for (size_t in = 0; in < _odo._size; in++)
 		{
-			if (_odo._sections[in] == fm_sect) _odo._sections[in] = hpr.first;
-			if (_odo._sections[in] == to_sect) _odo._sections[in] = hpr.second;
+			if (*_odo._sections[in] == *fm_sect) _odo._sections[in] = hpr.first;
+			if (*_odo._sections[in] == *to_sect) _odo._sections[in] = hpr.second;
 		}
 	}
 
@@ -343,7 +343,7 @@ HandlePair Aggregate::connect_section(const Handle& fm_sect,
 	size_t tidx = -1;
 	for (size_t i=0; i<tseq.size(); i++)
 	{
-		if (to_con == tseq[i]) { tidx = i; break; }
+		if (*to_con == *tseq[i]) { tidx = i; break; }
 	}
 
 	Handle new_fm = make_link(fm_sect, offset, link);
