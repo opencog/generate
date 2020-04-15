@@ -89,6 +89,12 @@ Handle RandomCallback::select_from_lexis(const Frame& frame,
 	return create_unique_section(to_sects[dist(rangen)]);
 }
 
+/// Return a random section from the provided list of sections.
+/// In simple terms, this just returns `to_sects[dist(rangen)]`
+/// and that's all ... except ... if `allow_self_connections` is
+/// false, then we have to make sure that `to_sects[dist(rangen)]`
+/// is not equal to `fm_sect`. This seemingly simple check adds
+/// a little bit of complexity to everything.
 Handle RandomCallback::check_self(const HandleSeq& to_sects,
                                   const Handle& fm_sect,
                                   std::discrete_distribution<size_t>& dist)
