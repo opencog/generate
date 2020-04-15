@@ -1,3 +1,5 @@
+![Example random network](./examples/n20.gml.png)
+
 # Network Generation
 Graphical networks are generic: natural language parse trees are graphs.
 So are the chains of axioms and logical deductions in a mathematical

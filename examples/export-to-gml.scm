@@ -5,6 +5,9 @@
 ; Language, see https://en.wikipedia.org/wiki/Graph_Modelling_Language
 ; This allows the networks to be visualized with CytoScape or Gephi.
 ;
+; The PNG image `n20.gml.png` is an example random network generated
+; with the code below, and visualized with CytoScape.
+;
 (use-modules (opencog) (opencog generate))
 (use-modules (ice-9 textual-ports))
 
