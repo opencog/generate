@@ -40,7 +40,7 @@ class GenerateSCM : public ModuleWrap
 protected:
 	virtual void init();
 
-	Handle do_aggregate(AtomSpace* as, Handle);
+	Handle do_random_aggregate(AtomSpace* as, Handle);
 
 public:
 	GenerateSCM();
@@ -49,13 +49,32 @@ public:
 #define al as->add_link
 #define an as->add_node
 
-Handle GenerateSCM::do_aggregate(AtomSpace* as, Handle root)
+Handle GenerateSCM::do_random_aggregate(AtomSpace* as,
+                                        Handle poles,
+                                        Handle lexis,
+                                        Handle root)
 {
-	// Everything below here is WRONG!!!
 	Dictionary dict(as);
-	Handle any = an(CONNECTOR_DIR_NODE, "*");
-	dict.add_pole_pair(any, any);
 
+	// Add the poles to the dictionary.
+	HandleSeq poleset = get_incoming_by_type(poles, MEMBER_LINK);
+	for (const Handle& pole_pair : poleset)
+	{
+		if (*pole_pair->getOutgoingAtom(1) != *poles) continue;
+
+		const Handle& p0 = pole_pair->getOutgoingAtom(0);
+		const Handle& p1 = pole_pair->getOutgoingAtom(1);
+		dict.add_pole_pair(p0, p1);
+
+		if (nameserver().isA(pole_pair->get_type(), UNORDERED_LINK)
+		    and *p0 != *p1)
+		{
+			dict.add_pole_pair(p1, p0);
+		}
+	}
+	
+
+	// Everything below here is WRONG!!!
 	// OK, a problem here is that junk sections get added.
 	// e.g. sections that have partly-connected stuff,
 	// left over from whatever the hack.
