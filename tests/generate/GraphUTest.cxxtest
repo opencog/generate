@@ -97,7 +97,7 @@ void GraphUTest::setup_dict()
 void GraphUTest::check_dipole(Handle root, size_t nedges)
 {
 	SimpleCallback cb(as, *dict);
-	cb.allow_self_connections(true);
+	cb.allow_self_connections = true;
 
 	Aggregate lag(as);
 	lag.aggregate({root}, cb);
