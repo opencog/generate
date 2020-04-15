@@ -109,13 +109,20 @@ Handle SimpleCallback::select_from_open(const Frame& frame,
 	}
 
 	// Set up an iterator, if possible.
+	const Handle& linkty = to_con->getOutgoingAtom(0);
 	HandleSeq to_sects;
 	for (const Handle& open_sect : frame._open_sections)
 	{
 		const Handle& conseq = open_sect->getOutgoingAtom(1);
 		for (const Handle& con : conseq->getOutgoingSet())
 		{
-			if (*con == *to_con) to_sects.push_back(open_sect);
+			if (*con == *to_con)
+			{
+				// Wait, are these already connected?
+				if (max_pair_links <= num_links(fm_sect, open_sect, linkty))
+					continue;
+				to_sects.push_back(open_sect);
+			}
 		}
 	}
 

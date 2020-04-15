@@ -22,6 +22,7 @@
 #include <random>
 #include <uuid/uuid.h>
 
+#include <opencog/util/oc_assert.h>
 #include <opencog/atoms/base/Link.h>
 
 #include "LinkStyle.h"
@@ -104,6 +105,21 @@ size_t LinkStyle::num_undirected_links(const Handle& fm_sect,
 	{
 		if (*exli == *lnk) count++;
 	}
+
+	// XXX FIXME -- undef this and save some CPU...
+#define SELF_TEST
+#ifdef SELF_TEST
+	// Count the number of links, starting with to_sect.
+	// The result should be the same. This is a waste of CPU time,
+	// if everything is working correctly.
+	const Handle& tdis = to_sect->getOutgoingAtom(1);
+	size_t tcnt = 0;
+	for (const Handle& exli : tdis->getOutgoingSet())
+	{
+		if (*exli == *lnk) tcnt++;
+	}
+	OC_ASSERT(count == tcnt, "Not internally self-consistent!");
+#endif
 
 	return count;
 }
