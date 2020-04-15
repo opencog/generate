@@ -25,6 +25,9 @@
 (define graph-set
 	(cog-random-aggregate polarity-set lexis weights (Concept "burr-3")))
 
+;; Print the number of graphs that were generated
+(cog-arity graph-set)
+
 ;; Convert the Atomese representation of these networks into
 ;; a GML string.
 (define gml-string (export-to-gml graph-set))
@@ -38,6 +41,13 @@
 (let ((outport (open-file "/tmp/basic-random-net.gml" "w")))
    (put-string outport just-one-gml)
    (close outport))
+
+;; Visualize the resulting network.
+;; -- Install and start cytoscape.
+;; -- Select "File -> Import -> Network from file ..."
+;; -- Select "/tmp/basic-random-net.gml"
+;; -- Hit the "Apply Perfered Layout" button (the rotating arrows button)
+;; Ta-dahhhh! That's it!
 
 ;; Hush printing when loading this file.
 *unspecified*
