@@ -80,6 +80,13 @@ public:
 	virtual Handle make_link(const Handle& fm_con, const Handle& to_con,
 	                         const Handle& fm_pnt, const Handle& to_pnt) = 0;
 
+	/// Return a link, but only if it already exists; do not make a
+	/// a new link if it doesn't. Otherwise, much like `make_link()`:
+	/// Return a link from connector `fm_con` to connector `to_con`,
+	/// which will connect `fm_pnt` to `to_pnt`.
+	virtual Handle have_link(const Handle& fm_con, const Handle& to_con,
+	                         const Handle& fm_pnt, const Handle& to_pnt) = 0;
+
 	virtual void push_frame(const Frame&) {}
 	virtual void pop_frame(const Frame&) {}
 
@@ -112,6 +119,11 @@ public:
 	/// themselves (if the other mating rules allow the two connectors
 	/// to connect).
 	bool allow_self_connections = false;
+
+	/// The maximum number of links allowed between a pair of sections.
+	/// By default, it is one, as "most" "typical" graphs make sense
+	/// when only one edge connects a pair of vertexes.
+	size_t max_pair_links = 1;
 
 	/// Maximum size of the generated network. Exploration of networks
 	/// larger than this will not be attempted.

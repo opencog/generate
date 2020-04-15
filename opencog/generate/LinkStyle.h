@@ -44,6 +44,8 @@ public:
 	Handle create_unique_section(const Handle&);
 	Handle create_undirected_link(const Handle&, const Handle&,
 	                              const Handle&, const Handle&);
+	Handle have_undirected_link(const Handle&, const Handle&,
+	                            const Handle&, const Handle&);
 
 };
 

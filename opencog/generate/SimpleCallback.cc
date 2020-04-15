@@ -159,6 +159,14 @@ Handle SimpleCallback::make_link(const Handle& fm_con,
 	return create_undirected_link(fm_con, to_con, fm_pnt, to_pnt);
 }
 
+Handle SimpleCallback::have_link(const Handle& fm_con,
+                                 const Handle& to_con,
+                                 const Handle& fm_pnt,
+                                 const Handle& to_pnt)
+{
+	return have_undirected_link(fm_con, to_con, fm_pnt, to_pnt);
+}
+
 void SimpleCallback::push_frame(const Frame& frm)
 {
 	_opensel_stack.push(_opensel);

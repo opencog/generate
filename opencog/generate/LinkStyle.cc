@@ -83,3 +83,19 @@ Handle LinkStyle::create_undirected_link(const Handle& fm_con,
 	Handle lnk = _as->add_link(EVALUATION_LINK, linkty, edg);
 	return lnk;
 }
+
+/// Return an undirected edge, but only if it exists, already.
+/// Much like `create_undirected_link()`, except it doesn't create
+/// the link.
+Handle LinkStyle::have_undirected_link(const Handle& fm_con,
+                                       const Handle& to_con,
+                                       const Handle& fm_pnt,
+                                       const Handle& to_pnt)
+{
+	// Create the actual link to use.
+	Handle linkty = fm_con->getOutgoingAtom(0);
+	Handle edg = _as->get_link(SET_LINK, fm_pnt, to_pnt);
+	if (!edg) return edg;
+	Handle lnk = _as->get_link(EVALUATION_LINK, linkty, edg);
+	return lnk;
+}

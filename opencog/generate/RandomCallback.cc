@@ -96,8 +96,8 @@ Handle RandomCallback::select_from_lexis(const Frame& frame,
 /// is not equal to `fm_sect`. This seemingly simple check adds
 /// a little bit of complexity to everything.
 Handle RandomCallback::do_select_one(const HandleSeq& to_sects,
-                                  const Handle& fm_sect,
-                                  std::discrete_distribution<size_t>& dist)
+                                     const Handle& fm_sect,
+                                     std::discrete_distribution<size_t>& dist)
 {
 	bool disallow_self = not allow_self_connections;
 
@@ -239,6 +239,14 @@ Handle RandomCallback::make_link(const Handle& fm_con,
                                  const Handle& to_pnt)
 {
 	return create_undirected_link (fm_con, to_con, fm_pnt, to_pnt);
+}
+
+Handle RandomCallback::have_link(const Handle& fm_con,
+                                 const Handle& to_con,
+                                 const Handle& fm_pnt,
+                                 const Handle& to_pnt)
+{
+	return have_undirected_link (fm_con, to_con, fm_pnt, to_pnt);
 }
 
 void RandomCallback::push_frame(const Frame& frm)
