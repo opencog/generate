@@ -95,7 +95,7 @@ Handle RandomCallback::select_from_lexis(const Frame& frame,
 /// false, then we have to make sure that `to_sects[dist(rangen)]`
 /// is not equal to `fm_sect`. This seemingly simple check adds
 /// a little bit of complexity to everything.
-Handle RandomCallback::check_self(const HandleSeq& to_sects,
+Handle RandomCallback::do_select_one(const HandleSeq& to_sects,
                                   const Handle& fm_sect,
                                   std::discrete_distribution<size_t>& dist)
 {
@@ -133,7 +133,8 @@ Handle RandomCallback::check_self(const HandleSeq& to_sects,
 	}
 }
 
-/// Return a section containing `to_con`.
+/// Return a section containing `to_con`, from the set of currently
+/// unconnected sections.
 ///
 /// Examine the set of currently-unconnected connectors. If any of
 /// them are connectable to `to_con`, then randomly pick one of the
@@ -141,6 +142,9 @@ Handle RandomCallback::check_self(const HandleSeq& to_sects,
 ///
 /// This disallows self-connections (the from and to-sections being the
 /// same) unless the parameters allow it.
+//
+// This just sets up a list of candidates; the actual picking is done
+// by `do_select_one()`.
 Handle RandomCallback::select_from_open(const Frame& frame,
                                const Handle& fm_sect, size_t offset,
                                const Handle& to_con)
@@ -162,7 +166,7 @@ Handle RandomCallback::select_from_open(const Frame& frame,
 	{
 		const HandleSeq& to_sects = tosit->second;
 		auto dist = curit->second;
-		return check_self(to_sects, fm_sect, dist);
+		return do_select_one(to_sects, fm_sect, dist);
 	}
 
 	// Create a list of connectable sections
@@ -203,7 +207,7 @@ Handle RandomCallback::select_from_open(const Frame& frame,
 	std::discrete_distribution<size_t> dist(pdf.begin(), pdf.end());
 	_opensel._opendi.emplace(std::make_pair(to_con, dist));
 
-	return check_self(to_sects, fm_sect, dist);
+	return do_select_one(to_sects, fm_sect, dist);
 }
 
 /// Return a section containing `to_con`.
