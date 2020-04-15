@@ -40,8 +40,7 @@ class GenerateSCM : public ModuleWrap
 protected:
 	virtual void init();
 
-	Handle do_random_aggregate(AtomSpace* as, Handle,
-	                           Handle, Handle, Handle);
+	Handle do_random_aggregate(Handle, Handle, Handle, Handle);
 
 public:
 	GenerateSCM();
@@ -50,12 +49,12 @@ public:
 #define al as->add_link
 #define an as->add_node
 
-Handle GenerateSCM::do_random_aggregate(AtomSpace* as,
-                                        Handle poles,
+Handle GenerateSCM::do_random_aggregate(Handle poles,
                                         Handle lexis,
                                         Handle weight,
                                         Handle root)
 {
+	AtomSpace* as = SchemeSmob::ss_get_env_as("cog-random-aggregate");
 	Dictionary dict(as);
 
 	// Add the poles to the dictionary.
