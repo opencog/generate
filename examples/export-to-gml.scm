@@ -11,7 +11,7 @@
 (use-modules (opencog) (opencog generate))
 (use-modules (ice-9 textual-ports))
 
-(load "tests/generate/basic-network.scm")
+(load "basic-network.scm")
 
 ;; XXX Caution, this is not the final API -- subjet to change.
 ;; This generates multiple graphs.
