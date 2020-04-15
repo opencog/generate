@@ -25,8 +25,8 @@ using namespace opencog;
 
 BasicParameters::BasicParameters()
 {
-	// Try to close existing connectors .. most of the time.
-	join_existing = 0.7;
+	// Try to close existing connectors .. sometimes.
+	join_existing = 0.3;
 }
 
 BasicParameters::~BasicParameters()
