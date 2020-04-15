@@ -18,13 +18,15 @@ The examples are meant to be explored in the order given.
 
 * See the unit-tests directory for more examples... look at them in the
   following order:
-   + dict-helloworld.scm
-   + dict-tree.scm
-   + dict-loop.scm
-   + dict-biloop.scm
-   + dict-quad.scm
-   + dict-mixed.scm
-  These go through a series of lxis that generate increasingly
-  sophisticated networks.
+   + dict-helloworld.scm -- Multiple edge types.
+   + dict-tree.scm   -- Tree graph with edge types.
+   + dict-loop.scm   -- Cyclic graph with edge types.
+   + dict-biloop.scm -- Graph with two cycles (triangles).
+   + dict-quad.scm   -- Graph where the cycle is a square.
+   + dict-mixed.scm  -- Mixture of cycles.
+
+These go through a series of lexis that generate increasingly
+sophisticated networks. All of the examples are "linguistic",
+with the linking constrainted by explit edge-types.
 
 That's all for now!
