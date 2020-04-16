@@ -26,7 +26,7 @@ using namespace opencog;
 BasicParameters::BasicParameters()
 {
 	// Try to close existing connectors .. sometimes.
-	join_existing = 0.3;
+	close_fraction = 0.3;
 }
 
 BasicParameters::~BasicParameters()
@@ -43,7 +43,7 @@ static inline double uniform_double(void)
 
 bool BasicParameters::connect_existing(const Frame& frm)
 {
-	return uniform_double() < join_existing;
+	return uniform_double() < close_fraction;
 }
 
 bool BasicParameters::step(const Frame& frm)

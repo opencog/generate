@@ -15,6 +15,8 @@ The examples are meant to be explored in the order given.
      Definitions for generating a simple random network.
 * [export-to-gml](export-to-gml.scm) --
      Generate a random network, and export it to GML for visualztion.
+* [parameters.scm](parameters.scm) --
+     Some of the paramaters that control the network generation.
 
 * See the unit-tests directory for more examples... look at them in the
   following order:

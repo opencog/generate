@@ -52,7 +52,7 @@ public:
 	/// unconnected connectorsdrops by two. Otherwise, a new puzzle
 	/// piece is selected from the lexis (thus necessarily enlarging
 	/// the network.)
-	double join_existing;
+	double close_fraction;
 };
 
 

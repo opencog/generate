@@ -40,7 +40,7 @@ class GenerateSCM : public ModuleWrap
 protected:
 	virtual void init();
 
-	Handle do_random_aggregate(Handle, Handle, Handle, Handle);
+	Handle do_random_aggregate(Handle, Handle, Handle, Handle, Handle);
 
 public:
 	GenerateSCM();
@@ -52,6 +52,7 @@ public:
 Handle GenerateSCM::do_random_aggregate(Handle poles,
                                         Handle lexis,
                                         Handle weight,
+                                        Handle params,
                                         Handle root)
 {
 	AtomSpace* as = SchemeSmob::ss_get_env_as("cog-random-aggregate");

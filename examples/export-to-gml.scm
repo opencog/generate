@@ -14,6 +14,9 @@
 ; Load the dataset we plan to demo.
 (load "basic-network.scm")
 
+; The parameters that will control the search.
+(load "parameters.scm")
+
 ;; Generate a collection of random networks, using the lexis, the
 ;; connectable end-points and the probability weightings previously
 ;; defined. The result of running this will generate multiple graphs.
@@ -23,7 +26,8 @@
 ;;
 ;; XXX Caution, this is not the final API -- subjet to change.
 (define graph-set
-	(cog-random-aggregate polarity-set lexis weights (Concept "burr-3")))
+	(cog-random-aggregate polarity-set lexis weights basic-net-params
+		(Concept "burr-3")))
 
 ;; Print the number of graphs that were generated
 (cog-arity graph-set)
