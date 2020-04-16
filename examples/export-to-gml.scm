@@ -54,8 +54,10 @@
 ;; Ta-dahhhh! That's it!
 
 ;; OK, just for the heck of it, play around with the close-fraction
-;; parameter. Then rerun the the graph generation.
-(State (Member close-fraction basic-net-params) (Number 0.0))
+;; parameter. Then rerun the the graph generation. Setting it to zero
+;; should result in a tree, containing no loops.
+(State (Member close-fraction basic-net-params) (Number 0.01))
+(State (Member max-solutions basic-net-params) (Number 1))
 
 ;; etc... cut and paste from above...
 
