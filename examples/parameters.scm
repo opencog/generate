@@ -26,5 +26,5 @@
 ; The parameters that are used for the `basic-network.scm` demo.
 (define basic-net-params (Concept "Basic network demo"))
 
-(Member (Evaluation max-solutions (Number 10)) basic-net-params)
-(Member (Evaluation close-fraction (Number 0.5)) basic-net-params)
+(State (Member max-solutions basic-net-params) (Number 10))
+(State (Member close-fraction basic-net-params) (Number 0.5))

@@ -53,5 +53,11 @@
 ;; -- Hit the "Apply Perfered Layout" button (the rotating arrows button)
 ;; Ta-dahhhh! That's it!
 
+;; OK, just for the heck of it, play around with the close-fraction
+;; parameter. Then rerun the the graph generation.
+(State (Member close-fraction basic-net-params) (Number 0.2))
+
+;; etc... cut and paste from above...
+
 ;; Hush printing when loading this file.
 *unspecified*

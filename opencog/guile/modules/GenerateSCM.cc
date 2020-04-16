@@ -20,6 +20,7 @@
  */
 
 #include <opencog/atoms/core/NumberNode.h>
+#include <opencog/atoms/core/StateLink.h>
 #include <opencog/guile/SchemeModule.h>
 #include <opencog/guile/SchemePrimitive.h>
 
@@ -51,19 +52,24 @@ public:
 #define an as->add_node
 
 /// Decode paramters. A bit ad-hoc, right now.
-void decode_param(const Handle& evli,
+///
+/// The expected encoding for a paramter is
+///    (StateLink
+///       (MemberLink (PredicateNode "param") (ConceptNode "class"))
+///       (Atom "value"))
+/// where "param" is a well-known parameter, "class" is the particular
+/// grouping of paramters we care about, and `(Atom "value")` is the
+/// value for that parameter.
+///
+void decode_param(const Handle& membli,
                   RandomCallback& cb,
                   BasicParameters& basic)
 {
-	// We expect and EvaluationLink. Ah heck, any ordered link
-	// will do...
-	if (not evli->is_link())
-		throw InvalidParamException(TRACE_INFO,
-			"Expecting an ordered link, got %s",
-			evli->to_short_string());
+	Handle statli = StateLink::get_link(membli);
+	if (nullptr == statli) return;
 
-	const Handle& pname = evli->getOutgoingAtom(0);
-	const Handle& pval = evli->getOutgoingAtom(1);
+	const Handle& pname = membli->getOutgoingAtom(0);
+	const Handle& pval = StateLink::get_state(statli);
 
 	// We expect the paramater name in a PredicateNode. Ah heck,
 	// any node will do ...
@@ -132,7 +138,7 @@ Handle GenerateSCM::do_random_aggregate(Handle poles,
 	for (const Handle& membli : memps)
 	{
 		if (*membli->getOutgoingAtom(1) != *params) continue;
-		decode_param(membli->getOutgoingAtom(0), cb, basic);
+		decode_param(membli, cb, basic);
 	}
 
 #if 0
