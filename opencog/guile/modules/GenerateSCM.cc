@@ -69,9 +69,9 @@ void decode_param(const Handle& membli,
 	if (nullptr == statli) return;
 
 	const Handle& pname = membli->getOutgoingAtom(0);
-	const Handle& pval = StateLink::get_state(statli);
+	const Handle& pval = statli->getOutgoingAtom(1);
 
-	// We expect the paramater name in a PredicateNode. Ah heck,
+	// We expect the parameter name in a PredicateNode. Ah heck,
 	// any node will do ...
 	if (not pname->is_node())
 		throw InvalidParamException(TRACE_INFO,

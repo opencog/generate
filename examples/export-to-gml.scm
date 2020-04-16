@@ -55,7 +55,7 @@
 
 ;; OK, just for the heck of it, play around with the close-fraction
 ;; parameter. Then rerun the the graph generation.
-(State (Member close-fraction basic-net-params) (Number 0.2))
+(State (Member close-fraction basic-net-params) (Number 0.0))
 
 ;; etc... cut and paste from above...
 
