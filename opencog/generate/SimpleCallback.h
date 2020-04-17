@@ -57,7 +57,6 @@ private:
 
 	// -------------------------------------------
 	// Nucleation points.
-	HandleSeq _root_points;
 	HandleSeqSeq _root_sections;
 	std::vector<HandleSeq::iterator> _root_iters;
 

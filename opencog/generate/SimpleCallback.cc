@@ -38,7 +38,6 @@ void SimpleCallback::root_set(const HandleSet& roots)
 {
 	for (const Handle& point: roots)
 	{
-		// _root_points.push_back(point); // not needed.
 		_root_sections.push_back(_dict.entries(point));
 		_root_iters.push_back(_root_sections.back().begin());
 	}
