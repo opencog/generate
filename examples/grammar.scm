@@ -87,9 +87,11 @@
 
 ; --------
 ; Do it again, for the other dictionaries.
+#! ---
 (export-to-file
 	(cog-simple-aggregate dir-set dict-loop no-params left-wall)
 	"/tmp/corpus-loop.gml")
+!#
 
 ;; Hush printing when loading this file.
 *unspecified*
