@@ -135,6 +135,15 @@ public:
 	/// odometers. This is maximum diameter of the network, as measured
 	/// from the starting point.
 	size_t max_depth = -1;
+
+	/// Maximum number of odometer steps to take. This needs to be
+	/// capped, as infinite loops are possible, especially with the
+	/// random selector, which, with approrpaite weightings, can
+	/// explosively create infinite networks. (Its potentially
+	/// possible to determine, in advance, if a given weighting scheme
+	/// will create infinite trees, mon average. But this does not seem
+	/// like a high priority task, right now.
+	size_t max_steps = 8121343;
 };
 
 

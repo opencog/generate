@@ -52,6 +52,8 @@ class SimpleCallback :
 {
 private:
 	Dictionary _dict;
+	size_t _steps_taken;
+	size_t _num_solutions_found;
 
 	// -------------------------------------------
 	// Lexical selection
@@ -90,6 +92,7 @@ public:
 	SimpleCallback(AtomSpace*, const Dictionary&);
 	virtual ~SimpleCallback();
 
+	virtual bool step(const Frame&);
 	virtual HandleSeq joints(const Handle& con) {
 		return _dict.joints(con);
 	}

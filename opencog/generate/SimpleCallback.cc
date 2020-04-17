@@ -28,6 +28,8 @@ using namespace opencog;
 SimpleCallback::SimpleCallback(AtomSpace* as, const Dictionary& dict)
 	: GenerateCallback(as), LinkStyle(as), _dict(dict)
 {
+	_steps_taken = 0;
+	_num_solutions_found = 0;
 }
 
 SimpleCallback::~SimpleCallback() {}
@@ -196,7 +198,18 @@ void SimpleCallback::pop_odometer(const Odometer& odo)
 	_lexlit = _lexlit_stack.top(); _lexlit_stack.pop();
 }
 
+bool SimpleCallback::step(const Frame& frm)
+{
+	_steps_taken ++;
+	if (max_steps < _steps_taken) return false;
+	if (max_solutions <= _num_solutions_found) return false;
+	if (max_network_size < frm._linkage.size()) return false;
+	if (max_depth < frm._nodo) return false;
+	return true;
+}
+
 void SimpleCallback::solution(const Frame& frm)
 {
+	_num_solutions_found++;
 	record_solution(frm);
 }

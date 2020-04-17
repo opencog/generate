@@ -34,6 +34,7 @@ RandomCallback::RandomCallback(AtomSpace* as, const Dictionary& dict,
 	_dict(dict), _parms(&parms)
 {
 	_num_solutions_found = 0;
+	_steps_taken = 0;
 
 	max_solutions = 100;
 
@@ -269,6 +270,8 @@ void RandomCallback::pop_frame(const Frame& frm)
 
 bool RandomCallback::step(const Frame& frm)
 {
+	_steps_taken ++;
+	if (max_steps < _steps_taken) return false;
 	if (max_solutions <= _num_solutions_found) return false;
 	if (max_network_size < frm._linkage.size()) return false;
 	if (max_depth < frm._nodo) return false;
