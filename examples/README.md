@@ -17,6 +17,8 @@ The examples are meant to be explored in the order given.
      Generate a random network, and export it to GML for visualztion.
 * [parameters.scm](parameters.scm) --
      Some of the paramaters that control the network generation.
+* [dict-tree](dict-tree.scm) --
+     A simple English-language grammar, with typed edges.
 
 * See the unit-tests directory for more examples... look at them in the
   following order:
