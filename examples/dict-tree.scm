@@ -37,10 +37,12 @@
 
 ; Each word in the dictionary is added by means of a MemberLink.
 ; The name of the dictionary here is `(Concept "dict-tree")`.
+(define dict-tree (Concept "dict-tree"))
+
 ; To keep the example simple and readable, the membership is done
 ; in a giant-sized for-loop.
 (for-each
-	(lambda (sect) (Member sect (Concept "dict-tree")))
+	(lambda (sect) (Member sect dict-tree))
 	(list
 
 		;; All sentences start with the "left wall" -- this is a
