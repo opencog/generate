@@ -50,10 +50,14 @@ class Dictionary
 	/// Pairings of connectors that can joint to one-another.
 	HandlePairSeq _pole_pairs;
 
-	// Map from Connectors to Sections that hold that connector.
-	// This map is set up at the start, before iteration begins.
+	/// Map from Connectors to Sections that hold that connector.
+	/// This map is set up at the start, before iteration begins.
 	//
-	HandleSeqMap _lexis;
+	HandleSeqMap _connectables;
+
+	/// Map from points to Sections rooted at that point.
+	/// This map is set up at the start, before iteration begins.
+	HandleSeqMap _entries;
 
 public:
 	Dictionary(AtomSpace*);
@@ -66,9 +70,10 @@ public:
 	void add_to_lexis(const HandleSet& lex) {
 		for (const Handle& h: lex) add_to_lexis(h);
 	}
-	void sort_lexis(const Handle&);
+	// void sort_lexis(const Handle&);
 
-	const HandleSeq& sections(const Handle&) const;
+	const HandleSeq& connectables(const Handle&) const;
+	const HandleSeq& entries(const Handle&) const;
 };
 
 

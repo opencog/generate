@@ -65,7 +65,7 @@ Handle RandomCallback::select_from_lexis(const Frame& frame,
                                const Handle& fm_sect, size_t offset,
                                const Handle& to_con)
 {
-	const HandleSeq& to_sects = _dict.sections(to_con);
+	const HandleSeq& to_sects = _dict.connectables(to_con);
 
 	// Oh no, dead end!
 	if (0 == to_sects.size()) return Handle::UNDEFINED;

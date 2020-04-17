@@ -87,26 +87,35 @@ void Dictionary::add_to_lexis(const Handle& sect)
 	// with Predicate "lexis", and then using the AtomSpace API to
 	// access... Just sayin...
 	//
-	// Anyway, this is a lookup table: given a connector, we can lookup
-	// a list of sections that have that connector in it. We're using
-	// a sequence, not a set, for two reasons: (1) fast random lookup,
+
+	// First lookup table: given a point, create a list of all the
+	// sections it belongs to.
+	Handle point = sect->getOutgoingAtom(0);
+	HandleSeq slist = _entries[point];
+	slist.push_back(sect);
+	_entries[point] = slist;
+
+	// Second lookup table: given a connector, we can lookup a list
+	// of sections that have that connector in it. We're using a
+	// sequence, not a set, for two reasons: (1) fast random lookup,
 	// and (2) the sequence can be ordered in priority order.
 	//
 	Handle con_seq = sect->getOutgoingAtom(1);
 	for (const Handle& con : con_seq->getOutgoingSet())
 	{
-		HandleSeq sect_list = _lexis[con];
+		HandleSeq sect_list = _connectables[con];
 
 		// Only allow unique entries
 		auto found = std::find(sect_list.begin(), sect_list.end(), sect);
 		if (sect_list.end() == found)
 		{
 			sect_list.push_back(sect);
-			_lexis[con] = sect_list;
+			_connectables[con] = sect_list;
 		}
 	}
 }
 
+#if NOT_NEEDED_RIGHT_NOW
 /// Sort the list of sections containing some connecter into weighted
 /// order, by acessing the weights located at the predicate key.
 ///
@@ -132,21 +141,31 @@ void Dictionary::sort_lexis(const Handle& predicate)
 
 	bigger.pred = predicate;
 
-	for (auto& pr: _lexis)
+	for (auto& pr: _connectables)
 	{
 		HandleSeq& seq = pr.second;
 		std::sort(seq.begin(), seq.end(), bigger);
 	}
 }
+#endif
 
 /// Given a Connector, return a list of all of the Sections that
 /// the connector appears in.
-const HandleSeq& Dictionary::sections(const Handle& connector) const
+const HandleSeq& Dictionary::connectables(const Handle& connector) const
 {
 	static HandleSeq empty;
 
-	const auto& its = _lexis.find(connector);
-	if (its == _lexis.end()) return empty;
+	const auto& its = _connectables.find(connector);
+	if (its == _connectables.end()) return empty;
 
 	return its->second;
+}
+
+const HandleSeq& Dictionary::entries(const Handle& point) const
+{
+	static HandleSeq empty_set;
+	const auto ice = _entries.find(point);
+	if (_entries.end() == ice) return empty_set;
+
+	return ice->second;
 }

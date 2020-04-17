@@ -51,7 +51,7 @@ Handle SimpleCallback::select_from_lexis(const Frame& frame,
                                const Handle& fm_sect, size_t offset,
                                const Handle& to_con)
 {
-	const HandleSeq& to_sects = _dict.sections(to_con);
+	const HandleSeq& to_sects = _dict.connectables(to_con);
 
 	// Do we have an iterator (a future/promise) for the to-connector?
 	// If not, then set one up. Else use the one we found.  The iterator
