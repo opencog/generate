@@ -52,6 +52,11 @@ private:
 	size_t _steps_taken;
 
 	// -------------------------------------------
+	// Nucleation points.
+	HandleSeqSeq _root_sections;
+	std::vector<std::discrete_distribution<size_t>> _root_dist;
+
+	// -------------------------------------------
 	// Lexical selection
 	Handle select_from_lexis(const Frame&,
 	                         const Handle&, size_t,

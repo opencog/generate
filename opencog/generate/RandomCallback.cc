@@ -52,11 +52,47 @@ static std::mt19937 rangen(seed());
 
 void RandomCallback::root_set(const HandleSet& roots)
 {
+	size_t i = 0;
+	for (const Handle& point: roots)
+	{
+		HandleSeq sects(_dict.entries(point));
+		_root_sections.push_back(sects);
+
+		// Create a discrete distribution. This will randomly pick
+		// an index into the `root_sections` array. The weight of
+		// each index is given by the pdf aka "probability distribution
+		// function".  The pdf is just given by the weighting-key
+		// hanging off the section (in a FloatValue).
+		std::vector<double> pdf;
+		for (const Handle& sect: sects)
+		{
+			FloatValuePtr fvp(FloatValueCast(sect->getValue(_weight_key)));
+			if (fvp)
+				pdf.push_back(fvp->value()[0]);
+			else
+				pdf.push_back(0.0);
+		}
+		std::discrete_distribution<size_t> dist(pdf.begin(), pdf.end());
+		_root_dist[i] = dist;
+		i++;
+	}
 }
 
 HandleSet RandomCallback::next_root(void)
 {
-	return HandleSet();
+	static HandleSet empty_set;
+	size_t len = _root_sections.size();
+	if (len == 0) return empty_set;
+
+	// Random drawing.
+	HandleSet starters;
+	for (size_t i=0; i<len; i++)
+	{
+		size_t idx = _root_dist[i](rangen);
+		starters.insert(_root_sections[i][idx]);
+	}
+
+	return starters;
 }
 
 /// Return a section containing `to_con`.
@@ -82,7 +118,7 @@ Handle RandomCallback::select_from_lexis(const Frame& frame,
 	// Create a discrete distribution. This will randomly pick an
 	// index into the `to_sects` array. The weight of each index
 	// is given by the pdf aka "probability distribution function".
-	// The pdf is just given by the weighting-key haning off the
+	// The pdf is just given by the weighting-key hanging off the
 	// section (in a FloatValue).
 	std::vector<double> pdf;
 	for (const Handle& sect: to_sects)
