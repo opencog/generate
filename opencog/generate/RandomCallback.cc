@@ -52,7 +52,6 @@ static std::mt19937 rangen(seed());
 
 void RandomCallback::root_set(const HandleSet& roots)
 {
-	size_t i = 0;
 	for (const Handle& point: roots)
 	{
 		HandleSeq sects(_dict.entries(point));
@@ -73,8 +72,7 @@ void RandomCallback::root_set(const HandleSet& roots)
 				pdf.push_back(0.0);
 		}
 		std::discrete_distribution<size_t> dist(pdf.begin(), pdf.end());
-		_root_dist[i] = dist;
-		i++;
+		_root_dist.push_back(dist);
 	}
 }
 
