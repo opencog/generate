@@ -36,6 +36,10 @@ SimpleCallback::~SimpleCallback() {}
 
 void SimpleCallback::root_set(const HandleSet& roots)
 {
+	// Might be getting re-used.
+	_root_sections.clear();
+	_root_iters.clear();
+
 	for (const Handle& point: roots)
 	{
 		_root_sections.push_back(_dict.entries(point));
