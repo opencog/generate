@@ -71,9 +71,9 @@ HandleSet SimpleCallback::next_root(void)
 			_root_iters[i] = iter;
 			_root_iters[i+1] ++;
 		}
-		else
+		else if (0 == i)
 		{
-			_root_iters[i]++;
+			_root_iters[0]++;
 		}
 		starters.insert(*iter);
 	}
