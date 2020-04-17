@@ -56,30 +56,30 @@ void Aggregate::clear(void)
 /// The nuclei are the nucleation points: points that must
 /// appear in sections, some section of which must be linkable.
 ///
-/// pol_pairs is a list of polarization pairs, i.e.
-/// match pairs of ConnectorDir pairs (from, to) which
-/// are to be connected.
 void Aggregate::aggregate(const HandleSet& nuclei,
-                            GenerateCallback& cb)
+                          GenerateCallback& cb)
 {
 	clear();
 	_cb = &cb;
-	_frame._open_points = nuclei;
-
-	// Pick a point, any point.
-	// XXX TODO replace this by a heuristic of some kind.
-	Handle nucleus = *_frame._open_points.begin();
-
-	HandleSeq sections = nucleus->getIncomingSetByType(SECTION);
 
 	// Link style should be configurable, part of the callback.
-	// so thi is a hack for now, XXX FIXME.
+	// so this is a hack for now, XXX FIXME.
 	LinkStyle lsu(_as);
-	for (const Handle& sect : sections)
+
+	// Set it up and go.
+	_frame._open_points = nuclei;
+	_cb->root_set(nuclei);
+	while (true)
 	{
-		Handle usect(lsu.create_unique_section(sect));
+		HandleSet starters = _cb->next_root();
+		if (starters.size() == 0) break;
+
 		push_frame();
-		_frame._open_sections.insert(usect);
+		for (const Handle& sect : starters)
+		{
+			Handle usect(lsu.create_unique_section(sect));
+			_frame._open_sections.insert(usect);
+		}
 		recurse();
 		pop_frame();
 	}

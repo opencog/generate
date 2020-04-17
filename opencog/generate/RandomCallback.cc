@@ -50,6 +50,15 @@ RandomCallback::~RandomCallback() {}
 static std::random_device seed;
 static std::mt19937 rangen(seed());
 
+void RandomCallback::root_set(const HandleSet& roots)
+{
+}
+
+HandleSet RandomCallback::next_root(void)
+{
+	return HandleSet();
+}
+
 /// Return a section containing `to_con`.
 /// Pick a new section from the lexis.
 Handle RandomCallback::select_from_lexis(const Frame& frame,

@@ -56,6 +56,11 @@ private:
 	size_t _num_solutions_found;
 
 	// -------------------------------------------
+	// Nucleation points.
+	HandleSet _root_set;
+	// std::set<
+
+	// -------------------------------------------
 	// Lexical selection
 	Handle select_from_lexis(const Frame&,
 	                         const Handle&, size_t,
@@ -96,6 +101,10 @@ public:
 	virtual HandleSeq joints(const Handle& con) {
 		return _dict.joints(con);
 	}
+
+	virtual void root_set(const HandleSet&);
+	virtual HandleSet next_root(void);
+
 	virtual Handle select(const Frame&,
 	                      const Handle&, size_t,
 	                      const Handle&);

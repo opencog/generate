@@ -34,6 +34,17 @@ SimpleCallback::SimpleCallback(AtomSpace* as, const Dictionary& dict)
 
 SimpleCallback::~SimpleCallback() {}
 
+void SimpleCallback::root_set(const HandleSet& roots)
+{
+	_root_set = roots;
+}
+
+HandleSet SimpleCallback::next_root(void)
+{
+	if (_root_set.size() == 0) return HandleSet();
+	return HandleSet();
+}
+
 /// Return a section containing `to_con`.
 /// Pick a new section from the lexis.
 Handle SimpleCallback::select_from_lexis(const Frame& frame,

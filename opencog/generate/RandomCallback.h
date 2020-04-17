@@ -86,6 +86,9 @@ public:
 
 	void set_weight_key(const Handle& pred) { _weight_key = pred; }
 
+	virtual void root_set(const HandleSet&);
+	virtual HandleSet next_root(void);
+
 	virtual HandleSeq joints(const Handle& con) {
 		return _dict.joints(con);
 	}

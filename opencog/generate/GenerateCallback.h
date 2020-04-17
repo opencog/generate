@@ -53,6 +53,17 @@ public:
 	GenerateCallback(AtomSpace* as) {}
 	virtual ~GenerateCallback() {}
 
+	/// Declare a set of initial starting (nucleation) points.  The
+	/// generated graph will grow outwards from these points.
+	virtual void root_set(const HandleSet& points) = 0;
+
+	/// Iterator, returning the next untried initial starting (nucleation)
+	/// sections. These are meant to be a set of sections, containing
+	/// the nucleation points, from which the graph generation can grow.
+	/// The nucleation points were previously declated by `root_set()`.
+	/// Returns the emtpy set, when there is no more to be done.
+	virtual HandleSet next_root(void) = 0;
+
 	/// Given a connector, return a set of matching connectors
 	/// that this particular connector could connect to. This
 	/// set may be empty, or may contain more than one match.

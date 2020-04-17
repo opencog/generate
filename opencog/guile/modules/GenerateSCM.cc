@@ -164,12 +164,6 @@ Handle GenerateSCM::do_random_aggregate(Handle poles,
 	// Decode the parameters.
 	decode_params(params, cb, basic);
 
-#if 0
-logger().set_print_to_stdout_flag(true);
-logger().set_timestamp_flag(false);
-logger().set_level(Logger::FINE);
-#endif
-
 	Aggregate ag(as);
 	ag.aggregate({root}, cb);
 
