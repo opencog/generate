@@ -71,7 +71,6 @@ void Aggregate::aggregate(const HandleSet& nuclei,
 	LinkStyle lsu(_as);
 
 	// Set it up and go.
-	_frame._open_points = nuclei;
 	_cb->root_set(nuclei);
 	while (true)
 	{
