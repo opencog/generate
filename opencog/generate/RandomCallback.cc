@@ -76,11 +76,16 @@ void RandomCallback::root_set(const HandleSet& roots)
 	}
 }
 
+/// Perform a random draw of root sections.
 HandleSet RandomCallback::next_root(void)
 {
 	static HandleSet empty_set;
 	size_t len = _root_sections.size();
 	if (len == 0) return empty_set;
+
+	// Stop iterating if limits have been reached.
+	if (max_steps < _steps_taken) return empty_set;
+	if (max_solutions <= _num_solutions_found) return empty_set;
 
 	// Random drawing.
 	HandleSet starters;

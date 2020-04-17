@@ -43,11 +43,18 @@ void SimpleCallback::root_set(const HandleSet& roots)
 	}
 }
 
+/// Return the next unexplored set of root sections. This will
+/// exhaustively explore all permutations, unless earlier
+/// termination criteria are met.
 HandleSet SimpleCallback::next_root(void)
 {
 	static HandleSet empty_set;
 	size_t len = _root_iters.size();
 	if (len == 0) return empty_set;
+
+	// Stop iterating if limits have been reached.
+	if (max_steps < _steps_taken) return empty_set;
+	if (max_solutions <= _num_solutions_found) return empty_set;
 
 	// This implements a kind-of odometer. It cycles through each
 	// of the sections for each of the starting points. It does
