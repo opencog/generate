@@ -45,6 +45,7 @@ void SimpleCallback::clear(void)
 	_root_iters.clear();
 	_steps_taken = 0;
 	_num_solutions_found = 0;
+	CollectStyle::clear();
 }
 
 void SimpleCallback::root_set(const HandleSet& roots)

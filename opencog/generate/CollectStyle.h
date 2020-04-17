@@ -43,6 +43,7 @@ public:
 	CollectStyle(void);
 	~CollectStyle();
 
+	void clear(void) { _solutions.clear(); }
 	void record_solution(const Frame&);
 
 	std::set<HandleSet> get_solution_set(void) { return _solutions; }

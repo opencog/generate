@@ -61,6 +61,7 @@ void RandomCallback::clear(void)
 	_distmap.clear();
 	_num_solutions_found = 0;
 	_steps_taken = 0;
+	CollectStyle::clear();
 }
 
 void RandomCallback::root_set(const HandleSet& roots)
