@@ -414,6 +414,7 @@ void AggregationUTest::test_multi_root()
 	setup_dict();
 	SimpleCallback cb(as, *dict);
 
+	// ----------------------------------------------------
 	ag->aggregate({wall, black}, cb);
 	Handle result = cb.get_solutions();
 
@@ -427,6 +428,48 @@ void AggregationUTest::test_multi_root()
 	// only might/could in the parse.
 	// printf("Parse is %s\n", result->getOutgoingAtom(0)->to_string().c_str());
 	int cnt = 0;
+	for (const Handle& soln: result->getOutgoingSet())
+	{
+		logger().debug("   Soln %d expecting 10 words, got %d",
+			++cnt, soln->get_arity());
+		TSM_ASSERT("Bad section!", soln->get_arity() == 10);
+	}
+
+	// ----------------------------------------------------
+	ag->aggregate({wall, black, dog}, cb);
+	result = cb.get_solutions();
+
+	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
+
+	// printf("wall,black result is %s\n", result->to_string().c_str());
+	printf("wall,black,dog result size is %lu expecting 2\n", result->get_arity());
+	TSM_ASSERT("Bad loop result set!", result->get_arity() == 2);
+
+	// All of the solutions should be the same size, substituting
+	// only might/could in the parse.
+	// printf("Parse is %s\n", result->getOutgoingAtom(0)->to_string().c_str());
+	cnt = 0;
+	for (const Handle& soln: result->getOutgoingSet())
+	{
+		logger().debug("   Soln %d expecting 10 words, got %d",
+			++cnt, soln->get_arity());
+		TSM_ASSERT("Bad section!", soln->get_arity() == 10);
+	}
+
+	// ----------------------------------------------------
+	ag->aggregate({wall, black, dog, bark}, cb);
+	result = cb.get_solutions();
+
+	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
+
+	// printf("wall,black result is %s\n", result->to_string().c_str());
+	printf("wall,black,dog,bark result size is %lu expecting 1\n", result->get_arity());
+	TSM_ASSERT("Bad loop result set!", result->get_arity() == 1);
+
+	// All of the solutions should be the same size, substituting
+	// only might/could in the parse.
+	// printf("Parse is %s\n", result->getOutgoingAtom(0)->to_string().c_str());
+	cnt = 0;
 	for (const Handle& soln: result->getOutgoingSet())
 	{
 		logger().debug("   Soln %d expecting 10 words, got %d",
