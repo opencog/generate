@@ -28,13 +28,14 @@
 #include <opencog/generate/Dictionary.h>
 #include <opencog/generate/BasicParameters.h>
 #include <opencog/generate/RandomCallback.h>
+#include <opencog/generate/SimpleCallback.h>
 
 using namespace opencog;
 namespace opencog {
 
 /**
  * Scheme wrapper for the generation code. Quick Hack.
- * Completely wrong and terrible bad API.  XXX FIXME.
+ * Mediocre, ugly-ish API.  XXX FIXME.
  */
 
 class GenerateSCM : public ModuleWrap
@@ -43,14 +44,13 @@ protected:
 	virtual void init();
 
 	Handle do_random_aggregate(Handle, Handle, Handle, Handle, Handle);
+	Handle do_simple_aggregate(Handle, Handle, Handle, Handle);
 
 public:
 	GenerateSCM();
 };
 
-#define al as->add_link
-#define an as->add_node
-
+// ----------------------------------------------------------------
 /// Decode parameters. A bit ad-hoc, right now.
 ///
 /// The expected encoding for a paramter is
@@ -178,6 +178,30 @@ logger().set_level(Logger::FINE);
 	return result;
 }
 
+// ----------------------------------------------------------------
+/// C++ implementation of the scheme function.
+Handle GenerateSCM::do_simple_aggregate(Handle poles,
+                                        Handle lexis,
+                                        Handle params,
+                                        Handle root)
+{
+	AtomSpace* as = SchemeSmob::ss_get_env_as("cog-simple-aggregate");
+
+	Dictionary dict(decode_lexis(as, poles, lexis));
+
+	BasicParameters basic;
+	SimpleCallback cb(as, dict);
+	decode_params(params, cb, basic);
+
+	Aggregate ag(as);
+	ag.aggregate({root}, cb);
+
+	Handle result = cb.get_solutions();
+	result = as->add_atom(result);
+	return result;
+}
+
+// ----------------------------------------------------------------
 } /*end of namespace opencog*/
 
 GenerateSCM::GenerateSCM() : ModuleWrap("opencog generate") {}
@@ -199,3 +223,5 @@ void opencog_generate_init(void)
 	 static GenerateSCM generate_scm;
 	 generate_scm.module_init();
 }
+
+// --------------------- END OF FILE -----------------------
