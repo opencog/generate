@@ -51,6 +51,10 @@ void Aggregate::clear(void)
 	while (not _frame_stack.empty()) _frame_stack.pop();
 	while (not _odo_sections.empty()) _odo_sections.pop();
 	while (not _odo_stack.empty()) _odo_stack.pop();
+
+	_frame.clear();
+	_odo.clear();
+	_cb->clear();
 }
 
 /// The nuclei are the nucleation points: points that must
@@ -59,8 +63,8 @@ void Aggregate::clear(void)
 void Aggregate::aggregate(const HandleSet& nuclei,
                           GenerateCallback& cb)
 {
-	clear();
 	_cb = &cb;
+	clear();
 
 	// Link style should be configurable, part of the callback.
 	// so this is a hack for now, XXX FIXME.

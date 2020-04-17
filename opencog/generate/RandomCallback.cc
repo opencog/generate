@@ -50,6 +50,19 @@ RandomCallback::~RandomCallback() {}
 static std::random_device seed;
 static std::mt19937 rangen(seed());
 
+void RandomCallback::clear(void)
+{
+	while (not _opensel_stack.empty()) _opensel_stack.pop();
+	_opensel._opensect.clear();
+	_opensel._opendi.clear();
+
+	_root_sections.clear();
+	_root_dist.clear();
+	_distmap.clear();
+	_num_solutions_found = 0;
+	_steps_taken = 0;
+}
+
 void RandomCallback::root_set(const HandleSet& roots)
 {
 	for (const Handle& point: roots)

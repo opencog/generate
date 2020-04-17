@@ -34,11 +34,23 @@ SimpleCallback::SimpleCallback(AtomSpace* as, const Dictionary& dict)
 
 SimpleCallback::~SimpleCallback() {}
 
+void SimpleCallback::clear(void)
+{
+	while (not _lexlit_stack.empty()) _lexlit_stack.pop();
+	while (not _opensel_stack.empty()) _opensel_stack.pop();
+	_lexlit.clear();
+	_opensel._opensect.clear();
+	_opensel._openit.clear();
+	_root_sections.clear();
+	_root_iters.clear();
+	_steps_taken = 0;
+	_num_solutions_found = 0;
+}
+
 void SimpleCallback::root_set(const HandleSet& roots)
 {
 	// Might be getting re-used.
-	_root_sections.clear();
-	_root_iters.clear();
+	clear();
 
 	for (const Handle& point: roots)
 	{

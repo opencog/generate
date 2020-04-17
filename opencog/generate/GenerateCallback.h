@@ -53,6 +53,11 @@ public:
 	GenerateCallback(AtomSpace* as) {}
 	virtual ~GenerateCallback() {}
 
+	/// Callbacks are allowed to keep dynamical state. Callbacks are
+	/// allowed to be reused for multiple generations. This gives the
+	// callback the opportunity to clear dynamical state.
+	virtual void clear(void) = 0;
+
 	/// Declare a set of initial starting (nucleation) points.  The
 	/// generated graph will grow outwards from these points.
 	virtual void root_set(const HandleSet& points) = 0;

@@ -27,6 +27,25 @@
 
 using namespace opencog;
 
+void Frame::clear(void)
+{
+	_open_points.clear();
+	_open_sections.clear();
+	_linkage.clear();
+	_nodo = -1;
+	_wheel = -1;
+}
+
+void Odometer::clear(void)
+{
+	_sections.clear();
+	_from_index.clear();
+	_to_connectors.clear();
+	_size = 0;
+	_step = -1;
+	_frame_depth = 0;
+}
+
 // =================================================================
 // Debug printing utilities.
 // Current printing format makes assumptions about connectors

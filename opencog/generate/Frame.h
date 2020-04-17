@@ -48,6 +48,7 @@ struct Frame
 	size_t _nodo;
 	size_t _wheel;
 
+	void clear(void);
 	void print(void) const;
 
 	static void print_section(const Handle&);
@@ -80,6 +81,7 @@ struct Odometer
 	/// The correspoding frame-stack depth, when this odo was created.
 	size_t _frame_depth;
 
+	void clear(void);
 	void print_odometer(const Frame&) const;
 	void print_wheel(const Frame&, size_t) const;
 };
