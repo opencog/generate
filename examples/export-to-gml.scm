@@ -60,7 +60,7 @@
 ;;
 (State (Member close-fraction basic-net-params) (Number 0))
 
-;; May as well ask for just oe tree, from the outset.
+;; May as well ask for just one tree, from the outset.
 (State (Member max-solutions basic-net-params) (Number 1))
 ;;
 ;; Go!  Just cut-n-paste from above, and do it again...

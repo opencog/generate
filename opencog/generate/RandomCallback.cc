@@ -269,7 +269,7 @@ void RandomCallback::pop_frame(const Frame& frm)
 
 bool RandomCallback::step(const Frame& frm)
 {
-	if (max_solutions < _num_solutions_found) return false;
+	if (max_solutions <= _num_solutions_found) return false;
 	if (max_network_size < frm._linkage.size()) return false;
 	if (max_depth < frm._nodo) return false;
 	return true;
