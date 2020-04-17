@@ -143,7 +143,8 @@ public:
 	/// possible to determine, in advance, if a given weighting scheme
 	/// will create infinite trees, mon average. But this does not seem
 	/// like a high priority task, right now.
-	size_t max_steps = 8121343;
+	/// (2016 vintage CPU run at approx 1.2K steps/second).
+	size_t max_steps = 250101;
 };
 
 

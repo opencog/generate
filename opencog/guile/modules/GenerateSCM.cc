@@ -89,11 +89,14 @@ void decode_param(const Handle& membli,
 	if (0 == sname.compare("*-max-solutions-*"))
 		cb.max_solutions = dval;
 
+	if (0 == sname.compare("*-max-steps-*"))
+		cb.max_steps = dval;
+
 	else if (0 == sname.compare("*-close-fraction-*"))
 		basic.close_fraction = dval;
 }
 
-/// C++ implementation of teh scheme function.
+/// C++ implementation of the scheme function.
 Handle GenerateSCM::do_random_aggregate(Handle poles,
                                         Handle lexis,
                                         Handle weight,

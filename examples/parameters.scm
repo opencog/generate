@@ -23,8 +23,19 @@
 ; generator.
 (define close-fraction (Predicate "*-close-fraction-*"))
 
+; Maximum number of odometer steps to take, when searching for a
+; solution. It's not hard to specify grammars with weighting that lead
+; to infinite trees, (i.e. are infinitely recursive) and so it's
+; important to be able to halt exploration in such cases.
+;
+; CPU's of 2016 vintage run approx 1.2K steps/second (obviously,
+; this will be grammar dependent.)
+(define max-steps (Predicate "*-max-steps-*"))
+
+; --------------------------------------------------------------
 ; The parameters that are used for the `basic-network.scm` demo.
 (define basic-net-params (Concept "Basic network demo"))
 
 (State (Member max-solutions basic-net-params) (Number 10))
 (State (Member close-fraction basic-net-params) (Number 0.5))
+(State (Member max-steps basic-net-params) (Number 123123))
