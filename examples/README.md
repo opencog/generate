@@ -17,26 +17,29 @@ The examples are meant to be explored in the order given.
      Generate a random network, and export it to GML for visualztion.
 * [parameters.scm](parameters.scm) --
      Some of the paramaters that control the network generation.
+
+The next batch of examples define simple English-language grammars that
+encode dependency relations. These are written in the style of Link
+Grammar (LG). In LG, dependencies can consist of directed or undirected
+edges; the examples all use undirected edges. Unlike the above, the
+edges have different types, indicating the type of dependency (subject,
+object, adjective, determiner, etc.). In LG, the parse "tree" does not
+need to be strictly a tree; it may contain loops (loops, in general,
+serve not only to indicate secondary, interesting relationships, but
+also serve to constrain the parse itself.)
+
 * [dict-tree](dict-tree.scm) --
-     A simple English-language grammar, with typed edges, generating a
-     dependency tree.
+     A simple grammar, with typed edges, generating a dependency tree.
 * [dict-loop](dict-loop.scm) --
-     A simple grammar generating a dependency tree that includes a loop.
+     A simple grammar generating a dependency graph that includes a loop.
+* [dict-triquad](dict-triquad.scm) --
+     A grammar generating a dependency graph that consists of three
+     quadrilaterals.
 * [dict-mixed](dict-mixed.scm) --
-     A grammar generating a dependency tree with a mixture of loops and
+     A grammar generating a dependency graph with a mixture of loops and
      trees.
 * [grammar](grammar.scm) --
-     Generating a (small) corpus of sentences from a (small) grammar.
-
-* See the unit-tests directory for more examples... look at them in the
-  following order:
-   + dict-loop.scm   -- Cyclic graph with edge types.
-   + dict-biloop.scm -- Graph with two cycles (triangles).
-   + dict-quad.scm   -- Graph where the cycle is a square.
-   + dict-mixed.scm  -- Mixture of cycles.
-
-These go through a series of lexis that generate increasingly
-sophisticated networks. All of the examples are "linguistic",
-with the linking constrainted by explit edge-types.
+     The demo itself, employing the above dictionaries to generate a
+     (small) corpus of sentences.
 
 That's all for now!

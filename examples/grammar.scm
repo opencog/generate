@@ -18,6 +18,7 @@
 ; example. Load all of them.  Each one defines a diffferent dictionary.
 (load "dict-tree.scm")
 (load "dict-loop.scm")
+(load "dict-triquad.scm")
 (load "dict-mixed.scm")
 
 ; --------
@@ -91,6 +92,10 @@
 (export-to-file
 	(cog-simple-aggregate dir-set dict-loop no-params left-wall)
 	"/tmp/corpus-loop.gml")
+
+(export-to-file
+	(cog-simple-aggregate dir-set dict-triquad no-params left-wall)
+	"/tmp/corpus-triquad.gml")
 
 (export-to-file
 	(cog-simple-aggregate dir-set dict-mixed no-params left-wall)
