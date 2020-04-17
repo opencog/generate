@@ -36,13 +36,38 @@ SimpleCallback::~SimpleCallback() {}
 
 void SimpleCallback::root_set(const HandleSet& roots)
 {
-	_root_set = roots;
+	for (const Handle& point: roots)
+	{
+		// _root_points.push_back(point); // not needed.
+		_root_sections.push_back(_dict.entries(point));
+		_root_iters.push_back(_root_sections.back().begin());
+	}
 }
 
 HandleSet SimpleCallback::next_root(void)
 {
-	if (_root_set.size() == 0) return HandleSet();
-	return HandleSet();
+	static HandleSet empty_set;
+	size_t len = _root_iters.size();
+	if (len == 0) return empty_set;
+
+	// This implements a kind-of odometer. It cycles through each
+	// of the sections for each of the starting points. It does
+	// this by keeping a sequence of iterators, bumping each
+	// iterator in turn, when the previous one rolls over.
+	HandleSet starters;
+	for (size_t i=0; i<len; i++)
+	{
+		auto iter = _root_iters[i];
+		if (_root_sections[i].end() == iter)
+		{
+			if (len-1 == i) return empty_set;
+			iter = _root_sections[i].begin();
+			_root_iters[i] = iter;
+			_root_iters[i+1] ++;
+		}
+		starters.insert(*iter);
+	}
+	return starters;
 }
 
 /// Return a section containing `to_con`.
