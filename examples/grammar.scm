@@ -17,6 +17,7 @@
 ; There are several different grammars that will be used in this
 ; example. Load all of them.  Each one defines a diffferent dictionary.
 (load "dict-tree.scm")
+(load "dict-loop.scm")
 
 ; --------
 ;; All sentences start with the "left wall" -- this is a "word" at the
@@ -82,7 +83,13 @@
 (cog-arity tree-set)
 
 ; Write the corpus of sentences out to a file (in GML format).
-(export-to-file tree-set "/tmp/tree-corpus.gml")
+(export-to-file tree-set "/tmp/corpus-tree.gml")
+
+; --------
+; Do it again, for the other dictionaries.
+(export-to-file
+	(cog-simple-aggregate dir-set dict-loop no-params left-wall)
+	"/tmp/corpus-loop.gml")
 
 ;; Hush printing when loading this file.
 *unspecified*
