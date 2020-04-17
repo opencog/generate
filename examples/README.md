@@ -19,11 +19,11 @@ The examples are meant to be explored in the order given.
      Some of the paramaters that control the network generation.
 * [dict-tree](dict-tree.scm) --
      A simple English-language grammar, with typed edges.
+* [grammar](grammar.scm) --
+     Generating a (small) corpus of sentences from a (small) grammar.
 
 * See the unit-tests directory for more examples... look at them in the
   following order:
-   + dict-helloworld.scm -- Multiple edge types.
-   + dict-tree.scm   -- Tree graph with edge types.
    + dict-loop.scm   -- Cyclic graph with edge types.
    + dict-biloop.scm -- Graph with two cycles (triangles).
    + dict-quad.scm   -- Graph where the cycle is a square.

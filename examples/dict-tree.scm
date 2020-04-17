@@ -32,46 +32,58 @@
 ; Each "word" is a point in the section. Each section indicates the
 ; kinds of connectors it can attach to.
 ;
+(use-modules (srfi srfi-1))
 (use-modules (opencog))
 
-(define left-wall (Concept "LEFT-WALL"))
+; Each word in the dictionary is added by means of a MemberLink.
+; The name of the dictionary here is `(Concept "dict-tree")`.
+; To keep the example simple and readable, the membership is done
+; in a giant-sized for-loop.
+(for-each
+	(lambda (sect) (Member sect (Concept "dict-tree")))
+	(list
 
-(Section
-	(Concept "LEFT-WALL")
-	(ConnectorSeq
-		(Connector (Concept "W") (ConnectorDir "+"))))
+		;; All sentences start with the "left wall" -- this is a
+		;; "word" at the start of the sentence, which serves as the
+		;; root to which subsequent words will be attached.
+		(Section
+			(Concept "LEFT-WALL")
+			(ConnectorSeq
+				(Connector (Concept "W") (ConnectorDir "+"))))
 
-(Section
-	(Concept "John")
-	(ConnectorSeq
-		(Connector (Concept "W") (ConnectorDir "-"))
-		(Connector (Concept "S") (ConnectorDir "+"))))
+		(Section
+			(Concept "John")
+			(ConnectorSeq
+				(Connector (Concept "W") (ConnectorDir "-"))
+				(Connector (Concept "S") (ConnectorDir "+"))))
 
-(Section
-	(Concept "Mary")
-	(ConnectorSeq
-		(Connector (Concept "W") (ConnectorDir "-"))
-		(Connector (Concept "S") (ConnectorDir "+"))))
+		(Section
+			(Concept "Mary")
+			(ConnectorSeq
+				(Connector (Concept "W") (ConnectorDir "-"))
+				(Connector (Concept "S") (ConnectorDir "+"))))
 
-(Section
-	(Concept "saw")
-	(ConnectorSeq
-		(Connector (Concept "S") (ConnectorDir "-"))
-		(Connector (Concept "O") (ConnectorDir "+"))))
+		(Section
+			(Concept "saw")
+			(ConnectorSeq
+				(Connector (Concept "S") (ConnectorDir "-"))
+				(Connector (Concept "O") (ConnectorDir "+"))))
 
-(Section
-	(Concept "a")
-	(ConnectorSeq
-		(Connector (Concept "D") (ConnectorDir "+"))))
+		(Section
+			(Concept "a")
+			(ConnectorSeq
+				(Connector (Concept "D") (ConnectorDir "+"))))
 
-(Section
-	(Concept "cat")
-	(ConnectorSeq
-		(Connector (Concept "D") (ConnectorDir "-"))
-		(Connector (Concept "O") (ConnectorDir "-"))))
+		(Section
+			(Concept "cat")
+			(ConnectorSeq
+				(Connector (Concept "D") (ConnectorDir "-"))
+				(Connector (Concept "O") (ConnectorDir "-"))))
 
-(Section
-	(Concept "dog")
-	(ConnectorSeq
-		(Connector (Concept "D") (ConnectorDir "-"))
-		(Connector (Concept "O") (ConnectorDir "-"))))
+		(Section
+			(Concept "dog")
+			(ConnectorSeq
+				(Connector (Concept "D") (ConnectorDir "-"))
+				(Connector (Concept "O") (ConnectorDir "-"))))
+
+)) ; End of the for-each loop.
