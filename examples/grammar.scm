@@ -18,6 +18,7 @@
 ; example. Load all of them.  Each one defines a diffferent dictionary.
 (load "dict-tree.scm")
 (load "dict-loop.scm")
+(load "dict-mixed.scm")
 
 ; --------
 ;; All sentences start with the "left wall" -- this is a "word" at the
@@ -87,11 +88,13 @@
 
 ; --------
 ; Do it again, for the other dictionaries.
-#! ---
 (export-to-file
 	(cog-simple-aggregate dir-set dict-loop no-params left-wall)
 	"/tmp/corpus-loop.gml")
-!#
+
+(export-to-file
+	(cog-simple-aggregate dir-set dict-mixed no-params left-wall)
+	"/tmp/corpus-mixed.gml")
 
 ;; Hush printing when loading this file.
 *unspecified*

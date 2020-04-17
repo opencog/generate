@@ -18,7 +18,13 @@ The examples are meant to be explored in the order given.
 * [parameters.scm](parameters.scm) --
      Some of the paramaters that control the network generation.
 * [dict-tree](dict-tree.scm) --
-     A simple English-language grammar, with typed edges.
+     A simple English-language grammar, with typed edges, generating a
+     dependency tree.
+* [dict-loop](dict-loop.scm) --
+     A simple grammar generating a dependency tree that includes a loop.
+* [dict-mixed](dict-mixed.scm) --
+     A grammar generating a dependency tree with a mixture of loops and
+     trees.
 * [grammar](grammar.scm) --
      Generating a (small) corpus of sentences from a (small) grammar.
 
