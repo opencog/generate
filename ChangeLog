@@ -1,14 +1,17 @@
+Version 0.1.0 (17 April 2020)
+ * Multiple examples of simple grammars.
+
 Version 0.0.6 (12 April 2020)
  * Beginnings of the random network explorer.
- * Scaffolding for guile scheme bindings
- * Export to GML (Graph Modelling Language)
+ * Prototype scheme bindings.
+ * Export to GML (Graph Modelling Language).
 
 Version 0.0.5 (1 April 2020)
- * More unit tests and fixes
+ * More unit tests and fixes.
  * Description of the breadth-first algo.
 
 Version 0.0.4 (29 March 2020)
- * Initial breadth-first aggregation
+ * Initial breadth-first aggregation.
 
 Version 0.0.2 (20 March 2020)
- * Initial depth-first aggregation
+ * Initial depth-first aggregation.

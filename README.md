@@ -303,27 +303,32 @@ design choices:
   I have no desire to reinvent any wheels, here.
 
 
-# Version 0.0.6
+# Version 0.1.0
 The current code implements a breadth-first aggregation algorithm.
 It provides two search modes: a deterministic explorer that will
 exhaustively generate all finite "unambiguous" graphs, and an
-early prototype of random network, useful for controlling infinite
-recursion.  It passes all unit tests. See
+random network explorer, useful for sampling from larger grammers
+that cannot be fully explored via exhaustive enumeration.  It passes
+all unit tests. See
 [opencog/generate/README](opencog/generate/) for algo details.
 
 The deterministic explorer is works well, and is effectively complete.
-It explores all possible graphs up to given depth (maximum diameter),
+It explores all possible graphs up to a given depth (maximum diameter),
 and thus provides an exhaustive listing, even in the case of grammars
 to might generate an infinite number of graphs.
 
 The random explorer seems to work "well enough", but is still missing
-features that are desirable. These will be added as the need arises.
-Formost are additional tunable paramaters to control the kinds of graphs
-that are generated.
+desirable features. These will be added as the need arises.  Foremost
+are additional tunable paramaters to control the statistical
+distribution of the generated graphs.
 
-The most important missing upcoming feature is the ability to use
-multiple nucleation points, and to "fill in the graph" in between
-those points.
+This has not yet been tried on anything but small, toy grammars, and
+may fail pathologically, or get bogged down with poor performance,
+for large, complex grammars.
+
+Upcoming plans are to provide constraints to generate planar graphs.
+An extension to force linear order (so as to obtain sequences, e.g.
+word sequences) is also equired.
 
 Some of the missing features are listed in the github issues list.
 
