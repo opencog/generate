@@ -49,6 +49,7 @@ public:
 	void test_biquad();
 	void test_triquad();
 	void test_mixed();
+	void test_multi_root();
 };
 
 AggregationUTest::AggregationUTest()
@@ -384,6 +385,43 @@ void AggregationUTest::test_mixed()
 	// printf("Mixed result is %s\n", result->to_string().c_str());
 	printf("Mixed result size is %lu expecting 8\n", result->get_arity());
 	TSM_ASSERT("Bad loop result set!", result->get_arity() == 8);
+
+	// All of the solutions should be the same size, substituting
+	// only might/could in the parse.
+	// printf("Parse is %s\n", result->getOutgoingAtom(0)->to_string().c_str());
+	int cnt = 0;
+	for (const Handle& soln: result->getOutgoingSet())
+	{
+		logger().debug("   Soln %d expecting 10 words, got %d",
+			++cnt, soln->get_arity());
+		TSM_ASSERT("Bad section!", soln->get_arity() == 10);
+	}
+
+	logger().debug("END TEST: %s", __FUNCTION__);
+}
+
+// Multiple nucleation points
+void AggregationUTest::test_multi_root()
+{
+	logger().debug("BEGIN TEST: %s", __FUNCTION__);
+
+	eval->eval("(load-from-path \"tests/generate/dict-mixed.scm\")");
+	Handle wall = eval->eval_h("left-wall");
+	Handle black = eval->eval_h("black");
+	Handle dog = eval->eval_h("dog");
+	Handle bark = eval->eval_h("bark");
+
+	setup_dict();
+	SimpleCallback cb(as, *dict);
+
+	ag->aggregate({wall, black}, cb);
+	Handle result = cb.get_solutions();
+
+	TSM_ASSERT("Bad result!", result != Handle::UNDEFINED);
+
+	// printf("wall,black result is %s\n", result->to_string().c_str());
+	printf("wall,black result size is %lu expecting 4\n", result->get_arity());
+	TSM_ASSERT("Bad loop result set!", result->get_arity() == 4);
 
 	// All of the solutions should be the same size, substituting
 	// only might/could in the parse.

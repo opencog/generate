@@ -20,6 +20,9 @@
 (use-modules (opencog) (opencog exec))
 
 (define left-wall (Concept "LEFT-WALL"))
+(define black (Concept "black"))
+(define dog (Concept "dog"))
+(define bark (Concept "barked"))
 
 ; A test dictionary of basic data.
 (Section
