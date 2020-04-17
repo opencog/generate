@@ -51,7 +51,7 @@ public:
 #define al as->add_link
 #define an as->add_node
 
-/// Decode paramters. A bit ad-hoc, right now.
+/// Decode parameters. A bit ad-hoc, right now.
 ///
 /// The expected encoding for a paramter is
 ///    (StateLink
@@ -62,7 +62,7 @@ public:
 /// value for that parameter.
 ///
 void decode_param(const Handle& membli,
-                  RandomCallback& cb,
+                  GenerateCallback& cb,
                   BasicParameters& basic)
 {
 	Handle statli = StateLink::get_link(membli);
@@ -96,14 +96,25 @@ void decode_param(const Handle& membli,
 		basic.close_fraction = dval;
 }
 
-/// C++ implementation of the scheme function.
-Handle GenerateSCM::do_random_aggregate(Handle poles,
-                                        Handle lexis,
-                                        Handle weight,
-                                        Handle params,
-                                        Handle root)
+/// Decode all parameters attached to an anchor point.
+/// See `decode_param()` above. This is just a loop.
+void decode_params(const Handle& param_anchor,
+                   GenerateCallback& cb,
+                   BasicParameters& basic)
 {
-	AtomSpace* as = SchemeSmob::ss_get_env_as("cog-random-aggregate");
+	// Decode the parameters. One at a time.
+	HandleSeq memps = param_anchor->getIncomingSetByType(MEMBER_LINK);
+	for (const Handle& membli : memps)
+	{
+		if (*membli->getOutgoingAtom(1) != *param_anchor) continue;
+		decode_param(membli, cb, basic);
+	}
+}
+
+// ----------------------------------------------------------------
+/// Pull the lexis out of the atomspace.
+Dictionary decode_lexis(AtomSpace* as, Handle poles, Handle lexis)
+{
 	Dictionary dict(as);
 
 	// Add the poles to the dictionary.
@@ -131,18 +142,27 @@ Handle GenerateSCM::do_random_aggregate(Handle poles,
 		if (*membli->getOutgoingAtom(1) != *lexis) continue;
 		dict.add_to_lexis(membli->getOutgoingAtom(0));
 	}
+	return dict;
+}
+
+// ----------------------------------------------------------------
+/// C++ implementation of the scheme function.
+Handle GenerateSCM::do_random_aggregate(Handle poles,
+                                        Handle lexis,
+                                        Handle weight,
+                                        Handle params,
+                                        Handle root)
+{
+	AtomSpace* as = SchemeSmob::ss_get_env_as("cog-random-aggregate");
+
+	Dictionary dict(decode_lexis(as, poles, lexis));
 
 	BasicParameters basic;
 	RandomCallback cb(as, dict, basic);
 	cb.set_weight_key(weight);
 
-	// Decode the parameters. This is .. tedious.
-	HandleSeq memps = params->getIncomingSetByType(MEMBER_LINK);
-	for (const Handle& membli : memps)
-	{
-		if (*membli->getOutgoingAtom(1) != *params) continue;
-		decode_param(membli, cb, basic);
-	}
+	// Decode the parameters.
+	decode_params(params, cb, basic);
 
 #if 0
 logger().set_print_to_stdout_flag(true);
