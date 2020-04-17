@@ -311,16 +311,21 @@ early prototype of random network, useful for controlling infinite
 recursion.  It passes all unit tests. See
 [opencog/generate/README](opencog/generate/) for algo details.
 
-The deterministic explorer is works well, and is effectively complete,
-as long as the grammar is finite: i.e. will not generate an infinite
-nuymber of graphs. The random explorer is an early prototype.
+The deterministic explorer is works well, and is effectively complete.
+It explores all possible graphs up to given depth (maximum diameter),
+and thus provides an exhaustive listing, even in the case of grammars
+to might generate an infinite number of graphs.
 
-Various key features are missing; these come next in the design.
-This includes controlling infinite recurion in the deterministic
-explorer, and providing closer control and more tunable parameters in
-the random explorer.
+The random explorer seems to work "well enough", but is still missing
+features that are desirable. These will be added as the need arises.
+Formost are additional tunable paramaters to control the kinds of graphs
+that are generated.
 
-Some missing features are listed in the github issues list.
+The most important missing upcoming feature is the ability to use
+multiple nucleation points, and to "fill in the graph" in between
+those points.
+
+Some of the missing features are listed in the github issues list.
 
 ## Building & testing
 The code here presumes the [AtomSpace](https://github.com/opencog/atomspace)
