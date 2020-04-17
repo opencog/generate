@@ -212,6 +212,8 @@ void GenerateSCM::init(void)
 {
 	define_scheme_primitive("cog-random-aggregate",
 		&GenerateSCM::do_random_aggregate, this, "generate");
+	define_scheme_primitive("cog-simple-aggregate",
+		&GenerateSCM::do_simple_aggregate, this, "generate");
 }
 
 extern "C" {
