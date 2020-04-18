@@ -9,6 +9,7 @@
 ; in a specific value.
 
 (use-modules (opencog) (opencog exec))
+(use-modules (opencog generate))
 
 ; ---------------------------------------------------------------------
 ; Scheme short-hand for five possible states. This serves no particular
@@ -101,7 +102,66 @@
 )
 
 ; ---------------------------------------------------------------------
-; A grammar that defines a random network.
+; A grammar that defines a random network. This grammar will be used
+; to generate fixed, static networks of individuals. Why use a static
+; network? To better model geographical isolation. Thus, for example,
+; a person who mostly stays home is likely to encounter only three
+; people: other family members. A person who is highly social might
+; meet dozens of people - now, this does NOT mean that the meetings
+; happen every day - they may be very infrequent. But its usually
+; the same dozen people, from the same neighborhood - even, maybe
+; random strangers in the grocery store.  The static network captures
+; this locality, and the general invariance of the potential network.
+;
+; The grammar used here is quite simple: it is just a minor twist on
+; the grammar used in the `basic-network.scm` example. It introduces
+; two relatinoship types: "freind" and "stranger", the idea that links
+; to freinds are more likely to transmit disease, than links to
+; strangers, as the individual is more likely to mingle and linger with
+; freinds, than with strangers.
+;
+; The code here just automates the generation of the grammar. The
+; setting of susceptibilities and infirmities will be done after the
+; network has been generated.
+
+; This is the key under which the liklihood of creating this kind of
+; network node will be stored. This is used to selet nodes during the
+; random network generation.
+(define node-weight (Predicate "node liklihood"))
+
+; A doubly-nested loop to create network nodes (not yet people!)
+; having some number of freinds, and some number of strangers
+; encountered during their daily lives. These node only become
+; "actual individual people" when the network gets created. Here,
+; the nodes have the form of "personality prototypes", not yet
+; having been instantiated as individuals.
+;
+(for-each (lambda (num-freinds)
+	(for-each (lambda (num-strangers)
+			(define person
+				(Section
+					(Concept "person")
+					(ConnectorSeq
+						(make-list num-freinds
+							(Connector (Concept "freind") (ConnectorDir "*")))
+						(make-list num-strangers
+							(Connector (Concept "stranger") (ConnectorDir "*"))))))
+
+			; The probability that an individual, with this number of
+			; freind and stranger relationships, will appear in some
+			; typical random network. This is just a cheesy hack, for
+			; now. Its not even the expectation,value, not really, its
+			; just a weighting controlling the liklihood of such
+			; node being selected, during network generation.
+			(cog-set-value! person node-weight
+				(FloatValue (/ 1.0
+					(* (+ num-freinds num-strangers) num-freinds)))))
+
+		; Allow for 3 to 11 strangers in the network.
+		(iota 8 3)))
+
+	; Allow for 1 to 7 freinds in the network.
+	(iota 6 1))
 
 ; ---------------------------------------------------------------------
 (define person-a (Concept "person a"))
