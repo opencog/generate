@@ -185,6 +185,8 @@
 (define max-solutions (Predicate "*-max-solutions-*"))
 (define close-fraction (Predicate "*-close-fraction-*"))
 (define max-steps (Predicate "*-max-steps-*"))
+(define max-depth (Predicate "*-max-depth-*"))
+(define max-network-size (Predicate "*-max-network-size-*"))
 
 (define params (Concept "Simple Covid net paramaters"))
 
@@ -198,6 +200,10 @@
 ; iteration stopps if the number of desired nets is found, or this
 ; number of steps is taken, whichever comes first.
 (State (Member max-steps params) (Number 123123))
+
+; Allow large networks.
+(State (Member max-depth params) (Number 100))
+(State (Member max-network-size params) (Number 2000))
 
 ; An initial nucleation point, from which to grow the network.
 ; Multiple nucleation points can be used, but we use only one here.
@@ -220,9 +226,9 @@
 (cog-execute!  (SetValue person-b seir-state susceptible))
 (cog-execute!  (SetValue person-b seir-state infected))
 
-(cog-set-value! person-a infirm-state (FloatValue 0.6))
+(cog-set-value! person-a infirmity (FloatValue 0.6))
 
-(cog-execute! (Put trans (List person-a person-b)))
+; (cog-execute! (Put trans (List person-a person-b)))
 
 *unspecified*
 ; ---------------------------------------------------------------------
