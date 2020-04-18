@@ -135,11 +135,11 @@
 ; different probability in the network.
 (define prototypes (Concept "Prototype Individual Anchor Point"))
 
-; A doubly-nested loop to create network nodes (not yet people!)
+; A doubly-nested loop to create network points (not yet people!)
 ; having some number of freinds, and some number of strangers
-; encountered during their daily lives. These node only become
+; encountered during their daily lives. These points only become
 ; "actual individual people" when the network gets created. Here,
-; the nodes have the form of "personality prototypes", not yet
+; the points have the form of "personality prototypes", not yet
 ; having been instantiated as individuals.
 ;
 (for-each (lambda (num-freinds)
@@ -161,11 +161,18 @@
 			; freind and stranger relationships, will appear in some
 			; typical random network. This is just a cheesy hack, for
 			; now. Its not even the expectation,value, not really, its
-			; just a weighting controlling the liklihood of such
-			; node being selected, during network generation.
-			(cog-set-value! person-type node-weight
-				(FloatValue (/ 1.0
-					(* (+ num-freinds num-strangers) num-freinds))))
+			; just a weighting controlling the likelihood of such
+			; prototype being selected, during network generation. The
+			; weighting chosen here punishes prototypes with many
+			; relationships. At this time, this is needed to force the
+			; search to terminate reasonably quickly, as otherwise, the
+			; current search algos will generate unboundedly large
+			; incomplete networks, without closing off open connections.
+			; Future work should improve the situation. Recall, we are
+			; at version 0.1 of the network generation code, right now.
+			(define weight (/ 1.0
+				(* (+ num-freinds num-strangers) num-freinds num-strangers)))
+			(cog-set-value! person-type node-weight (FloatValue weight))
 			(Member person-type prototypes)
 		)
 
@@ -199,7 +206,7 @@
 ; Avoid infinite recursion by quiting after some number of steps.
 ; iteration stopps if the number of desired nets is found, or this
 ; number of steps is taken, whichever comes first.
-(State (Member max-steps params) (Number 123123))
+(State (Member max-steps params) (Number 523123))
 
 ; Allow large networks.
 (State (Member max-depth params) (Number 100))
@@ -216,6 +223,8 @@
 	(cog-random-aggregate pole-set prototypes node-weight params seed))
 
 (format #t "Created ~D networks\n" (cog-arity network-set))
+(format #t "The network sizes are ~A\n"
+	(map cog-arity (cog-outgoing-set network-set)))
 
 ; ---------------------------------------------------------------------
 ; Some validation and debugging tools.
