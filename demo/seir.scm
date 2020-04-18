@@ -129,6 +129,12 @@
 ; random network generation.
 (define node-weight (Predicate "node liklihood"))
 
+; This is the anchor-point to which the grammar will be attached.
+; The grammar consists of a number of prototype individuals, having
+; different numbers of freind and stranger encounters, occuring with
+; different probability in the network.
+(define prototypes (Concept "Prototype Individual Anchor Point"))
+
 ; A doubly-nested loop to create network nodes (not yet people!)
 ; having some number of freinds, and some number of strangers
 ; encountered during their daily lives. These node only become
@@ -138,9 +144,13 @@
 ;
 (for-each (lambda (num-freinds)
 	(for-each (lambda (num-strangers)
-			(define person
+			; Give each prototype person a unique label.
+			; This is not required, but its convenient.
+			(define label (format #f "person-~D-~D"
+				num-freinds num-strangers))
+			(define person-type
 				(Section
-					(Concept "person")
+					(Concept label)
 					(ConnectorSeq
 						(make-list num-freinds
 							(Connector (Concept "freind") (ConnectorDir "*")))
@@ -153,9 +163,11 @@
 			; now. Its not even the expectation,value, not really, its
 			; just a weighting controlling the liklihood of such
 			; node being selected, during network generation.
-			(cog-set-value! person node-weight
+			(cog-set-value! person-type node-weight
 				(FloatValue (/ 1.0
-					(* (+ num-freinds num-strangers) num-freinds)))))
+					(* (+ num-freinds num-strangers) num-freinds))))
+			(Member person-type prototypes)
+		)
 
 		; Allow for 3 to 11 strangers in the network.
 		(iota 8 3)))
@@ -163,8 +175,41 @@
 	; Allow for 1 to 7 freinds in the network.
 	(iota 6 1))
 
-; Now, create the network.
+; Both freindships and stranger relationships are symmetrical,
+; any-to-any.
+(define pole-set (Concept "any to any"))
+(Member (Set (ConnectorDir "*") (ConnectorDir "*")) pole-set)
 
+; The below-defined names MUST be defined as given.
+; See the file `examples/parameters.scm` for details.
+(define max-solutions (Predicate "*-max-solutions-*"))
+(define close-fraction (Predicate "*-close-fraction-*"))
+(define max-steps (Predicate "*-max-steps-*"))
+
+(define params (Concept "Simple Covid net paramaters"))
+
+; Generate a dozen random networks.
+(State (Member max-solutions params) (Number 12))
+
+; Always try to close off new unconnected connectors.
+(State (Member close-fraction params) (Number 1.0))
+
+; Avoid infinite recursion by quiting after some number of steps.
+; iteration stopps if the number of desired nets is found, or this
+; number of steps is taken, whichever comes first.
+(State (Member max-steps params) (Number 123123))
+
+; An initial nucleation point, from which to grow the network.
+; Multiple nucleation points can be used, but we use only one here.
+; In this case, a person who encounters 2 freinds and 3 strangers.
+(define seed (Concept "person-2-3"))
+
+; Now, create the network.
+(format #t "Start creating the network!\n")
+(define network-set
+	(cog-random-aggregate pole-set prototypes node-weight params seed))
+
+(format #t "Created ~D networks\n" (length network-set))
 
 ; ---------------------------------------------------------------------
 ; Some validation and debugging tools.
