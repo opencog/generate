@@ -32,6 +32,17 @@
 ; this will be grammar dependent.)
 (define max-steps (Predicate "*-max-steps-*"))
 
+; Maximum depth of exploration. Starting from the nucleation points,
+; sections are chained on, forming a branching tree of chains. (They
+; may also interlink, thus forming a network rathr than a linear
+; chain or tre of chains). Ignoring the crosslinks, the max depth of
+; exploration is the maximum length of the chain that will be explored.
+(define max-depth (Predicate "*-max-depth-*"))
+
+; Maximum number of points in the network. Networks having more than
+; this number of points in them will not be explored.
+(define max-network-size (Predicate "*-max-network-size-*"))
+
 ; --------------------------------------------------------------
 ; The parameters that are used for the `basic-network.scm` demo.
 (define basic-net-params (Concept "Basic network demo"))

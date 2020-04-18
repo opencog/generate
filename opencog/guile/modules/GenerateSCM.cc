@@ -89,8 +89,14 @@ void decode_param(const Handle& membli,
 	if (0 == sname.compare("*-max-solutions-*"))
 		cb.max_solutions = dval;
 
-	if (0 == sname.compare("*-max-steps-*"))
+	else if (0 == sname.compare("*-max-steps-*"))
 		cb.max_steps = dval;
+
+	else if (0 == sname.compare("*-max-depth-*"))
+		cb.max_depth = dval;
+
+	else if(0 == sname.compare("*-max-network-size-*"))
+		cb.max_network_size = dval;
 
 	else if (0 == sname.compare("*-close-fraction-*"))
 		basic.close_fraction = dval;
