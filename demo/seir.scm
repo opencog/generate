@@ -10,6 +10,7 @@
 
 (use-modules (opencog) (opencog exec))
 
+; ---------------------------------------------------------------------
 ; Scheme short-hand for five possible states. This serves no particular
 ; purpose, other than to be slightly less verbose when writing later
 ; expressions.
@@ -38,6 +39,7 @@
 ; modulates the probability of recovering after infection.
 (define recovery (Predicate "Recovery weight"))
 
+; ---------------------------------------------------------------------
 ; A function that implements the transmission of the disease.
 ; It takes two arguments: two people, A and B, with A being
 ; exposed if B is infected. It is unidirectional.
@@ -98,6 +100,10 @@
 	))
 )
 
+; ---------------------------------------------------------------------
+; A grammar that defines a random network.
+
+; ---------------------------------------------------------------------
 (define person-a (Concept "person a"))
 (define person-b (Concept "person b"))
 
@@ -108,3 +114,4 @@
 (cog-set-value! person-a infirm-state (FloatValue 0.6))
 
 (cog-execute! (Put trans (List person-a person-b)))
+; ---------------------------------------------------------------------
