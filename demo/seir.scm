@@ -1,7 +1,7 @@
 ;
 ; seir.scm
 ;
-; Random network demo featuring a SEIR Covid-19 simulation.
+; Demo of random networks to encode a SEIR Covid-19 simulation.
 ;
 ; SEIR == "susceptible", "exposed", "infected", and "recovered".
 ;
@@ -51,9 +51,9 @@
 		(Cond
 			; If A is susceptible and B is infected, then A is exposed.
 			(And
-				(Equal (ValueOf (Variable "$A") seir-state) susceptible))
-				(Equal (ValueOf (Variable "$B") seir-state) infected)))
-			(SetValue (Variable "$A") seir-state exposed))
+				(Equal (ValueOf (Variable "$A") seir-state) susceptible)
+				(Equal (ValueOf (Variable "$B") seir-state) infected))
+			(SetValue (Variable "$A") seir-state exposed)
 		)))
 
 ; A function that implements state transitions of an individual.
@@ -66,14 +66,14 @@
 		(Cond
 			; If A is exposed, and is infirm, then A is infected.
 			; The probability of infection is controlled by a random
-			; number generator. RandomLink generates a uniform
+			; number generator. RandomNumberLink generates a uniform
 			; distribution.
 			(And
 				(Equal (ValueOf (Variable "$A") seir-state) (Concept "exposed"))
 				(GreaterThan
 					(Times
 						(ValueOf (Variable "$A") susceptibility)
-						(Random (Number 0) (Number 1)))
+						(RandomNumber (Number 0) (Number 1)))
 					(Number 0.5)))
 			(SetValue (Variable "$A") seir-state infected)
 
@@ -84,7 +84,7 @@
 				(GreaterThan
 					(Times
 						(ValueOf (Variable "$A") infirmity)
-						(Random (Number 0) (Number 1)))
+						(RandomNumber (Number 0) (Number 1)))
 					(Number 0.5)))
 			(SetValue (Variable "$A") seir-state died)
 
@@ -95,7 +95,7 @@
 				(GreaterThan
 					(Times
 						(ValueOf (Variable "$A") recovery)
-						(Random (Number 0) (Number 1)))
+						(RandomNumber (Number 0) (Number 1)))
 					(Number 0.5)))
 			(SetValue (Variable "$A") seir-state recovered)
 	))
@@ -163,7 +163,11 @@
 	; Allow for 1 to 7 freinds in the network.
 	(iota 6 1))
 
+; Now, create the network.
+
+
 ; ---------------------------------------------------------------------
+; Some validation and debugging tools.
 (define person-a (Concept "person a"))
 (define person-b (Concept "person b"))
 
@@ -174,4 +178,6 @@
 (cog-set-value! person-a infirm-state (FloatValue 0.6))
 
 (cog-execute! (Put trans (List person-a person-b)))
+
+*unspecified*
 ; ---------------------------------------------------------------------
