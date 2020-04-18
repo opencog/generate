@@ -209,7 +209,7 @@
 (define network-set
 	(cog-random-aggregate pole-set prototypes node-weight params seed))
 
-(format #t "Created ~D networks\n" (length network-set))
+(format #t "Created ~D networks\n" (cog-arity network-set))
 
 ; ---------------------------------------------------------------------
 ; Some validation and debugging tools.
