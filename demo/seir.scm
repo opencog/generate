@@ -10,18 +10,17 @@
 
 (use-modules (opencog) (opencog exec))
 
-(define person-a (Concept "person a"))
-(define person-b (Concept "person b"))
-
-; Scheme short-hand for five possible states.
+; Scheme short-hand for five possible states. This serves no particular
+; purpose, other than to be slightly less verbose when writing later
+; expressions.
 (define susceptible (Concept "susceptible"))
 (define exposed (Concept "exposed"))
 (define infected (Concept "infected"))
 (define recovered (Concept "recovered"))
 (define died (Concept "died"))
 
-; Predicate under which the state will be stored. This state will
-; be one of the above five states.
+; Predicate under which the SEIR state will be stored. This marks
+; the location (key) under which the state-value willl be stored.
 (define seir-state (Predicate "SEIR state"))
 
 ; Predicate under which a susceptibility weight will be stored.
@@ -31,18 +30,17 @@
 
 ; Predicate under which an infirmity weight will be stored.
 ; This weight, a floating point number between zero and one,
-; modulates the probability of dying after exposure.
+; modulates the probability of dying after infection.
 (define infirmity (Predicate "Infirmity weight"))
 
-(cog-execute!  (SetValue person-a seir-state susceptible))
-(cog-execute!  (SetValue person-b seir-state susceptible))
-(cog-execute!  (SetValue person-b seir-state infected))
-
-(cog-set-value! person-a infirm-state (FloatValue 0.6))
+; Predicate under which a recovery weight will be stored.
+; This weight, a floating point number between zero and one,
+; modulates the probability of recovering after infection.
+(define recovery (Predicate "Recovery weight"))
 
 ; A function that implements the transmission of the disease.
 ; It takes two arguments: two people, A and B, with A being
-; exposed if B is infected.
+; exposed if B is infected. It is unidirectional.
 (Define
 	(DefinedSchema "transmission")
 	(Lambda
@@ -93,11 +91,20 @@
 				(Equal (ValueOf (Variable "$A") seir-state) (Concept "infected"))
 				(GreaterThan
 					(Times
-						(Minus (Number 1) (ValueOf (Variable "$A") infirmity))
+						(ValueOf (Variable "$A") recovery)
 						(Random (Number 0) (Number 1)))
 					(Number 0.5)))
 			(SetValue (Variable "$A") seir-state recovered)
 	))
 )
+
+(define person-a (Concept "person a"))
+(define person-b (Concept "person b"))
+
+(cog-execute!  (SetValue person-a seir-state susceptible))
+(cog-execute!  (SetValue person-b seir-state susceptible))
+(cog-execute!  (SetValue person-b seir-state infected))
+
+(cog-set-value! person-a infirm-state (FloatValue 0.6))
 
 (cog-execute! (Put trans (List person-a person-b)))
