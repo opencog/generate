@@ -8,8 +8,10 @@
 ; Model with a state-transition machine. The state will be kept
 ; in a specific value.
 
+(use-modules (srfi srfi-1))
 (use-modules (opencog) (opencog exec))
 (use-modules (opencog generate))
+(use-modules (ice-9 textual-ports))
 
 ; ---------------------------------------------------------------------
 ; Scheme short-hand for five possible states. This serves no particular
@@ -225,6 +227,16 @@
 (format #t "Created ~D networks\n" (cog-arity network-set))
 (format #t "The network sizes are ~A\n"
 	(map cog-arity (cog-outgoing-set network-set)))
+
+; Dump the first network found to a file, for visualization.
+(define just-one (Set (gar network-set)))
+(define just-one-gml (export-to-gml just-one))
+
+;; Print the string to a file.
+(let ((outport (open-file "/tmp/social-network.gml" "w")))
+	(put-string outport just-one-gml)
+	(close outport))
+
 
 ; ---------------------------------------------------------------------
 ; Some validation and debugging tools.
