@@ -243,7 +243,10 @@ Handle RandomCallback::select_from_open(const Frame& frame,
 			if (*con == *to_con)
 			{
 				// Wait, are these already connected?
-				if (max_pair_links <= num_links(fm_sect, open_sect, linkty))
+				if (pair_any_links <= num_any_links(fm_sect, open_sect))
+					continue;
+				if (pair_typed_links <= num_undirected_links(fm_sect,
+				                                     open_sect, linkty))
 					continue;
 				to_sects.push_back(open_sect);
 			}
