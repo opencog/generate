@@ -67,6 +67,10 @@ void RandomCallback::root_set(const HandleSet& roots)
 	for (const Handle& point: roots)
 	{
 		HandleSeq sects(_dict.entries(point));
+		if (0 == sects.size())
+			throw RuntimeException(TRACE_INFO,
+				"No dictionary entry for root=%s", point->to_string().c_str());
+
 		_root_sections.push_back(sects);
 
 		// Create a discrete distribution. This will randomly pick
