@@ -324,6 +324,16 @@
 ; second way is ultimately simpler, and provides better automation,
 ; but both ways are illustrated, for comparison.
 
+; ------ But first, a handy utility:
+; Execute some atomese. Assume that it returns a Setlink.
+; Unwrap the SetLink, discard it, return the contents.
+(define (exec-unwrap ATOMESE)
+	(define set-link (cog-execute! ATOMESE))
+	(define contents (cog-outgoing-set set-link))
+	(cog-delete set-link)
+	contents)
+
+; ---------
 ; A function that runs the transmission step once. This is written
 ; using a scheme `for-each` loop to iterate over all encounters.
 ; It requires, as input, the list of all relations created above.
@@ -337,28 +347,24 @@
 	; twice, swapping the individuals the second time.
 	(for-each
 		(lambda (relation)
-			(cog-execute! (Put (DefinedSchema "transmission")
+			(exec-unwrap (Put (DefinedSchema "transmission")
 				(List (gar relation) (gdr relation)))))
 		all-relations)
 
 	; And now swapped ...
 	(for-each
 		(lambda (relation)
-			(cog-execute! (Put (DefinedSchema "transmission")
+			(exec-unwrap (Put (DefinedSchema "transmission")
 				(List (gdr relation) (gar relation)))))
 		all-relations)
 )
 
 ; Obtain a list of individuals in a given state.
 (define (get-individuals-in-state STATE)
-	(define set-link
-		(cog-execute!
-			(Get
-				(TypedVariable (Variable "$indiv") (Type "ConceptNode"))
-				(Equal (ValueOf (Variable "$indiv") seir-state) STATE))))
-	(define ind-list (cog-outgoing-set set-link))
-	(cog-delete set-link)
-	ind-list)
+	(exec-unwrap
+		(Get
+			(TypedVariable (Variable "$indiv") (Type "ConceptNode"))
+			(Equal (ValueOf (Variable "$indiv") seir-state) STATE))))
 
 ; A function that reports the current stats on the population.
 (define (report-stats)
@@ -378,7 +384,7 @@
 (define (run-one-state-transition)
 	(for-each
 		(lambda (individual)
-			(cog-execute! (Put (DefinedSchema "state transition")
+			(exec-unwrap (Put (DefinedSchema "state transition")
 				individual)))
 		individual-list))
 
@@ -394,9 +400,33 @@
 (report-stats)
 
 ; ---------------------------------------------------------------------
-; Some validation and debugging tools.
+; State transitions, applied as rewrite rules, run over the AtomSpace.
+; Instead of iterating over scheme lists of relations and individuals,
+; this searches the AtomSpace for the relevant relations/individuals.
 
-; (cog-execute! (Put trans (List person-a person-b)))
+(define (do-transmission)
+	(exec-unwrap
+		(Bind
+			(VariableList
+				(TypedVariable (Variable "$pers-a") (Type "ConceptNode"))
+				(TypedVariable (Variable "$pers-b") (Type "ConceptNode")))
+			(Present
+				(Set (Variable "$pers-a") (Variable "$pers-b")))
+			(Put (DefinedSchema "transmission")
+				(List (Variable "$pers-a") (Variable "$pers-b")))))
+	*unspecified*)
+
+(define (do-state-transition)
+	(exec-unwrap
+		(Bind
+			(TypedVariable (Variable "$person") (Type "ConceptNode"))
+			(Present (Variable "$person"))
+			(Put (DefinedSchema "state transition")
+				(List (Variable "$person")))))
+	*unspecified*)
+
+; ---------------------------------------------------------------------
+; The end.
 
 *unspecified*
 ; ---------------------------------------------------------------------
