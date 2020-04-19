@@ -202,6 +202,9 @@
 ; Generate a dozen random networks.
 (State (Member max-solutions params) (Number 12))
 
+; Nahh. Make that just one.
+(State (Member max-solutions params) (Number 1))
+
 ; Always try to close off new unconnected connectors.
 (State (Member close-fraction params) (Number 1.0))
 
