@@ -270,19 +270,27 @@
 		(lambda (proto) (cog-incoming-by-type proto 'InheritanceLink))
 		proto-list)))
 
+; Assign to each individual the state of "initially healthy", and
+; some randm numbers for susceptibility.
+(for-each
+	(lambda (individual)
+		(cog-set-value! individual seir-state susceptible)
+		(cog-set-value! individual susceptibility
+			(RandomNumber (Number 0.1) (Number 1)))
+		(cog-set-value! individual infirmity
+			(RandomNumber (Number 0.2) (Number 0.8)))
+		(cog-set-value! individual recovery
+			(RandomNumber (Number 0.3) (Number 0.7))))
+	individual-list)
+
+; Pick one person, and make them infected
+(cog-set-value! (car individual-list) seir-state infected)
+
 ; ---------------------------------------------------------------------
 ; Start applying state transition rules to the network.
 
 ; ---------------------------------------------------------------------
 ; Some validation and debugging tools.
-(define person-a (Concept "person a"))
-(define person-b (Concept "person b"))
-
-(cog-execute!  (SetValue person-a seir-state susceptible))
-(cog-execute!  (SetValue person-b seir-state susceptible))
-(cog-execute!  (SetValue person-b seir-state infected))
-
-(cog-set-value! person-a infirmity (FloatValue 0.6))
 
 ; (cog-execute! (Put trans (List person-a person-b)))
 
