@@ -404,6 +404,7 @@
 ; Instead of iterating over scheme lists of relations and individuals,
 ; this searches the AtomSpace for the relevant relations/individuals.
 
+; Search for all pairs, and apply the transmission rule.
 (define (do-transmission)
 	(exec-unwrap
 		(Bind
@@ -416,14 +417,26 @@
 				(List (Variable "$pers-a") (Variable "$pers-b")))))
 	*unspecified*)
 
+; Search for individuals, and apply the state transition rule.
+; We use a wildly-complex search here ...
 (define (do-state-transition)
 	(exec-unwrap
 		(Bind
-			(TypedVariable (Variable "$person") (Type "ConceptNode"))
-			(Present (Variable "$person"))
+			(VariableList
+				(TypedVariable (Variable "$person") (Type "ConceptNode"))
+				(TypedVariable (Variable "$proto") (Type "ConceptNode"))
+				(TypedVariable (Variable "$da") (Type "ConnectorSeq"))
+				(TypedVariable (Variable "$db") (Type "ConnectorSeq")))
+			(Present
+				(Inheritance
+					(Section (Variable "$person") (Variable "$da"))
+					(Section (Variable "$proto") (Variable "$db"))))
 			(Put (DefinedSchema "state transition")
-				(List (Variable "$person")))))
+				(Variable "$person"))))
 	*unspecified*)
+
+(do-transmission)     (report-stats)
+(do-state-transition) (report-stats)
 
 ; ---------------------------------------------------------------------
 ; The end.
