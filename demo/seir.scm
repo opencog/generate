@@ -290,9 +290,9 @@
 (cog-set-value! (car individual-list) seir-state infected)
 
 ; ---------------------------------------------------------------------
-; Start applying state transition rules to the network. But first,
-; obtain a list of all friendship relations, and all encounters between
-; strangers.
+; Obtain a list of all friendship relations, and all encounters between
+; strangers. We don't really need to have these (they can always be
+; generated on the fly) but they're handy to look at and have around.
 
 (define all-relations (remove-duplicate-atoms (append-map
 	(lambda (individual) (cog-incoming-by-type individual 'SetLink))
@@ -315,6 +315,55 @@
 (format #t "The social network consists of ~D stranger-pairs\n"
 	(length stranger-relations))
 
+; ---------------------------------------------------------------------
+; Start applying state transition rules to the network.
+; This will be done "by hand" for the first few rounds, just to show how
+; it works. Several differnt styles will be shown. One is by directly
+; running scheme code. A second, better way is by applying Atomese
+; search-and-update rules directly to the atomspace contents. The
+; second way is ultimately simpler, and provides better automation,
+; but both ways are illustrated, for comparison.
+
+; The transmission rule is directed, from first to second individual.
+; But the relation-pairs are undirected, so we have to run the rule
+; twice, swapping the individuals the second time.  For this step,
+; write the loop over all relations in scheme, as a for-each loop.
+(for-each
+	(lambda (relation)
+		(cog-execute! (Put (DefinedSchema "transmission")
+			(List (gar relation) (gdr relation)))))
+	all-relations)
+
+; And now swapped ...
+(for-each
+	(lambda (relation)
+		(cog-execute! (Put (DefinedSchema "transmission")
+			(List (gdr relation) (gar relation)))))
+	all-relations)
+
+; Obtain a list of the exposed individuals
+(define (get-individuals-in-state STATE)
+	(define set-link
+		(cog-execute!
+			(Get (Variable "$indiv")
+				(Equal (ValueOf (Variable "$indiv") seir-state) STATE))))
+	(define ind-list (cog-outgoing-set set-link))
+	(cog-delete set-link)
+	ind-list)
+
+(format #t "There are ~D currently-exposed individuals\n"
+	(length (get-individuals-in-state exposed)))
+
+; Roll the dice, and see if they get sick. As before use a for-each loop
+; to loop over all individuals.
+(for-each
+	(lambda (individual)
+		(cog-execute! (Put (DefinedSchema "state transition")
+			individual)))
+	individual-list)
+
+(format #t "There are ~D currently-infected individuals\n"
+	(length (get-individuals-in-state infected)))
 
 ; ---------------------------------------------------------------------
 ; Some validation and debugging tools.
