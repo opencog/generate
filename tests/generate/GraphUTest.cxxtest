@@ -98,7 +98,8 @@ void GraphUTest::check_dipole(Handle root, size_t nedges)
 {
 	SimpleCallback cb(as, *dict);
 	cb.allow_self_connections = true;
-	cb.max_pair_links = -1;
+	cb.pair_any_links = -1;
+	cb.pair_typed_links = -1;
 
 	Aggregate lag(as);
 	lag.aggregate({root}, cb);
