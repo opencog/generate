@@ -33,7 +33,6 @@ RandomCallback::RandomCallback(AtomSpace* as, const Dictionary& dict,
 	GenerateCallback(as), LinkStyle(as),
 	_dict(dict), _parms(&parms)
 {
-	_num_solutions_found = 0;
 	_steps_taken = 0;
 
 	max_solutions = 100;
@@ -59,7 +58,6 @@ void RandomCallback::clear(void)
 	_root_sections.clear();
 	_root_dist.clear();
 	_distmap.clear();
-	_num_solutions_found = 0;
 	_steps_taken = 0;
 	CollectStyle::clear();
 }
@@ -99,7 +97,7 @@ HandleSet RandomCallback::next_root(void)
 
 	// Stop iterating if limits have been reached.
 	if (max_steps < _steps_taken) return empty_set;
-	if (max_solutions <= _num_solutions_found) return empty_set;
+	if (max_solutions <= num_solutions()) return empty_set;
 
 	// Random drawing.
 	HandleSet starters;
@@ -243,7 +241,11 @@ Handle RandomCallback::select_from_open(const Frame& frame,
 			if (*con == *to_con)
 			{
 				// Wait, are these already connected?
-				if (max_pair_links <= num_links(fm_sect, open_sect, linkty))
+				if (pair_any_links <= num_any_links(fm_sect, open_sect))
+					continue;
+				if (1 < pair_any_links and
+				    pair_typed_links <= num_undirected_links(fm_sect,
+				                                  open_sect, linkty))
 					continue;
 				to_sects.push_back(open_sect);
 			}
@@ -334,7 +336,7 @@ bool RandomCallback::step(const Frame& frm)
 {
 	_steps_taken ++;
 	if (max_steps < _steps_taken) return false;
-	if (max_solutions <= _num_solutions_found) return false;
+	if (max_solutions <= num_solutions()) return false;
 	if (max_network_size < frm._linkage.size()) return false;
 	if (max_depth < frm._nodo) return false;
 	return true;
@@ -343,6 +345,5 @@ bool RandomCallback::step(const Frame& frm)
 
 void RandomCallback::solution(const Frame& frm)
 {
-	_num_solutions_found++;
 	record_solution(frm);
 }

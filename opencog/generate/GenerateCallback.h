@@ -137,10 +137,16 @@ public:
 	/// to connect).
 	bool allow_self_connections = false;
 
-	/// The maximum number of links allowed between a pair of sections.
-	/// By default, it is one, as "most" "typical" graphs make sense
-	/// when only one edge connects a pair of vertexes.
-	size_t max_pair_links = 1;
+	/// The maximum number of any kind of link allowed between a pair
+	/// of sections. By default, it is one, as "most" "typical" graphs
+	/// make sense when only one edge connects a pair of vertexes.
+	size_t pair_any_links = 1;
+
+	/// The maximum number of each specific type of link allowed between
+	/// a pair of sections. For example, if this is set to two, then two
+	/// edges of different types can connect the same pair of points.
+	/// This is ignored if `pair_any_links` (above) is 1.
+	size_t pair_typed_links = 1;
 
 	/// Maximum size of the generated network. Exploration of networks
 	/// larger than this will not be attempted.

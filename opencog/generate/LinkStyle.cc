@@ -86,7 +86,7 @@ Handle LinkStyle::create_undirected_link(const Handle& fm_con,
 }
 
 /// Return a count of the number of links, of type `link_type`,
-/// connecting the two sections. Returns zero if tehy are not nearest
+/// connecting the two sections. Returns zero if they are not nearest
 /// neighbors, otherwise return a count.
 size_t LinkStyle::num_undirected_links(const Handle& fm_sect,
                                        const Handle& to_sect,
@@ -122,4 +122,33 @@ size_t LinkStyle::num_undirected_links(const Handle& fm_sect,
 #endif
 
 	return count;
+}
+
+/// Return a count of the number of any kind of links (no matter what
+/// the type), connecting the two sections. Returns zero if they are
+/// not nearest neighbors, otherwise return a count. Actually, as
+/// currently written, this does assume the links are undirected.
+size_t LinkStyle::num_any_links(const Handle& fm_sect,
+                                const Handle& to_sect)
+{
+	const Handle& fm_pnt = fm_sect->getOutgoingAtom(0);
+	const Handle& to_pnt = to_sect->getOutgoingAtom(0);
+
+	const Handle& fm_disj = fm_sect->getOutgoingAtom(1);
+	const Handle& to_disj = to_sect->getOutgoingAtom(1);
+	size_t cnt = 0;
+
+	for (const Handle& lnk: fm_disj->getOutgoingSet())
+	{
+		if (CONNECTOR_SEQ == lnk->get_type()) continue;
+
+		HandleSeq djs = lnk->getIncomingSetByType(CONNECTOR_SEQ);
+		for (const Handle& tdj : djs)
+		{
+			if (CONNECTOR_SEQ == tdj->get_type()) continue;
+			if (*tdj == *to_disj) cnt++;
+		}
+	}
+
+	return cnt;
 }

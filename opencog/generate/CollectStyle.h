@@ -46,6 +46,7 @@ public:
 	void clear(void) { _solutions.clear(); }
 	void record_solution(const Frame&);
 
+	size_t num_solutions(void) { return _solutions.size(); }
 	std::set<HandleSet> get_solution_set(void) { return _solutions; }
 	Handle get_solutions(void);
 };
