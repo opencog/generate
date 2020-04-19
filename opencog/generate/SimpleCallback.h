@@ -53,7 +53,6 @@ class SimpleCallback :
 private:
 	Dictionary _dict;
 	size_t _steps_taken;
-	size_t _num_solutions_found;
 
 	// -------------------------------------------
 	// Nucleation points.

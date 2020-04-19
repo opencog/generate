@@ -48,7 +48,6 @@ private:
 	Dictionary _dict;
 	RandomParameters* _parms;
 	Handle _weight_key;
-	size_t _num_solutions_found;
 	size_t _steps_taken;
 
 	// -------------------------------------------
