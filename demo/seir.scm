@@ -137,6 +137,25 @@
 ; different probability in the network.
 (define prototypes (Concept "Prototype Individual Anchor Point"))
 
+; Define a simple function that will create a "person prototype".
+; This is a prototypical person, having a social network that
+; consists of some number of friends, and some number of strangers
+; that are regularly encountered. The network-generation code will
+; take this "prototype person", and instantiate a number of
+; individuals of this type, and join them into a social network.
+(define (make-person-type Nfriends Nstrangers)
+	; Give each prototype person a unique label.
+	; This is not required, but its convenient.
+	(define label (format #f "person-~D-~D" Nfriends Nstrangers))
+
+	(Section
+		(Concept label)
+		(ConnectorSeq
+			(make-list Nfriends
+				(Connector (Concept "friend") (ConnectorDir "*")))
+			(make-list Nstrangers
+				(Connector (Concept "stranger") (ConnectorDir "*"))))))
+
 ; A doubly-nested loop to create network points (not yet people!)
 ; having some number of friends, and some number of strangers
 ; encountered during their daily lives. These points only become
@@ -146,18 +165,7 @@
 ;
 (for-each (lambda (num-friends)
 	(for-each (lambda (num-strangers)
-			; Give each prototype person a unique label.
-			; This is not required, but its convenient.
-			(define label (format #f "person-~D-~D"
-				num-friends num-strangers))
-			(define person-type
-				(Section
-					(Concept label)
-					(ConnectorSeq
-						(make-list num-friends
-							(Connector (Concept "friend") (ConnectorDir "*")))
-						(make-list num-strangers
-							(Connector (Concept "stranger") (ConnectorDir "*"))))))
+			(define person-type (make-person-type num-friends num-strangers))
 
 			; The probability that an individual, with this number of
 			; friend and stranger relationships, will appear in some
@@ -220,7 +228,7 @@
 ; An initial nucleation point, from which to grow the network.
 ; Multiple nucleation points can be used, but we use only one here.
 ; In this case, a person who encounters 2 friends and 3 strangers.
-(define seed (Concept "person-2-3"))
+(define seed (make-person-type 2 3))
 
 ; Now, create the network.
 (format #t "Start creating the network!\n")
@@ -245,6 +253,14 @@
 	(put-string outport just-one-gml)
 	(close outport))
 
+; ---------------------------------------------------------------------
+; Assign initial suceptibility and infirmity values to individuals
+; in the network. These will be randomly generated numbers. But first,
+; we need a way of iterating over all of the individuals that were
+; created for the random network.
+
+; ---------------------------------------------------------------------
+; Start applying state transition rules to the network.
 
 ; ---------------------------------------------------------------------
 ; Some validation and debugging tools.
