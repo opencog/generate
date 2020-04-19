@@ -270,6 +270,9 @@
 		(lambda (proto) (cog-incoming-by-type proto 'InheritanceLink))
 		proto-list)))
 
+(format #t "The social network consists of ~D individuals\n"
+	(length individual-list))
+
 ; Assign to each individual the state of "initially healthy", and
 ; some randm numbers for susceptibility.
 (for-each
@@ -287,7 +290,31 @@
 (cog-set-value! (car individual-list) seir-state infected)
 
 ; ---------------------------------------------------------------------
-; Start applying state transition rules to the network.
+; Start applying state transition rules to the network. But first,
+; obtain a list of all friendship relations, and all encounters between
+; strangers.
+
+(define all-relations (remove-duplicate-atoms (append-map
+	(lambda (individual) (cog-incoming-by-type individual 'SetLink))
+	individual-list)))
+
+(format #t "The social network consists of ~D pair-wise relationships\n"
+	(length all-relations))
+
+(define (get-relations-of-type RELATION)
+	(filter-map (lambda (relpair)
+		(equal? RELATION (gar (car
+			(cog-incoming-by-type relpair 'EvaluationLink)))))
+		all-relations))
+
+(define friend-relations (get-relations-of-type (Concept "friend")))
+(format #t "The social network consists of ~D freind-pairs\n"
+	(length friend-relations))
+
+(define stranger-relations (get-relations-of-type (Concept "stranger")))
+(format #t "The social network consists of ~D stranger-pairs\n"
+	(length stranger-relations))
+
 
 ; ---------------------------------------------------------------------
 ; Some validation and debugging tools.
