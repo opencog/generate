@@ -186,7 +186,8 @@ Handle SimpleCallback::select_from_open(const Frame& frame,
 				// Wait, are these already connected?
 				if (pair_any_links <= num_any_links(fm_sect, open_sect))
 					continue;
-				if (pair_typed_links <= num_undirected_links(fm_sect,
+				if (1 < pair_any_links and
+				    pair_typed_links <= num_undirected_links(fm_sect,
 				                                     open_sect, linkty))
 					continue;
 				to_sects.push_back(open_sect);
