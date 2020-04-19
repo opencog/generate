@@ -136,16 +136,15 @@ size_t LinkStyle::num_any_links(const Handle& fm_sect,
 
 	const Handle& fm_disj = fm_sect->getOutgoingAtom(1);
 	const Handle& to_disj = to_sect->getOutgoingAtom(1);
-	size_t cnt = 0;
 
+	size_t cnt = 0;
 	for (const Handle& lnk: fm_disj->getOutgoingSet())
 	{
-		if (CONNECTOR_SEQ == lnk->get_type()) continue;
+		if (CONNECTOR == lnk->get_type()) continue;
 
 		HandleSeq djs = lnk->getIncomingSetByType(CONNECTOR_SEQ);
 		for (const Handle& tdj : djs)
 		{
-			if (CONNECTOR_SEQ == tdj->get_type()) continue;
 			if (*tdj == *to_disj) cnt++;
 		}
 	}
