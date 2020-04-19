@@ -228,7 +228,7 @@
 ; An initial nucleation point, from which to grow the network.
 ; Multiple nucleation points can be used, but we use only one here.
 ; In this case, a person who encounters 2 friends and 3 strangers.
-(define seed (make-person-type 2 3))
+(define seed (gar (make-person-type 2 3)))
 
 ; Now, create the network.
 (format #t "Start creating the network!\n")
@@ -258,6 +258,17 @@
 ; in the network. These will be randomly generated numbers. But first,
 ; we need a way of iterating over all of the individuals that were
 ; created for the random network.
+
+; Create a list of all the prototype-persons in the dictionary.
+(define proto-list
+	(map gar (cog-incoming-by-type prototypes 'MemberLink)))
+
+; Each individual is linked back to the prototype that it came from,
+; so gather up a list of individuals.
+(define individual-list
+	(map gaar (append-map
+		(lambda (proto) (cog-incoming-by-type proto 'InheritanceLink))
+		proto-list)))
 
 ; ---------------------------------------------------------------------
 ; Start applying state transition rules to the network.
