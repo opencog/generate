@@ -324,46 +324,74 @@
 ; second way is ultimately simpler, and provides better automation,
 ; but both ways are illustrated, for comparison.
 
-; The transmission rule is directed, from first to second individual.
-; But the relation-pairs are undirected, so we have to run the rule
-; twice, swapping the individuals the second time.  For this step,
-; write the loop over all relations in scheme, as a for-each loop.
-(for-each
-	(lambda (relation)
-		(cog-execute! (Put (DefinedSchema "transmission")
-			(List (gar relation) (gdr relation)))))
-	all-relations)
+; A function that runs the transmission step once. This is written
+; using a scheme `for-each` loop to iterate over all encounters.
+; It requires, as input, the list of all relations created above.
+; As such, it is "static", depending on a static relationship list.
+; Later in the demo, we'll replace this loop by a search over the
+; Atomspace.
+(define (run-one-transmission-step)
 
-; And now swapped ...
-(for-each
-	(lambda (relation)
-		(cog-execute! (Put (DefinedSchema "transmission")
-			(List (gdr relation) (gar relation)))))
-	all-relations)
+	; The transmission rule is directed, from first to second individual.
+	; But the relation-pairs are undirected, so we have to run the rule
+	; twice, swapping the individuals the second time.
+	(for-each
+		(lambda (relation)
+			(cog-execute! (Put (DefinedSchema "transmission")
+				(List (gar relation) (gdr relation)))))
+		all-relations)
 
-; Obtain a list of the exposed individuals
+	; And now swapped ...
+	(for-each
+		(lambda (relation)
+			(cog-execute! (Put (DefinedSchema "transmission")
+				(List (gdr relation) (gar relation)))))
+		all-relations)
+)
+
+; Obtain a list of individuals in a given state.
 (define (get-individuals-in-state STATE)
 	(define set-link
 		(cog-execute!
-			(Get (Variable "$indiv")
+			(Get
+				(TypedVariable (Variable "$indiv") (Type "ConceptNode"))
 				(Equal (ValueOf (Variable "$indiv") seir-state) STATE))))
 	(define ind-list (cog-outgoing-set set-link))
 	(cog-delete set-link)
 	ind-list)
 
-(format #t "There are ~D currently-exposed individuals\n"
-	(length (get-individuals-in-state exposed)))
+; A function that reports the current stats on the population.
+(define (report-stats)
+	(format #t
+		"Exposed: ~D    Infected: ~D   Recovered: ~D  Died: ~D  of Total: ~D\n"
+		(length (get-individuals-in-state exposed))
+		(length (get-individuals-in-state infected))
+		(length (get-individuals-in-state recovered))
+		(length (get-individuals-in-state died))
+		(length individual-list))
+	*unspecified*)
 
-; Roll the dice, and see if they get sick. As before use a for-each loop
-; to loop over all individuals.
-(for-each
-	(lambda (individual)
-		(cog-execute! (Put (DefinedSchema "state transition")
-			individual)))
-	individual-list)
+; A function that rolls the dice, and updates state: looping over
+; all individuals, to see if they got infected, recovered, or died.
+; As before, this uses a `for-each` loop in scheme to loop over all
+; individuals.
+(define (run-one-state-transition)
+	(for-each
+		(lambda (individual)
+			(cog-execute! (Put (DefinedSchema "state transition")
+				individual)))
+		individual-list))
 
-(format #t "There are ~D currently-infected individuals\n"
-	(length (get-individuals-in-state infected)))
+; Now, actually run a few iterations, and see what happens.
+(run-one-transmission-step)
+(report-stats)
+(run-one-state-transition)
+(report-stats)
+
+(run-one-transmission-step)
+(report-stats)
+(run-one-state-transition)
+(report-stats)
 
 ; ---------------------------------------------------------------------
 ; Some validation and debugging tools.
