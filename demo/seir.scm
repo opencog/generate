@@ -73,8 +73,8 @@
 			(And
 				(Equal (ValueOf (Variable "$A") seir-state) (Concept "exposed"))
 				(GreaterThan
-					(RandomNumber (Number 0) (Number 1))
-					(ValueOf (Variable "$A") susceptibility)))
+					(ValueOf (Variable "$A") susceptibility)
+					(RandomNumber (Number 0) (Number 1))))
 			(SetValue (Variable "$A") seir-state infected)
 
 			; If A is exposed, but has not become infected, then
@@ -86,9 +86,9 @@
 			(And
 				(Equal (ValueOf (Variable "$A") seir-state) (Concept "exposed"))
 				(GreaterThan
-					(RandomNumber (Number 0) (Number 1))
 					(Minus (Number 1)
-						(ValueOf (Variable "$A") susceptibility))))
+						(ValueOf (Variable "$A") susceptibility))
+					(RandomNumber (Number 0) (Number 1))))
 			(SetValue (Variable "$A") seir-state susceptible)
 
 			; If A is infected, then A has a chance of dying,
@@ -96,8 +96,8 @@
 			(And
 				(Equal (ValueOf (Variable "$A") seir-state) (Concept "infected"))
 				(GreaterThan
-					(RandomNumber (Number 0) (Number 1))
-					(ValueOf (Variable "$A") infirmity)))
+					(ValueOf (Variable "$A") infirmity)
+					(RandomNumber (Number 0) (Number 1))))
 			(SetValue (Variable "$A") seir-state died)
 
 			; If A is infected, then A has a chance of recovering,
@@ -105,8 +105,8 @@
 			(And
 				(Equal (ValueOf (Variable "$A") seir-state) (Concept "infected"))
 				(GreaterThan
-					(RandomNumber (Number 0) (Number 1))
-					(ValueOf (Variable "$A") recovery)))
+					(ValueOf (Variable "$A") recovery)
+					(RandomNumber (Number 0) (Number 1))))
 			(SetValue (Variable "$A") seir-state recovered)
 	))
 )
