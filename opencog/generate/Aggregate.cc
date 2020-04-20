@@ -39,10 +39,12 @@ Aggregate::Aggregate(AtomSpace* as)
 	: _as(as)
 {
 	_cb = nullptr;
+	_scratch = nullptr;
 }
 
 Aggregate::~Aggregate()
 {
+	if (_scratch) delete _scratch;
 }
 
 /// Yuck. Should not allow re-use... XXX FIXME!?
@@ -55,6 +57,9 @@ void Aggregate::clear(void)
 	_frame.clear();
 	_odo.clear();
 	_cb->clear();
+
+	if (_scratch) delete _scratch;
+	_scratch = new AtomSpace(_as);
 }
 
 /// The nuclei are the nucleation points: points that must
@@ -383,12 +388,11 @@ Handle Aggregate::make_link(const Handle& sect, size_t index,
 		if (CONNECTOR == fc->get_type()) { is_open = true; break; }
 	}
 
-	// Create the now-connected linkage.
-	// XXX Why are we polluting the AtomSpace with this stuff?
-	// Shouldn't this go into a temp AtomSpace of some kind?
+	// Create the now-connected linkage. Create it in the scratch
+	// space, so as not to pollute the main space.
 	Handle linking =
-		_as->add_link(SECTION, point,
-			_as->add_link(CONNECTOR_SEQ, std::move(oset)));
+		_scratch->add_link(SECTION, point,
+			_scratch->add_link(CONNECTOR_SEQ, std::move(oset)));
 
 	// Remove the section from the open set.
 	_frame._open_sections.erase(sect);
