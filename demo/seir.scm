@@ -279,20 +279,14 @@
 
 ; ---------------------------------------------------------------------
 ; Assign initial suceptibility and infirmity values to individuals
-; in the network. These will be randomly generated numbers. But first,
-; we need a way of iterating over all of the individuals that were
-; created for the random network.
+; in the network. These will be randomly generated numbers.
 
-; Create a list of all the prototype-persons in the dictionary.
-(define proto-list
-	(map gar (cog-incoming-by-type prototypes 'MemberLink)))
-
-; Each individual is linked back to the prototype that it came from,
-; so gather up a list of individuals.
+; Each individual is linked back to the anchor node. Each individual
+; is also represented with a ConceptNode (we have some other junk
+; also attached to the anchor, so filter that out.)
 (define individual-list
-	(map gaar (append-map
-		(lambda (proto) (cog-incoming-by-type proto 'InheritanceLink))
-		proto-list)))
+	(filter (lambda (ind) (equal? (cog-type ind) 'ConceptNode))
+		(map gar (cog-incoming-by-type anchor 'MemberLink))))
 
 (format #t "The social network consists of ~D individuals\n"
 	(length individual-list))
@@ -388,7 +382,9 @@
 	(exec-unwrap
 		(Get
 			(TypedVariable (Variable "$indiv") (Type "ConceptNode"))
-			(Equal (ValueOf (Variable "$indiv") seir-state) STATE))))
+			(And
+				(Present (Member (Variable "$indiv") anchor))
+				(Equal (ValueOf (Variable "$indiv") seir-state) STATE)))))
 
 ; A function that reports the current stats on the population.
 (define (report-stats)
