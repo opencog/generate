@@ -166,7 +166,12 @@ public:
 	/// will create infinite trees, mon average. But this does not seem
 	/// like a high priority task, right now.
 	/// (2016 vintage CPU run at approx 1.2K steps/second).
-	size_t max_steps = 250101;
+	size_t max_steps = 25101;
+
+	/// A location to which all point instances will be anchored.
+	/// Thus, all points can be found by following the MemberLink
+	/// from this anchor point.
+	Handle point_set = Handle::UNDEFINED;
 };
 
 

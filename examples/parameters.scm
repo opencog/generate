@@ -43,6 +43,12 @@
 ; this number of points in them will not be explored.
 (define max-network-size (Predicate "*-max-network-size-*"))
 
+; When the network is generated, many individual instances of the
+; network points will be generated. To get easy access to these, they
+; can be tied at a well-known location -- specifically, they will
+; be tied with a MemberLink to the specified anchor point.
+(define point-set-anchor (Predicate "*-point-set-anchor-*"))
+
 ; --------------------------------------------------------------
 ; The parameters that are used for the `basic-network.scm` demo.
 (define basic-net-params (Concept "Basic network demo"))
@@ -50,3 +56,4 @@
 (State (Member max-solutions basic-net-params) (Number 10))
 (State (Member close-fraction basic-net-params) (Number 0.5))
 (State (Member max-steps basic-net-params) (Number 123123))
+(State (Member point-set-anchor basic-net-params) (Anchor "Basic-Net Points"))

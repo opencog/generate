@@ -60,6 +60,7 @@ void RandomCallback::clear(void)
 	_distmap.clear();
 	_steps_taken = 0;
 	CollectStyle::clear();
+	LinkStyle::_point_set = point_set;
 }
 
 void RandomCallback::root_set(const HandleSet& roots)
