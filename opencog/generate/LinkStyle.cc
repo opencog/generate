@@ -55,12 +55,16 @@ Handle LinkStyle::create_unique_section(const Handle& sect)
 			"Expection a Node for the section point, got %s",
 				point->to_string().c_str());
 
+	// Create a unique point.
+	Handle upoint(_as->add_node(point->get_type(),
+	              point->get_name() + "@" + idstr));
+
+	// Record the point location.
+	if (_point_set)
+		_as->add_link(MEMBER_LINK, upoint, _point_set);
+
 	// Create a unique instance of the section.
-	Handle usect(
-		_as->add_link(SECTION,
-			_as->add_node(point->get_type(),
-			              point->get_name() + "@" + idstr),
-			disj));
+	Handle usect(_as->add_link(SECTION, upoint, disj));
 
 	// Record it's original type.
 	_as->add_link(INHERITANCE_LINK, usect, sect);

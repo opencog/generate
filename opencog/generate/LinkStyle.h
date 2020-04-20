@@ -37,6 +37,7 @@ class LinkStyle
 {
 private:
 	AtomSpace* _as;
+	Handle _point_set;
 
 public:
 	LinkStyle(AtomSpace*);
