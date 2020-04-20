@@ -44,6 +44,7 @@ void SimpleCallback::clear(void)
 	_root_iters.clear();
 	_steps_taken = 0;
 	CollectStyle::clear();
+	LinkStyle::_point_set = point_set;
 }
 
 void SimpleCallback::root_set(const HandleSet& roots)
