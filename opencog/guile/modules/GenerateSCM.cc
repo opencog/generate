@@ -80,8 +80,11 @@ void decode_param(const Handle& membli,
 	const std::string& sname = pname->get_name();
 
 	// We expect a node. Well, any Atom, so we don't check.
-	if(0 == sname.compare("*-point-set-anchor-*"))
+	if (0 == sname.compare("*-point-set-anchor-*"))
+	{
 		cb.point_set = pval;
+		return;
+	}
 
 	// All parameters below here expect a NumberNode
 	if (not nameserver().isA(pval->get_type(), NUMBER_NODE))
