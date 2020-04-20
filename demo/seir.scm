@@ -306,16 +306,16 @@
 	(length individual-list))
 
 ; Assign to each individual the state of "initially healthy", and
-; some randm numbers for susceptibility.
+; some random numbers for susceptibility.
 (for-each
 	(lambda (individual)
 		(cog-set-value! individual seir-state susceptible)
 		(cog-set-value! individual susceptibility
-			(RandomNumber (Number 0.1) (Number 1)))
+			(cog-execute! (RandomNumber (Number 0.1) (Number 1))))
 		(cog-set-value! individual infirmity
-			(RandomNumber (Number 0.2) (Number 0.8)))
+			(cog-execute! (RandomNumber (Number 0.2) (Number 0.8))))
 		(cog-set-value! individual recovery
-			(RandomNumber (Number 0.3) (Number 0.7))))
+			(cog-execute! (RandomNumber (Number 0.3) (Number 0.7)))))
 	individual-list)
 
 ; Pick one person, and make them infected
