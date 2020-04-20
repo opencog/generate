@@ -67,6 +67,10 @@ void RandomCallback::root_set(const HandleSet& roots)
 	for (const Handle& point: roots)
 	{
 		HandleSeq sects(_dict.entries(point));
+		if (0 == sects.size())
+			throw RuntimeException(TRACE_INFO,
+				"No dictionary entry for root=%s", point->to_string().c_str());
+
 		_root_sections.push_back(sects);
 
 		// Create a discrete distribution. This will randomly pick
@@ -150,50 +154,6 @@ Handle RandomCallback::select_from_lexis(const Frame& frame,
 	return create_unique_section(to_sects[dist(rangen)]);
 }
 
-/// Return a random section from the provided list of sections.
-/// In simple terms, this just returns `to_sects[dist(rangen)]`
-/// and that's all ... except ... if `allow_self_connections` is
-/// false, then we have to make sure that `to_sects[dist(rangen)]`
-/// is not equal to `fm_sect`. This seemingly simple check adds
-/// a little bit of complexity to everything.
-Handle RandomCallback::do_select_one(const HandleSeq& to_sects,
-                                     const Handle& fm_sect,
-                                     std::discrete_distribution<size_t>& dist)
-{
-	bool disallow_self = not allow_self_connections;
-
-	// If only one is possible, then return just that.
-	if (1 == to_sects.size())
-	{
-		if (disallow_self and *to_sects[0] == *fm_sect)
-			return Handle::UNDEFINED;
-		return to_sects[0];
-	}
-
-	// If all of the choices link back to self, and self-connections
-	// are disallowed, then no connection is possible.
-	if (disallow_self)
-	{
-		bool only_self = true;
-		for (const Handle& sect : to_sects)
-		{
-			if (*sect != *fm_sect) { only_self = false; break; }
-		}
-		if (only_self) return Handle::UNDEFINED;
-	}
-
-	if (allow_self_connections)
-		return to_sects[dist(rangen)];
-
-	// This loop gauranteed to terminate, because check above
-	// verified that there is at least one choice.
-	while (true)
-	{
-		Handle choice(to_sects[dist(rangen)]);
-		if (*choice != *fm_sect) return choice;
-	}
-}
-
 /// Return a section containing `to_con`, from the set of currently
 /// unconnected sections.
 ///
@@ -220,14 +180,18 @@ Handle RandomCallback::select_from_open(const Frame& frame,
 	if (_opensel._opensect.end() != tosit and tosit->second.size() == 0)
 		return Handle::UNDEFINED;
 
+	// If there's only one, pick it.
+	const HandleSeq& to_seclist = tosit->second;
+	if (to_seclist.size() == 1)
+		return to_seclist[0];
+
 	// Do we have a chooser for the to-connector in the current frame?
 	// If so, then use it.
 	auto curit = _opensel._opendi.find(to_con);
 	if (_opensel._opendi.end() != curit)
 	{
-		const HandleSeq& to_sects = tosit->second;
 		auto dist = curit->second;
-		return do_select_one(to_sects, fm_sect, dist);
+		return to_seclist[dist(rangen)];
 	}
 
 	// Create a list of connectable sections
@@ -235,6 +199,9 @@ Handle RandomCallback::select_from_open(const Frame& frame,
 	HandleSeq to_sects;
 	for (const Handle& open_sect : frame._open_sections)
 	{
+		if (not allow_self_connections and open_sect == fm_sect)
+			continue;
+
 		const Handle& conseq = open_sect->getOutgoingAtom(1);
 		for (const Handle& con : conseq->getOutgoingSet())
 		{
@@ -258,6 +225,9 @@ Handle RandomCallback::select_from_open(const Frame& frame,
 	// Oh no, dead end!
 	if (0 == to_sects.size()) return Handle::UNDEFINED;
 
+	// There's only one. Pick it.
+	if (1 == to_sects.size()) return to_sects[0];
+
 	// Create a discrete distribution.
 	// Argh ... XXX FIXME ... the aggregator does NOT copy
 	// values onto the assembled linkage, and so these will
@@ -279,7 +249,7 @@ Handle RandomCallback::select_from_open(const Frame& frame,
 	std::discrete_distribution<size_t> dist(pdf.begin(), pdf.end());
 	_opensel._opendi.emplace(std::make_pair(to_con, dist));
 
-	return do_select_one(to_sects, fm_sect, dist);
+	return to_sects[dist(rangen)];
 }
 
 /// Return a section containing `to_con`.
