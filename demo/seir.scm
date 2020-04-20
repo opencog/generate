@@ -219,7 +219,12 @@
 ; Avoid infinite recursion by quitting after some number of steps.
 ; iteration stops if the number of desired nets is found, or this
 ; number of steps is taken, whichever comes first.
-(State (Member max-steps params) (Number 223123))
+; In the current implementation (this is subjecct to change!)
+; either a solution is found within about 300 steps, or not at all.
+; Thus, limit the search to just a bit more than 300, and try again,
+; if no solution is found. (About half of all attempts succeed.
+; Again, this is subject to change as the code is updated.)
+(State (Member max-steps params) (Number 345))
 
 ; Allow large networks.
 (State (Member max-depth params) (Number 100))
@@ -234,8 +239,13 @@
 (format #t "Start creating the network!\n")
 (define start-time (get-internal-real-time))
 
-(define network-set
-	(cog-random-aggregate pole-set prototypes node-weight params seed))
+(define (try-to-make-network)
+	(define net
+		(cog-random-aggregate pole-set prototypes node-weight params seed))
+	(if (< 0 (cog-arity net)) net
+		(try-to-make-network)))
+
+(define network-set (try-to-make-network))
 
 (define end-time (get-internal-real-time))
 (format #t "Created ~D networks in ~6F seconds\n"
