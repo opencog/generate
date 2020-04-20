@@ -204,6 +204,7 @@
 (define max-steps (Predicate "*-max-steps-*"))
 (define max-depth (Predicate "*-max-depth-*"))
 (define max-network-size (Predicate "*-max-network-size-*"))
+(define point-set-anchor (Predicate "*-point-set-anchor-*"))
 
 (define params (Concept "Simple Covid net parameters"))
 
@@ -229,6 +230,11 @@
 ; Allow large networks.
 (State (Member max-depth params) (Number 100))
 (State (Member max-network-size params) (Number 2000))
+
+; Record all the individials that are created. This will be handy to
+; have around, later.
+(define anchor (Anchor "Covid Sim Individuals"))
+(State (Member point-set-anchor params) anchor)
 
 ; An initial nucleation point, from which to grow the network.
 ; Multiple nucleation points can be used, but we use only one here.
@@ -428,19 +434,14 @@
 	*unspecified*)
 
 ; Search for individuals, and apply the state transition rule.
-; We use a wildly-complex search here ...
+; Make use of the anchor point (defined above) to which all of the
+; individuals are attached. Doing this greatly simplifies finding
+; all of them.
 (define (do-state-transition)
 	(exec-unwrap
 		(Bind
-			(VariableList
-				(TypedVariable (Variable "$person") (Type "ConceptNode"))
-				(TypedVariable (Variable "$proto") (Type "ConceptNode"))
-				(TypedVariable (Variable "$da") (Type "ConnectorSeq"))
-				(TypedVariable (Variable "$db") (Type "ConnectorSeq")))
-			(Present
-				(Inheritance
-					(Section (Variable "$person") (Variable "$da"))
-					(Section (Variable "$proto") (Variable "$db"))))
+			(TypedVariable (Variable "$person") (Type "ConceptNode"))
+			(Present (Member (Variable "$person") anchor))
 			(Put (DefinedSchema "state transition")
 				(Variable "$person"))))
 	*unspecified*)
@@ -454,7 +455,7 @@
 	(do-transmission)     (report-stats)
 	(do-state-transition) (report-stats)
 	(if (and
-		(= 0 (length (get-individuals-in-state exposed)))
+		(>= 1 (length (get-individuals-in-state exposed)))
 		(= 0 (length (get-individuals-in-state infected))))
 		(format #t "Finished simulation\n")
 		(loop)))
