@@ -448,6 +448,20 @@
 (do-transmission)     (report-stats)
 (do-state-transition) (report-stats)
 
+; Place the above in a loop that terminates only when the number
+; of exposed and infected individuals drops to zero.
+(define (loop)
+	(do-transmission)     (report-stats)
+	(do-state-transition) (report-stats)
+	(if (and
+		(= 0 (length (get-individuals-in-state exposed)))
+		(= 0 (length (get-individuals-in-state infected))))
+		(format #t "Finished simulation\n")
+		(loop)))
+
+; Run the loop.  This may take a while...
+(loop)
+
 ; ---------------------------------------------------------------------
 ; The end.
 
