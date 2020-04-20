@@ -79,6 +79,22 @@
 					(Number 0.5)))
 			(SetValue (Variable "$A") seir-state infected)
 
+			; If A is exposed, but has not become infected, then
+			; A has a chance of washing off the exposure, and returning
+			; to being susceptible but not infected. Basically, one
+			; can't stay "exposed" forever; one either gets ill, or
+			; one returns to original, unexposed state.
+			; Use one minus the probability of getting infected.
+			(And
+				(Equal (ValueOf (Variable "$A") seir-state) (Concept "exposed"))
+				(GreaterThan
+					(Times
+						(Minus (Number 1)
+							(ValueOf (Variable "$A") susceptibility))
+						(RandomNumber (Number 0) (Number 1)))
+					(Number 0.5)))
+			(SetValue (Variable "$A") seir-state susceptible)
+
 			; If A is infected, then A has a chance of dying,
 			; depending on the infirmity.
 			(And
@@ -257,8 +273,6 @@
 (format #t "Created ~D networks in ~6F seconds\n"
 	(cog-arity network-set)
 	(* 1.0e-9 (- end-time start-time)))
-(format #t "The network sizes are ~A\n"
-	(map cog-arity (cog-outgoing-set network-set)))
 
 ; Dump the first network found to a file, for visualization.
 (define just-one (Set (gar network-set)))
@@ -268,6 +282,8 @@
 (let ((outport (open-file "/tmp/social-network.gml" "w")))
 	(put-string outport just-one-gml)
 	(close outport))
+
+(format #t "Found a network of size ~D\n" (cog-arity (gar just-one)))
 
 ; ---------------------------------------------------------------------
 ; Assign initial suceptibility and infirmity values to individuals
@@ -455,13 +471,15 @@
 	(do-transmission)     (report-stats)
 	(do-state-transition) (report-stats)
 	(if (and
-		(>= 1 (length (get-individuals-in-state exposed)))
+		(= 0 (length (get-individuals-in-state exposed)))
 		(= 0 (length (get-individuals-in-state infected))))
 		(format #t "Finished simulation\n")
 		(loop)))
 
 ; Run the loop.  This may take a while...
-(loop)
+; (loop)
+
+(display "Now say `(loop)` to run the rest of the simulation automatically\n")
 
 ; ---------------------------------------------------------------------
 ; The end.
