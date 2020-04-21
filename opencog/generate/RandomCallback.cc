@@ -30,8 +30,7 @@ using namespace opencog;
 
 RandomCallback::RandomCallback(AtomSpace* as, const Dictionary& dict,
                                RandomParameters& parms) :
-	GenerateCallback(as), LinkStyle(as),
-	_dict(dict), _parms(&parms)
+	LinkStyle(as), _dict(dict), _parms(&parms)
 {
 	_steps_taken = 0;
 
@@ -49,7 +48,7 @@ RandomCallback::~RandomCallback() {}
 static std::random_device seed;
 static std::mt19937 rangen(seed());
 
-void RandomCallback::clear(void)
+void RandomCallback::clear(AtomSpace* scratch)
 {
 	while (not _opensel_stack.empty()) _opensel_stack.pop();
 	_opensel._opensect.clear();
@@ -61,6 +60,7 @@ void RandomCallback::clear(void)
 	_steps_taken = 0;
 	CollectStyle::clear();
 	LinkStyle::_point_set = point_set;
+	LinkStyle::_as = scratch;
 }
 
 void RandomCallback::root_set(const HandleSet& roots)

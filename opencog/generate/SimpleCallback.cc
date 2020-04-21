@@ -26,14 +26,14 @@
 using namespace opencog;
 
 SimpleCallback::SimpleCallback(AtomSpace* as, const Dictionary& dict)
-	: GenerateCallback(as), LinkStyle(as), _dict(dict)
+	: LinkStyle(as), _dict(dict)
 {
 	_steps_taken = 0;
 }
 
 SimpleCallback::~SimpleCallback() {}
 
-void SimpleCallback::clear(void)
+void SimpleCallback::clear(AtomSpace* scratch)
 {
 	while (not _lexlit_stack.empty()) _lexlit_stack.pop();
 	while (not _opensel_stack.empty()) _opensel_stack.pop();
@@ -45,13 +45,11 @@ void SimpleCallback::clear(void)
 	_steps_taken = 0;
 	CollectStyle::clear();
 	LinkStyle::_point_set = point_set;
+	LinkStyle::_as = scratch;
 }
 
 void SimpleCallback::root_set(const HandleSet& roots)
 {
-	// Might be getting re-used.
-	clear();
-
 	for (const Handle& point: roots)
 	{
 		_root_sections.push_back(_dict.entries(point));

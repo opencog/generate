@@ -50,13 +50,15 @@ namespace opencog
 class GenerateCallback
 {
 public:
-	GenerateCallback(AtomSpace* as) {}
+	GenerateCallback(void) {}
 	virtual ~GenerateCallback() {}
 
 	/// Callbacks are allowed to keep dynamical state. Callbacks are
 	/// allowed to be reused for multiple generations. This gives the
-	// callback the opportunity to clear dynamical state.
-	virtual void clear(void) = 0;
+	/// callback the opportunity to clear dynamical state. In addition,
+	/// this provides a scratch space where temporary results can be
+	/// stored for the duration.
+	virtual void clear(AtomSpace*) = 0;
 
 	/// Declare a set of initial starting (nucleation) points.  The
 	/// generated graph will grow outwards from these points.

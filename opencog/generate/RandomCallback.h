@@ -86,7 +86,7 @@ public:
 	RandomCallback(AtomSpace*, const Dictionary&, RandomParameters&);
 	virtual ~RandomCallback();
 
-	void clear(void);
+	virtual void clear(AtomSpace*);
 	void set_weight_key(const Handle& pred) { _weight_key = pred; }
 
 	virtual void root_set(const HandleSet&);

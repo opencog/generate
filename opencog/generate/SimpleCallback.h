@@ -96,7 +96,7 @@ public:
 	SimpleCallback(AtomSpace*, const Dictionary&);
 	virtual ~SimpleCallback();
 
-	virtual void clear(void);
+	virtual void clear(AtomSpace*);
 	virtual bool step(const Frame&);
 	virtual HandleSeq joints(const Handle& con) {
 		return _dict.joints(con);

@@ -55,10 +55,10 @@ void Aggregate::clear(void)
 
 	_frame.clear();
 	_odo.clear();
-	_cb->clear();
 
 	if (_scratch) delete _scratch;
 	_scratch = new AtomSpace(_as);
+	_cb->clear(_scratch);
 }
 
 /// The nuclei are the nucleation points: points that must
