@@ -5,9 +5,64 @@
 ;
 ; SEIR == "susceptible", "exposed", "infected", and "recovered".
 ;
-; Model with a state-transition machine. The state will be kept
-; in a specific value.
+; This is a demo, only! It is demonstrating several different AtomSpace
+; programming techniques, one of which is the brand-new (version 0.1)
+; random network generator. Another is  Value Flows: the use of Values
+; for holding mutable state, and flowing that state through a network.
+; It is assumed that the reader is already familiar with the basics of
+; the OpenCog AtomSpace! This demo *could* be altered, modified and
+; extended to do actual scientific research; see "making this useful",
+; below.
+;
+; This demo generates a random "social network", consisting of two types
+; of relationships: "friends" and "strangers". It adopts a simple SEIR
+; model of disease transmission and progression along this network.
+; The model itself is a (simple) hand-coded state-transition machine.
+;
+; Making this Useful
+; ------------------
+; There's no whizzy visualization of the disease progression, or the
+; resulting stats. You can visualize snapshots of the network with
+; CytoScape or Gephi, but it won't be animated as the disease spreads.
+;
+; There's no statistical analysis performed, and no graphs or curves are
+; drawn. The demo shows how to generate the raw data, not how to analyze
+; raw data.
+;
+; Altering the disease progression model is not particularly easy. It is
+; written in Atomese, which is rather verbose, and programming in
+; Atomese is, in many ways, like programming in assembly code.  This is
+; perhaps the most important thing to understand about this demo.
+; Atomese is a graphical programming language, and it was designed for
+; automation. This means that the graphs, and the Atomese code, is easy
+; to manipulate with other algorithms. It's designed for other machines,
+; not for humans :-/
+;
+; For example, a graphical editor - a system that can draw and edit
+; graphs (such as CytoScape or Gephi, but also others) can be attached
+; to Atomese, so that a hand-drawn graphical model of disease progression
+; can be automatically converted into functional Atomese, and set
+; running.
+;
+; Another possibility is that of a disease-progression explorer: a
+; system that automatically creates a variety of different models,
+; and then explores how well each model works. Atomese was designed
+; for, is highly suited for such automation tasks.
+;
+; Thus, in reading the below, keep in mind that there is nothing special
+; about the SEIR model; its a stand-in for what could be a generic,
+; arbitrary state transition machine. Such machines can be hand-coded,
+; of course, but the interesting application is when they are generated
+; from other sources.
+;
+; Last but not least: keep in mind that the network generator is
+; currently at version 0.1, and is not yet as versatile, flexible and
+; powerful as it could be. The parameter settings below generate
+; networks that are long and thin. One such network can be seen in
+; the included image.
+; ---------------------------------------------------------------------
 
+; Import needed modules
 (use-modules (srfi srfi-1))
 (use-modules (opencog) (opencog exec))
 (use-modules (opencog generate))
