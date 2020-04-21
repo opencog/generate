@@ -30,7 +30,7 @@ using namespace opencog;
 
 RandomCallback::RandomCallback(AtomSpace* as, const Dictionary& dict,
                                RandomParameters& parms) :
-	_dict(dict), _parms(&parms)
+	GenerateCallback(as), _dict(dict), _parms(&parms)
 {
 	_steps_taken = 0;
 
@@ -60,7 +60,7 @@ void RandomCallback::clear(AtomSpace* scratch)
 	_steps_taken = 0;
 	CollectStyle::clear();
 	LinkStyle::_point_set = point_set;
-	LinkStyle::_as = scratch;
+	LinkStyle::_scratch = scratch;
 }
 
 void RandomCallback::root_set(const HandleSet& roots)
@@ -322,5 +322,6 @@ void RandomCallback::solution(const Frame& frm)
 
 Handle RandomCallback::get_solutions(void)
 {
+	LinkStyle::save_work(_as);
 	return CollectStyle::get_solutions();
 }

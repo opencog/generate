@@ -29,7 +29,7 @@
 
 using namespace opencog;
 
-LinkStyle::LinkStyle(void) : _as(nullptr)
+LinkStyle::LinkStyle(void) : _scratch(nullptr)
 {
 }
 
@@ -56,18 +56,18 @@ Handle LinkStyle::create_unique_section(const Handle& sect)
 				point->to_string().c_str());
 
 	// Create a unique point.
-	Handle upoint(_as->add_node(point->get_type(),
+	Handle upoint(_scratch->add_node(point->get_type(),
 	              point->get_name() + "@" + idstr));
 
 	// Record the point location.
 	if (_point_set)
-		_as->add_link(MEMBER_LINK, upoint, _point_set);
+		_scratch->add_link(MEMBER_LINK, upoint, _point_set);
 
 	// Create a unique instance of the section.
-	Handle usect(_as->add_link(SECTION, upoint, disj));
+	Handle usect(_scratch->add_link(SECTION, upoint, disj));
 
 	// Record it's original type.
-	_as->add_link(INHERITANCE_LINK, usect, sect);
+	_scratch->add_link(INHERITANCE_LINK, usect, sect);
 
 	return usect;
 }
@@ -84,8 +84,8 @@ Handle LinkStyle::create_undirected_link(const Handle& fm_con,
 {
 	// Create the actual link to use.
 	Handle linkty = fm_con->getOutgoingAtom(0);
-	Handle edg = _as->add_link(SET_LINK, fm_pnt, to_pnt);
-	Handle lnk = _as->add_link(EVALUATION_LINK, linkty, edg);
+	Handle edg = _scratch->add_link(SET_LINK, fm_pnt, to_pnt);
+	Handle lnk = _scratch->add_link(EVALUATION_LINK, linkty, edg);
 	return lnk;
 }
 
@@ -98,9 +98,9 @@ size_t LinkStyle::num_undirected_links(const Handle& fm_sect,
 {
 	const Handle& fm_pnt = fm_sect->getOutgoingAtom(0);
 	const Handle& to_pnt = to_sect->getOutgoingAtom(0);
-	Handle edg = _as->get_link(SET_LINK, fm_pnt, to_pnt);
+	Handle edg = _scratch->get_link(SET_LINK, fm_pnt, to_pnt);
 	if (nullptr == edg) return 0;
-	Handle lnk = _as->get_link(EVALUATION_LINK, link_type, edg);
+	Handle lnk = _scratch->get_link(EVALUATION_LINK, link_type, edg);
 	if (nullptr == lnk) return 0;
 
 	const Handle& disj = fm_sect->getOutgoingAtom(1);
@@ -154,4 +154,8 @@ size_t LinkStyle::num_any_links(const Handle& fm_sect,
 	}
 
 	return cnt;
+}
+
+void LinkStyle::save_work(AtomSpace* as)
+{
 }

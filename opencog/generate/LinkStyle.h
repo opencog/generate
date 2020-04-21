@@ -36,7 +36,7 @@ namespace opencog
 class LinkStyle
 {
 protected:
-	AtomSpace* _as;
+	AtomSpace* _scratch;
 	Handle _point_set;
 
 public:

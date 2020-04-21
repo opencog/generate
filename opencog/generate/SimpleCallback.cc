@@ -26,7 +26,7 @@
 using namespace opencog;
 
 SimpleCallback::SimpleCallback(AtomSpace* as, const Dictionary& dict)
-	: _dict(dict)
+	: GenerateCallback(as), _dict(dict)
 {
 	_steps_taken = 0;
 }
@@ -45,7 +45,7 @@ void SimpleCallback::clear(AtomSpace* scratch)
 	_steps_taken = 0;
 	CollectStyle::clear();
 	LinkStyle::_point_set = point_set;
-	LinkStyle::_as = scratch;
+	LinkStyle::_scratch = scratch;
 }
 
 void SimpleCallback::root_set(const HandleSet& roots)
@@ -279,5 +279,6 @@ void SimpleCallback::solution(const Frame& frm)
 
 Handle SimpleCallback::get_solutions(void)
 {
+	LinkStyle::save_work(_as);
 	return CollectStyle::get_solutions();
 }

@@ -49,8 +49,10 @@ namespace opencog
 ///
 class GenerateCallback
 {
+protected:
+	AtomSpace* _as;
 public:
-	GenerateCallback(void) {}
+	GenerateCallback(AtomSpace* as) : _as(as) {}
 	virtual ~GenerateCallback() {}
 
 	/// Callbacks are allowed to keep dynamical state. Callbacks are
