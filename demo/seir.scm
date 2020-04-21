@@ -77,17 +77,18 @@
 (use-modules (ice-9 textual-ports))
 
 ; ---------------------------------------------------------------------
-; Scheme short-hand for five possible states. This serves no particular
-; purpose, other than to be slightly less verbose when writing later
-; expressions.
+; Scheme short-hand for five possible disease states.
 (define susceptible (Concept "susceptible"))
 (define exposed (Concept "exposed"))
 (define infected (Concept "infected"))
 (define recovered (Concept "recovered"))
 (define died (Concept "died"))
 
-; Predicate under which the SEIR state will be stored. This marks
-; the location (key) under which the state-value will be stored.
+; State will be stored as Atomese Values, placed at certain locations
+; (keys). Every Atom is a key-value database; the below defines the keys
+; where the Values (attributes) will be stored.
+;
+; Predicate under which the SEIR state will be stored.
 (define seir-state (Predicate "SEIR state"))
 
 ; Predicate under which a susceptibility weight will be stored.
@@ -107,8 +108,10 @@
 
 ; ---------------------------------------------------------------------
 ; A function that implements the transmission of the disease.
-; It takes two arguments: two people, A and B, with A being
-; exposed if B is infected. It is unidirectional.
+; It takes two arguments: two people, A and B, with A becoming
+; exposed if B is infected. It is unidirectional.  This is a
+; deterministic state change: there's no "probability of exposure",
+; one simply is, or isn't. The probabilities are in the next step.
 (Define
 	(DefinedSchema "transmission")
 	(Lambda
@@ -132,9 +135,9 @@
 			; If A is exposed, and is infirm, then A is infected.
 			; The probability of infection is controlled by a random
 			; number generator. RandomNumberLink generates a uniform
-			; distribution.
+			; distribution between the two indicated bounds.
 			(And
-				(Equal (ValueOf (Variable "$A") seir-state) (Concept "exposed"))
+				(Equal (ValueOf (Variable "$A") seir-state) exposed)
 				(GreaterThan
 					(ValueOf (Variable "$A") susceptibility)
 					(RandomNumber (Number 0) (Number 1))))
@@ -147,7 +150,7 @@
 			; one returns to original, unexposed state.
 			; Use one minus the probability of getting infected.
 			(And
-				(Equal (ValueOf (Variable "$A") seir-state) (Concept "exposed"))
+				(Equal (ValueOf (Variable "$A") seir-state) exposed)
 				(GreaterThan
 					(Minus (Number 1)
 						(ValueOf (Variable "$A") susceptibility))
@@ -157,16 +160,16 @@
 			; If A is infected, then A has a chance of dying,
 			; depending on the infirmity.
 			(And
-				(Equal (ValueOf (Variable "$A") seir-state) (Concept "infected"))
+				(Equal (ValueOf (Variable "$A") seir-state) infected)
 				(GreaterThan
 					(ValueOf (Variable "$A") infirmity)
 					(RandomNumber (Number 0) (Number 1))))
 			(SetValue (Variable "$A") seir-state died)
 
 			; If A is infected, then A has a chance of recovering,
-			; depending on the infirmity.
+			; depending on the recovery-health strength.
 			(And
-				(Equal (ValueOf (Variable "$A") seir-state) (Concept "infected"))
+				(Equal (ValueOf (Variable "$A") seir-state) infected)
 				(GreaterThan
 					(ValueOf (Variable "$A") recovery)
 					(RandomNumber (Number 0) (Number 1))))
@@ -354,20 +357,23 @@
 (format #t "The social network consists of ~D individuals\n"
 	(length individual-list))
 
-; Assign to each individual the state of "initially healthy", and
-; some random numbers for susceptibility.
+; Assign to each individual the state of "initially healthy".
+; Choose some random numbers for the overall population health:
+; some random susceptibility (the probability of becoming ill after
+; being exposed), the infirmity (probability of illness leading to
+; death) and a probability of recovering from illness.
 (for-each
 	(lambda (individual)
 		(cog-set-value! individual seir-state susceptible)
 		(cog-set-value! individual susceptibility
-			(cog-execute! (RandomNumber (Number 0.1) (Number 1))))
-		(cog-set-value! individual infirmity
 			(cog-execute! (RandomNumber (Number 0.2) (Number 0.8))))
+		(cog-set-value! individual infirmity
+			(cog-execute! (RandomNumber (Number 0.01) (Number 0.55))))
 		(cog-set-value! individual recovery
-			(cog-execute! (RandomNumber (Number 0.3) (Number 0.7)))))
+			(cog-execute! (RandomNumber (Number 0.6) (Number 0.95)))))
 	individual-list)
 
-; Pick one person, and make them infected
+; Pick one person, and make them infected.
 (cog-set-value! (car individual-list) seir-state infected)
 
 ; ---------------------------------------------------------------------
