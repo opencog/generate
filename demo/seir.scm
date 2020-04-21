@@ -247,10 +247,10 @@
 ; node-type.
 (define node-weight (Predicate "node likelihood"))
 
-; This is the anchor-point to which the grammar will be attached.
-; The grammar consists of a number of prototype individuals, having
-; different numbers of friend and stranger encounters, occurring with
-; different probability in the network.
+; The anchor-point to which the grammar will be attached. The grammar
+; consists of a number of prototype individuals, having different
+; numbers of friend and stranger encounters, occurring with different
+; probability in the network.
 (define prototypes (Concept "Prototype Individual Anchor Point"))
 
 ; Define a simple function that will create a "person prototype".
@@ -286,8 +286,8 @@
 			; The probability that an individual, with this number of
 			; friend and stranger relationships, will appear in some
 			; typical random network. This is just a cheesy hack, for
-			; now. Its not even the expectation,value, not really, its
-			; just a weighting controlling the likelihood of such
+			; now. Its not even the expectation value, not really, its
+			; just a weight controlling the likelihood of such a
 			; prototype being selected, during network generation. The
 			; weighting chosen here punishes prototypes with many
 			; relationships. At this time, this is needed to force the
@@ -309,7 +309,7 @@
 	(iota 6 1))
 
 ; Both friendships and stranger relationships are symmetrical,
-; any-to-any.
+; mutually reciprocal.
 (define pole-set (Concept "any to any"))
 (Member (Set (ConnectorDir "*") (ConnectorDir "*")) pole-set)
 
@@ -330,13 +330,13 @@
 ; Nahh. Make that just one.
 (State (Member max-solutions params) (Number 1))
 
-; Always try to close off new unconnected connectors.
+; Always try to close off new, unconnected connectors.
 (State (Member close-fraction params) (Number 1.0))
 
 ; Avoid infinite recursion by quitting after some number of steps.
-; iteration stops if the number of desired nets is found, or this
+; Iteration stops if the number of desired nets is found, or this
 ; number of steps is taken, whichever comes first.
-; In the current implementation (this is subjecct to change!)
+; In the current implementation (this is subject to change!)
 ; either a solution is found within about 300 steps, or not at all.
 ; Thus, limit the search to just a bit more than 300, and try again,
 ; if no solution is found. (About half of all attempts succeed.
@@ -347,7 +347,7 @@
 (State (Member max-depth params) (Number 100))
 (State (Member max-network-size params) (Number 2000))
 
-; Record all the individials that are created. This will be handy to
+; Record all the individuals that are created. This will be handy to
 ; have around, later.
 (define anchor (Anchor "Covid Sim Individuals"))
 (State (Member point-set-anchor params) anchor)
@@ -437,7 +437,7 @@
 		all-relations))
 
 (define friend-relations (get-relations-of-type (Concept "friend")))
-(format #t "The social network consists of ~D freind-pairs\n"
+(format #t "The social network consists of ~D friend-pairs\n"
 	(length friend-relations))
 
 (define stranger-relations (get-relations-of-type (Concept "stranger")))
@@ -446,6 +446,7 @@
 
 ; ---------------------------------------------------------------------
 ; Start applying state transition rules to the network.
+;
 ; This will be done "by hand" for the first few rounds, just to show how
 ; it works. Several differnt styles will be shown. One is by directly
 ; running scheme code. A second, better way is by applying Atomese
@@ -471,7 +472,7 @@
 ; Atomspace.
 (define (run-one-transmission-step)
 
-	; The transmission rule is directed, from first to second individual.
+	; The transmission rule is directed, from second to first individual.
 	; But the relation-pairs are undirected, so we have to run the rule
 	; twice, swapping the individuals the second time.
 	(for-each
@@ -509,7 +510,7 @@
 	*unspecified*)
 
 ; A function that rolls the dice, and updates state: looping over
-; all individuals, to see if they got infected, recovered, or died.
+; all individuals, to see if they got infected, or recovered, or died.
 ; As before, this uses a `for-each` loop in scheme to loop over all
 ; individuals.
 (define (run-one-state-transition)
@@ -533,7 +534,10 @@
 ; ---------------------------------------------------------------------
 ; State transitions, applied as rewrite rules, run over the AtomSpace.
 ; Instead of iterating over scheme lists of relations and individuals,
-; this searches the AtomSpace for the relevant relations/individuals.
+; the code below searches the AtomSpace directly for the relevant
+; relations and individuals. This is more elegant than monkeying around
+; with scheme code. It operates by applying graph rewrite rules directly
+; to the AtomSpace, where the data actually lives.
 
 ; Search for all pairs, and apply the transmission rule.
 (define (do-transmission)
