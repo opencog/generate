@@ -67,7 +67,7 @@ Handle LinkStyle::create_unique_section(const Handle& sect)
 	Handle usect(_scratch->add_link(SECTION, upoint, disj));
 
 	// Record it's original type.
-	_inhsects.emplace_back(createLink(INHERITANCE_LINK, usect, sect));
+	// _inhsects.emplace_back(createLink(INHERITANCE_LINK, upoint, sect));
 
 	return usect;
 }
@@ -165,8 +165,15 @@ void LinkStyle::clear(void)
 void LinkStyle::save_work(AtomSpace* as)
 {
 	for (const Handle& h : _mempoints)
-		as->add_atom(h);
+	{
+		Handle pt(as->add_atom(h));
 
-	for (const Handle& h : _inhsects)
-		as->add_atom(h);
+#if FINISH_ME_LATER
+		// Link tying together the fully-connected piece, and the
+		// puzzle piece it came from.
+		IncomingSet iset = pt->get_incoming_by_type(SECTION, as);
+		OC_ASSERT(1 == iset.size(), "Wrong number of sections");
+		as
+#endif
+	}
 }
