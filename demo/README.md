@@ -10,7 +10,7 @@ programming techniques, one of which is the brand-new (version 0.1)
 random network generator. Another is Value Flows: the use of Values
 for holding mutable state, and flowing that state through a network.
 It is assumed that the reader is already familiar with the basics of
-the OpenCog AtomSpace! This demo *could* be enhanced to do actual
+the OpenCog AtomSpace! This demo **could** be enhanced to do actual
 scientific exploration; see "making this useful", below.
 
 This demo generates a random "social network", consisting of two types

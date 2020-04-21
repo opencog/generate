@@ -2,6 +2,7 @@ Version 0.1.0 (17 April 2020)
  * Multiple examples of simple grammars.
  * Half-dozen configurable parameters.
  * Partially-assembled networks isolated in scratch space.
+ * Epidemiology model - covid-19, of course!
 
 Version 0.0.6 (12 April 2020)
  * Beginnings of the random network explorer.

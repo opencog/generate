@@ -343,3 +343,7 @@ that, and then build the stuff here in the same way.
 
 ## Examples
 Jump to the [examples](examples) directory!
+
+The [demo](demo) directory contains a simple epidemic-network simulation
+model. It demonstrates different aspects of the AtomSpace, such as value
+flows, as well as random network generation.
