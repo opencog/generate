@@ -59,6 +59,7 @@ void RandomCallback::clear(AtomSpace* scratch)
 	_distmap.clear();
 	_steps_taken = 0;
 	CollectStyle::clear();
+	LinkStyle::clear();
 	LinkStyle::_point_set = point_set;
 	LinkStyle::_scratch = scratch;
 }

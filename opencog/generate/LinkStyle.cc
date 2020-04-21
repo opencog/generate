@@ -61,13 +61,13 @@ Handle LinkStyle::create_unique_section(const Handle& sect)
 
 	// Record the point location.
 	if (_point_set)
-		_scratch->add_link(MEMBER_LINK, upoint, _point_set);
+		_mempoints.emplace_back(createLink(MEMBER_LINK, upoint, _point_set));
 
 	// Create a unique instance of the section.
 	Handle usect(_scratch->add_link(SECTION, upoint, disj));
 
 	// Record it's original type.
-	_scratch->add_link(INHERITANCE_LINK, usect, sect);
+	_inhsects.emplace_back(createLink(INHERITANCE_LINK, usect, sect));
 
 	return usect;
 }
@@ -156,6 +156,17 @@ size_t LinkStyle::num_any_links(const Handle& fm_sect,
 	return cnt;
 }
 
+void LinkStyle::clear(void)
+{
+	_mempoints.clear();
+	_inhsects.clear();
+}
+
 void LinkStyle::save_work(AtomSpace* as)
 {
+	for (const Handle& h : _mempoints)
+		as->add_atom(h);
+
+	for (const Handle& h : _inhsects)
+		as->add_atom(h);
 }
