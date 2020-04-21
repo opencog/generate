@@ -178,16 +178,55 @@
 )
 
 ; ---------------------------------------------------------------------
-; A grammar that defines a random network. This grammar will be used
-; to generate fixed, static networks of individuals. Why use a static
-; network? To better model geographical isolation. Thus, for example,
-; a person who mostly stays home is likely to encounter only three
-; people: other family members. A person who is highly social might
-; meet dozens of people - now, this does NOT mean that the meetings
-; happen every day - they may be very infrequent. But its usually
-; the same dozen people, from the same neighborhood - even, maybe
-; random strangers in the grocery store.  The static network captures
-; this locality, and the general invariance of the potential network.
+; The above state-transmission model was verbose.  Just a tiny-bit of
+; script-fu can clean it up and make it easier to read. Lets do that.
+;
+; Define a wrapper for each of the state-transition clauses
+(define (condition CURRENT-STATE NEXT-STATE DISTRIBUTION)
+	(list
+		(And
+			(Equal (ValueOf (Variable "$A") seir-state) CURRENT-STATE)
+			(GreaterThan
+				(ValueOf (Variable "$A") DISTRIBUTION)
+				(RandomNumber (Number 0) (Number 1))))
+		(SetValue (Variable "$A") seir-state NEXT-STATE)))
+
+; Define a wrapper, just like above, but instead using (1-probability)
+(define (inverted CURRENT-STATE NEXT-STATE DISTRIBUTION)
+	(list
+		(And
+			(Equal (ValueOf (Variable "$A") seir-state) CURRENT-STATE)
+			(GreaterThan
+				(Minus (Number 1) (ValueOf (Variable "$A") DISTRIBUTION))
+				(RandomNumber (Number 0) (Number 1))))
+		(SetValue (Variable "$A") seir-state NEXT-STATE)))
+
+; Here's the easier-to-read version. So Atomese is verbose, but
+; that's not hard to hide behind some wrappers.
+(Define
+	(DefinedSchema "alt version of state transition")
+	(Lambda
+		(Variable "$A")
+		(Cond
+			(condition exposed  infected    susceptibility)
+			(inverted  exposed  susceptible susceptibility)
+			(condition infected died        infirmity)
+			(condition infected recovered   recovery))))
+
+; ---------------------------------------------------------------------
+; Generate a random social network. This starts by defining a grammar
+; that will express the network.
+;
+; The generated network will be a fixed, static networks of individuals.
+; Why use a static network? To better model geographical isolation.
+; Thus, for example, a person who mostly stays home is likely to
+; encounter only three people: other family members. A person who is
+; highly social might meet dozens of people - now, this does NOT mean
+; that the meetings happen every day - they may be very infrequent.
+; But its usually the same dozen people, from the same neighborhood
+; - even, maybe the same set of random strangers in the grocery store.
+; The static network captures this geographical locality, and the
+; general invariance of the potential network.
 ;
 ; The grammar used here is quite simple: it is just a minor twist on
 ; the grammar used in the `basic-network.scm` example. It introduces
@@ -199,10 +238,13 @@
 ; The code here just automates the generation of the grammar. The
 ; setting of susceptibilities and infirmities will be done after the
 ; network has been generated.
+;
+; ----
+; Network Gneration parameters.
 
-; This is the key under which the likelihood of creating this kind of
-; network node will be stored. This is used to select nodes during the
-; random network generation.
+; The key identifying the likelihood of creating a particular kind of
+; network node.  This weighting controls the selection of the particular
+; node-type.
 (define node-weight (Predicate "node likelihood"))
 
 ; This is the anchor-point to which the grammar will be attached.
