@@ -7,12 +7,11 @@
 ;
 ; This is a demo, only! It is demonstrating several different AtomSpace
 ; programming techniques, one of which is the brand-new (version 0.1)
-; random network generator. Another is  Value Flows: the use of Values
+; random network generator. Another is Value Flows: the use of Values
 ; for holding mutable state, and flowing that state through a network.
 ; It is assumed that the reader is already familiar with the basics of
-; the OpenCog AtomSpace! This demo *could* be altered, modified and
-; extended to do actual scientific research; see "making this useful",
-; below.
+; the OpenCog AtomSpace! This demo *could* be enhanced to do actual
+; scientific exploration; see "making this useful", below.
 ;
 ; This demo generates a random "social network", consisting of two types
 ; of relationships: "friends" and "strangers". It adopts a simple SEIR
@@ -21,6 +20,8 @@
 ;
 ; Making this Useful
 ; ------------------
+; This is a demo, not a final finished product.
+;
 ; There's no whizzy visualization of the disease progression, or the
 ; resulting stats. You can visualize snapshots of the network with
 ; CytoScape or Gephi, but it won't be animated as the disease spreads.
@@ -34,20 +35,27 @@
 ; Atomese is, in many ways, like programming in assembly code.  This is
 ; perhaps the most important thing to understand about this demo.
 ; Atomese is a graphical programming language, and it was designed for
-; automation. This means that the graphs, and the Atomese code, is easy
-; to manipulate with other algorithms. It's designed for other machines,
-; not for humans :-/
+; automation. This means that the graphs, and the Atomese code, is meant
+; to be easy for other algorithms to manipulate. It's designed for other
+; machines, not for humans :-!
 ;
-; For example, a graphical editor - a system that can draw and edit
-; graphs (such as CytoScape or Gephi, but also others) can be attached
-; to Atomese, so that a hand-drawn graphical model of disease progression
-; can be automatically converted into functional Atomese, and set
-; running.
+; Consider, for example, a graphical editor - something where you can
+; drag-n-drop, hand-draw interacting bubble diagrams. Something easy
+; to use - something a medical proffesional could get the hang of in
+; half an hour - something where a disease model could be sketched out
+; with bubbles and lines and flow-charts. The goal of Atomese is that
+; it becomes easy -- really easy -- to convert such diagrams into
+; executable code. That's what Atomese is designed to do.
 ;
-; Another possibility is that of a disease-progression explorer: a
-; system that automatically creates a variety of different models,
-; and then explores how well each model works. Atomese was designed
-; for, is highly suited for such automation tasks.
+; Another possibility is that of an automatic model explorer: a system
+; that automatically creates a variety of different models, and then
+; explores how well each model works. The automatic generator could,
+; for example, mutate the best models and see if even better-fitting
+; models can be obtained, searching for a best-fit.  The goal of Atomese
+; is that it becomes very easy for such models to be generated and run.
+; The verboseness of Atomese is no longer a problem; the simple
+; programming language it implements is easy for other tools to
+; manipulate and control. That's what it's good for.
 ;
 ; Thus, in reading the below, keep in mind that there is nothing special
 ; about the SEIR model; its a stand-in for what could be a generic,
