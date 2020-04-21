@@ -57,7 +57,7 @@ The verboseness of Atomese is no longer a problem; the simple
 programming language it implements is easy for other tools to
 manipulate and control. That's what it's good for.
 
-Thus, in reading the below, keep in mind that there is nothing special
+Thus, in reading the code, keep in mind that there is nothing special
 about the SEIR model; its a stand-in for what could be a generic,
 arbitrary state transition machine. Such machines can be hand-coded,
 of course, but the interesting application is when they are generated
@@ -65,6 +65,8 @@ from other sources.
 
 Last but not least: keep in mind that the network generator is
 currently at version 0.1, and is not yet as versatile, flexible and
-powerful as it could be. The parameter settings below generate
-networks that are long and thin. One such network can be seen in
-the included image.
+powerful as it could be. The parameter settings used in the demo
+generate networks that are long and thin. Very long and thin. Like
+the coiled-up network below.
+
+![Example social network](./social-network.gml_2b.png)
