@@ -109,7 +109,8 @@ HandleSet RandomCallback::next_root(void)
 	for (size_t i=0; i<len; i++)
 	{
 		size_t idx = _root_dist[i](rangen);
-		starters.insert(_root_sections[i][idx]);
+		Handle root(_root_sections[i][idx]);
+		starters.insert(create_unique_section(root));
 	}
 
 	return starters;

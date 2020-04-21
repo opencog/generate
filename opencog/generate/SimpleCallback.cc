@@ -91,7 +91,7 @@ HandleSet SimpleCallback::next_root(void)
 		{
 			_root_iters[0]++;
 		}
-		starters.insert(*iter);
+		starters.insert(create_unique_section(*iter));
 	}
 	return starters;
 }
