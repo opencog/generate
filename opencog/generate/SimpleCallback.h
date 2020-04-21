@@ -47,8 +47,8 @@ namespace opencog
 
 class SimpleCallback :
 	public GenerateCallback,
-	public LinkStyle,
-	public CollectStyle
+	private LinkStyle,
+	private CollectStyle
 {
 private:
 	Dictionary _dict;
@@ -118,6 +118,7 @@ public:
 	virtual void push_odometer(const Odometer&);
 	virtual void pop_odometer(const Odometer&);
 	virtual void solution(const Frame&);
+	virtual Handle get_solutions(void);
 };
 
 

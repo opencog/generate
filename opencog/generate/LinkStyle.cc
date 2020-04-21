@@ -29,7 +29,7 @@
 
 using namespace opencog;
 
-LinkStyle::LinkStyle(AtomSpace* as) : _as(as)
+LinkStyle::LinkStyle(void) : _as(nullptr)
 {
 }
 

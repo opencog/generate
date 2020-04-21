@@ -41,8 +41,8 @@ namespace opencog
 
 class RandomCallback :
 	public GenerateCallback,
-	public LinkStyle,
-	public CollectStyle
+	private LinkStyle,
+	private CollectStyle
 {
 private:
 	Dictionary _dict;
@@ -108,6 +108,7 @@ public:
 
 	virtual bool step(const Frame&);
 	virtual void solution(const Frame&);
+	virtual Handle get_solutions(void);
 };
 
 

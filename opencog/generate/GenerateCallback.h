@@ -124,6 +124,11 @@ public:
 	/// with no open connectors.
 	virtual void solution(const Frame&) = 0;
 
+	/// Return a SetLink with all of the solutions that were
+	/// reported via the above callback. Perform any other AtomSpace
+	/// maintanence pertaining to reporting the solutions.
+	virtual Handle get_solutions(void) = 0;
+
 	// ---------------------------------------------------------------
 	/// Generic Parameters
 	/// These are parameters that all callback systems might reasonably

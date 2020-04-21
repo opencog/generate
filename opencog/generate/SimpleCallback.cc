@@ -26,7 +26,7 @@
 using namespace opencog;
 
 SimpleCallback::SimpleCallback(AtomSpace* as, const Dictionary& dict)
-	: LinkStyle(as), _dict(dict)
+	: _dict(dict)
 {
 	_steps_taken = 0;
 }
@@ -275,4 +275,9 @@ bool SimpleCallback::step(const Frame& frm)
 void SimpleCallback::solution(const Frame& frm)
 {
 	record_solution(frm);
+}
+
+Handle SimpleCallback::get_solutions(void)
+{
+	return CollectStyle::get_solutions();
 }
