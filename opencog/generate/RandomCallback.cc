@@ -323,6 +323,9 @@ void RandomCallback::solution(const Frame& frm)
 
 Handle RandomCallback::get_solutions(void)
 {
-	LinkStyle::save_work(_as);
-	return CollectStyle::get_solutions();
+	Handle results = CollectStyle::get_solutions();
+
+	// Populate the atomspace, only if there are results to report.
+	if (0 < results->get_arity()) LinkStyle::save_work(_as);
+	return results;
 }
