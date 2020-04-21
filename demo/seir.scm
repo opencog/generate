@@ -41,7 +41,7 @@
 ;
 ; Consider, for example, a graphical editor - something where you can
 ; drag-n-drop, hand-draw interacting bubble diagrams. Something easy
-; to use - something a medical proffesional could get the hang of in
+; to use - something a medical professional could get the hang of in
 ; half an hour - something where a disease model could be sketched out
 ; with bubbles and lines and flow-charts. The goal of Atomese is that
 ; it becomes easy -- really easy -- to convert such diagrams into
@@ -240,7 +240,7 @@
 ; network has been generated.
 ;
 ; ----
-; Network Gneration parameters.
+; Network Generation parameters.
 
 ; The key identifying the likelihood of creating a particular kind of
 ; network node.  This weighting controls the selection of the particular
@@ -386,7 +386,7 @@
 (format #t "Found a network of size ~D\n" (cog-arity (gar just-one)))
 
 ; ---------------------------------------------------------------------
-; Assign initial suceptibility and infirmity values to individuals
+; Assign initial susceptibility and infirmity values to individuals
 ; in the network. These will be randomly generated numbers.
 
 ; Each individual is linked back to the anchor node. Each individual
@@ -448,14 +448,14 @@
 ; Start applying state transition rules to the network.
 ;
 ; This will be done "by hand" for the first few rounds, just to show how
-; it works. Several differnt styles will be shown. One is by directly
+; it works. Several different styles will be shown. One is by directly
 ; running scheme code. A second, better way is by applying Atomese
-; search-and-update rules directly to the atomspace contents. The
+; search-and-update rules directly to the AtomSpace contents. The
 ; second way is ultimately simpler, and provides better automation,
 ; but both ways are illustrated, for comparison.
 
 ; ------ But first, a handy utility:
-; Execute some atomese. Assume that it returns a Setlink.
+; Execute some Atomese. Assume that it returns a SetLink.
 ; Unwrap the SetLink, discard it, return the contents.
 (define (exec-unwrap ATOMESE)
 	(define set-link (cog-execute! ATOMESE))
@@ -469,7 +469,7 @@
 ; It requires, as input, the list of all relations created above.
 ; As such, it is "static", depending on a static relationship list.
 ; Later in the demo, we'll replace this loop by a search over the
-; Atomspace.
+; AtomSpace.
 (define (run-one-transmission-step)
 
 	; The transmission rule is directed, from second to first individual.
