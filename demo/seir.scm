@@ -484,6 +484,9 @@
 				(Present (Member (Variable "$indiv") anchor))
 				(Equal (ValueOf (Variable "$indiv") seir-state) STATE)))))
 
+; Initially, all individuals are unexposed. Just get a list of them.
+(define all-individuals (get-individuals-in-state susceptible))
+
 ; A function that reports the current stats on the population.
 (define (report-stats)
 	(format #t
@@ -492,7 +495,7 @@
 		(length (get-individuals-in-state infected))
 		(length (get-individuals-in-state recovered))
 		(length (get-individuals-in-state died))
-		(length individual-list))
+		(length all-individuals))
 	*unspecified*)
 
 ; ---------------------------------------------------------------------
