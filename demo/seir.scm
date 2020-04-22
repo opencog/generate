@@ -430,27 +430,22 @@
 ;
 ; The initialization is done with a graph-query and graph-rewrite
 ; run over the AtomSpace. The query is simple: find all individuals
-; attached with a `MemberLink` to an anchor node. The rewrite is
-; trickier: its a `DeleteLink` whose contents are executed first.
-; The contents perform the intialization of each individual that is
-; found. The DeleteLink then just discards the wrapper ListLink.
-; We didn't actually need to discard it, but it seems nice to not
-; leave ponitless garbage lying round in the AtomSpace.
+; attached with a `MemberLink` to an anchor node. The rewrite
+; consists of the 3rd and subsequent clauses: all of the SetValues.
 
 (define (initialize-state)
 	(exec-unwrap
 		(Bind
 			(TypedVariable (Variable "$person") (Type "ConceptNode"))
 			(Present (Member (Variable "$person") anchor))
-			(Delete (List
-				(SetValue (Variable "$person") seir-state susceptible)
-				(SetValue (Variable "$person") susceptibility
-					(RandomNumber (Number 0.2) (Number 0.8)))
-				(SetValue (Variable "$person") infirmity
-					(RandomNumber (Number 0.01) (Number 0.55)))
-				(SetValue (Variable "$person") recovery
-					(RandomNumber (Number 0.6) (Number 0.95)))
-			))))
+			(SetValue (Variable "$person") seir-state susceptible)
+			(SetValue (Variable "$person") susceptibility
+				(RandomNumber (Number 0.2) (Number 0.8)))
+			(SetValue (Variable "$person") infirmity
+				(RandomNumber (Number 0.01) (Number 0.55)))
+			(SetValue (Variable "$person") recovery
+				(RandomNumber (Number 0.6) (Number 0.95)))
+			))
 	*unspecified*)
 
 ; Run the above.
