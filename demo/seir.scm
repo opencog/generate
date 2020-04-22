@@ -5,7 +5,7 @@
 ;
 ; SEIR == "susceptible", "exposed", "infected", and "recovered".
 ;
-; This is a demo, only! It is demonstrating several different AtomSpace
+; This is a demo, only! It demonstrates several different AtomSpace
 ; programming techniques, one of which is the brand-new (version 0.1)
 ; random network generator. Another is Value Flows: the use of Values
 ; for holding mutable state, and flowing that state through a network.
@@ -13,7 +13,7 @@
 ; the OpenCog AtomSpace! This demo *could* be enhanced to do actual
 ; scientific exploration; see "making this useful", below.
 ;
-; This demo generates a random "social network", consisting of two types
+; The demo generates a random "social network", consisting of two types
 ; of relationships: "friends" and "strangers". It adopts a simple SEIR
 ; model of disease transmission and progression along this network.
 ; The model itself is a (simple) hand-coded state-transition machine.
@@ -22,9 +22,12 @@
 ;
 ;    https://blog.opencog.org/2020/04/22/covid-19-modelling-and-random-social-networks/
 ;
-; Reading the blog post might be easier than diving head-first into the
-; code below. If you're lazy and just want to run the demo, then just
-; start the guile shell, load this file, and ... the demo will run.
+; The blog post touches on the high-lites of the demo, avoiding all of
+; the grunge needed to make the code actually run. Thus, its easier to
+; read than the below.
+;
+; If you're lazy and just want to run the demo, then just start the
+; guile shell, load this file, and ... the demo will run.
 ;
 ; Making this Useful
 ; ------------------
@@ -36,16 +39,31 @@
 ;
 ; There's no statistical analysis performed, and no graphs or curves are
 ; drawn. The demo shows how to generate the raw data, not how to analyze
-; raw data.
+; raw data. There are plenty of tools designed for statistical analysis.
+; Use those.
 ;
-; Altering the disease progression model is not particularly easy. It is
-; written in Atomese, which is rather verbose, and programming in
-; Atomese is, in many ways, like programming in assembly code.  This is
-; perhaps the most important thing to understand about this demo.
+; A few notes about scheme, python and Atomese. This demo would appear
+; to be written ins scheme. It could have just as eassily been written
+; in python, without changing it's basic form (the AtomSpace has python
+; bindings.) It may seem hard to beleive, but the choice of language
+; doesn't really much matter. That's because all of the hard work is
+; done in Atomese.
+;
 ; Atomese is a graphical programming language, and it was designed for
-; automation. This means that the graphs, and the Atomese code, is meant
-; to be easy for other algorithms to manipulate. It's designed for other
-; machines, not for humans :-!
+; automation. Atomese expressions are graphs; they live as graphs in the
+; AtomSpace graph database. Atomese encodes a type of "Abstract Syntax
+; Tree" (see https://en.wikipedia.org/wiki/Abstract_syntax_tree) and
+; such a representation is useful for all of the reasons that the
+; Wikipedia article says they are. But it also means that "coding" in
+; Atomese can sometimes feel unusual. Like: "Why can't I just code in
+; python? It would be so much easier!" -- Well, but that misses the
+; point. And the point is, again: Atomese was designed for automation.
+;
+; What this really means that the graphs are meant to be easy for other
+; algorithms to manipulate. It's designed for ease-of-use by machines,
+; not for humans! The style is more barren, unadorned, without
+; short-cuts. Its a bit verbose at times. That's OK, machines don't mind
+; verbosity and tedium.
 ;
 ; Consider, for example, a graphical editor - something where you can
 ; drag-n-drop, hand-draw interacting bubble diagrams. Something easy
@@ -55,15 +73,21 @@
 ; it becomes easy -- really easy -- to convert such diagrams into
 ; executable code. That's what Atomese is designed to do.
 ;
-; Another possibility is that of an automatic model explorer: a system
-; that automatically creates a variety of different models, and then
-; explores how well each model works. The automatic generator could,
-; for example, mutate the best models and see if even better-fitting
-; models can be obtained, searching for a best-fit.  The goal of Atomese
-; is that it becomes very easy for such models to be generated and run.
-; The verboseness of Atomese is no longer a problem; the simple
-; programming language it implements is easy for other tools to
-; manipulate and control. That's what it's good for.
+; In this demo, the disease progression model is written in Atomese.
+; This is the model that a graphical GUI WYSIWYG whizz-bang system
+; would generate.
+;
+; Atomese enables other, more abstract approaches. Consider an automatic
+; model explorer: a system that automatically creates a variety of
+; different disease progression models, and then explores how each
+; model works. The model generator might try to fit an existing dataset.
+; Alternately, it could mutate models so as to obtain certain
+; characteristics.  This moves beyond just adjusting some parameters
+; in some hand-created, hypothesized model. This is not just some
+; monte-carlo search or machine-learning hill-climbing for paramter
+; tuning.  This is a whole-sale creation of previously non-existant
+; code. Atomese allows software to read, understand, mutate, modify
+; and write programs.
 ;
 ; Thus, in reading the below, keep in mind that there is nothing special
 ; about the SEIR model; its a stand-in for what could be a generic,
