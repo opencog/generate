@@ -123,12 +123,23 @@
 (Define
 	(DefinedSchema "transmission")
 	(Lambda
-		(VariableList (Variable "$A") (Variable "$B"))
+		(VariableList (Variable "$A") (Variable "$B") (Variable "$REL"))
 		(Cond
-			; If A is susceptible and B is infected, then A is exposed.
+			; If A is susceptible and B is infected, then maybe
+			; A is exposed, if A gets close enough/spends enough
+			; time with B. A passing stranger is unlikely to
+			; lead to exposure; but friends are harder to avoid
+			; and are thus more likely to lead to exposure.
 			(And
 				(Equal (ValueOf (Variable "$A") seir-state) susceptible)
-				(Equal (ValueOf (Variable "$B") seir-state) infected))
+				(Equal (ValueOf (Variable "$B") seir-state) infected)
+				(Or
+					(And
+						(Equal (Variable "$REL") (Concept "friend"))
+						(GreaterThan (RandomNumber (Number 0) (Number 1)) 0.3))
+					(And
+						(Equal (Variable "$REL") (Concept "stranger"))
+						(GreaterThan (RandomNumber (Number 0) (Number 1)) 0.7))))
 			(SetValue (Variable "$A") seir-state exposed)
 		)))
 
@@ -584,11 +595,17 @@
 		(Bind
 			(VariableList
 				(TypedVariable (Variable "$pers-a") (Type "ConceptNode"))
-				(TypedVariable (Variable "$pers-b") (Type "ConceptNode")))
+				(TypedVariable (Variable "$pers-b") (Type "ConceptNode"))
+				(TypedVariable (Variable "$relation") (Type "ConceptNode")))
 			(Present
-				(Set (Variable "$pers-a") (Variable "$pers-b")))
+				(Evaluation
+					(Variable "$relation")
+					(Set (Variable "$pers-a") (Variable "$pers-b"))))
 			(Put (DefinedSchema "transmission")
-				(List (Variable "$pers-a") (Variable "$pers-b")))))
+				(List
+					(Variable "$pers-a")
+					(Variable "$pers-b")
+					(Variable "$relation")))))
 	*unspecified*)
 
 ; Search for individuals, and apply the state transition rule.
