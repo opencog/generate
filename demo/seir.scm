@@ -59,7 +59,7 @@
 ; python? It would be so much easier!" -- Well, but that misses the
 ; point. And the point is, again: Atomese was designed for automation.
 ;
-; What this really means that the graphs are meant to be easy for other
+; What this really means is that the graphs are meant to be easy for other
 ; algorithms to manipulate. It's designed for ease-of-use by machines,
 ; not for humans! The style is more barren, unadorned, without
 ; short-cuts. Its a bit verbose at times. That's OK, machines don't mind
@@ -68,7 +68,7 @@
 ; Consider, for example, a graphical editor - something where you can
 ; drag-n-drop, hand-draw interacting bubble diagrams. Something easy
 ; to use - something a medical professional could get the hang of in
-; half an hour - something where a disease model could be sketched out
+; a few hours - something where a disease model could be sketched out
 ; with bubbles and lines and flow-charts. The goal of Atomese is that
 ; it becomes easy -- really easy -- to convert such diagrams into
 ; executable code. That's what Atomese is designed to do.
@@ -84,8 +84,8 @@
 ; Alternately, it could mutate models so as to obtain certain
 ; characteristics.  This moves beyond just adjusting some parameters
 ; in some hand-created, hypothesized model. This is not just some
-; monte-carlo search or machine-learning hill-climbing for paramter
-; tuning.  This is a whole-sale creation of previously non-existant
+; monte-carlo search or machine-learning hill-climbing for parameter
+; tuning.  This is a whole-sale creation of previously non-existent
 ; code. Atomese allows software to read, understand, mutate, modify
 ; and write programs.
 ;
