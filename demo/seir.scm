@@ -406,7 +406,7 @@
 	(put-string outport just-one-gml)
 	(close outport))
 
-(format #t "Found a network of size ~D\n" (cog-arity (gar just-one)))
+(format #t "Found a network of ~D individuals\n" (cog-arity (gar just-one)))
 
 ; ---------------------------------------------------------------------
 ; A handy utility.  We need this for the rest of the demo.
