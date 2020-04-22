@@ -452,20 +452,6 @@
 ; Run the above.
 (initialize-state)
 
-; ---------
-; Each individual is linked back to the anchor node. Each individual
-; is also represented with a ConceptNode (we have some other junk
-; also attached to the anchor, so filter that out.)
-(define individual-list
-	(filter (lambda (ind) (equal? (cog-type ind) 'ConceptNode))
-		(map gar (cog-incoming-by-type anchor 'MemberLink))))
-
-(format #t "The social network consists of ~D individuals\n"
-	(length individual-list))
-
-; Pick one person, and make them infected.
-(cog-set-value! (car individual-list) seir-state infected)
-
 ; ---------------------------------------------------------------------
 ; Reporting statistics.
 ;
@@ -510,14 +496,13 @@
 	*unspecified*)
 
 ; ---------------------------------------------------------------------
-; Start applying state transition rules to the network.
+; Apply state transition rules to the network.
 ;
-; State transitions, applied as rewrite rules, run over the AtomSpace.
-; Instead of iterating over scheme lists of relations and individuals,
-; the code below searches the AtomSpace directly for the relevant
-; relations and individuals. This is more elegant than monkeying around
-; with scheme code. It operates by applying graph rewrite rules directly
-; to the AtomSpace, where the data actually lives.
+; The state transition rules drive the actual simulation. These rules
+; are applied as graph rewrite rules, running over the AtomSpace.
+; There are two rules to apply. One rule that runs over all pairs,
+; transmitting disease from one individual to another. The other rule
+; updates the individual state, from exposed to infected to resolved.
 
 ; Search for all pairs, and apply the transmission rule.
 (define (do-transmission)
@@ -550,6 +535,16 @@
 			(Put (DefinedSchema "state transition")
 				(Variable "$person"))))
 	*unspecified*)
+
+; Oh, but first, pick one person, and make them infected!
+(define everyone (get-individuals-in-state susceptible))
+(define one-person (first everyone))
+(cog-execute! (SetValue one-person seir-state infected))
+
+; Start the simulation. Run several steps by hand, to get the
+; hang of it.
+(do-transmission)     (report-stats)
+(do-state-transition) (report-stats)
 
 (do-transmission)     (report-stats)
 (do-state-transition) (report-stats)
