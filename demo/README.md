@@ -18,6 +18,12 @@ of relationships: "friends" and "strangers". It adopts a simple SEIR
 model of disease transmission and progression along this network.
 The model itself is a (simple) hand-coded state-transition machine.
 
+The
+[blog post](https://blog.opencog.org/2020/04/22/covid-19-modelling-and-random-social-networks/)
+about this demo might be the easiest way to quickly gain an
+understanding of the central ideas.
+
+
 Making this Useful
 ------------------
 This is a demo, not a final finished product.

@@ -18,6 +18,14 @@
 ; model of disease transmission and progression along this network.
 ; The model itself is a (simple) hand-coded state-transition machine.
 ;
+; There's a blog post here:
+;
+;    https://blog.opencog.org/2020/04/22/covid-19-modelling-and-random-social-networks/
+;
+; Reading the blog post might be easier than diving head-first into the
+; code below. If you're lazy and just want to run the demo, then just
+; start the guile shell, load this file, and ... the demo will run.
+;
 ; Making this Useful
 ; ------------------
 ; This is a demo, not a final finished product.

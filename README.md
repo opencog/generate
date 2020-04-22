@@ -346,4 +346,6 @@ Jump to the [examples](examples) directory!
 
 The [demo](demo) directory contains a simple epidemic-network simulation
 model. It demonstrates different aspects of the AtomSpace, such as value
-flows, as well as random network generation.
+flows, as well as random network generation. There's even a
+[blog post](https://blog.opencog.org/2020/04/22/covid-19-modelling-and-random-social-networks/)
+that you might want to read first.
