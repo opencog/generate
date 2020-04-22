@@ -23,8 +23,8 @@
 ;    https://blog.opencog.org/2020/04/22/covid-19-modelling-and-random-social-networks/
 ;
 ; The blog post touches on the high-lites of the demo, avoiding all of
-; the grunge needed to make the code actually run. Thus, its easier to
-; read than the below.
+; the grunge needed to get actual, working code. Thus, reading it is
+; recommended before diving into the code below.
 ;
 ; If you're lazy and just want to run the demo, then just start the
 ; guile shell, load this file, and ... the demo will run.
