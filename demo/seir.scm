@@ -502,37 +502,28 @@
 (cog-set-value! (car individual-list) seir-state infected)
 
 ; ---------------------------------------------------------------------
-; Obtain a list of all friendship relations, and all encounters between
-; strangers. We don't really need to have these (they can always be
-; generated on the fly) but they're handy to look at and have around.
-
-(define all-relations (remove-duplicate-atoms (append-map
-	(lambda (individual) (cog-incoming-by-type individual 'SetLink))
-	individual-list)))
-
-(format #t "The social network consists of ~D pair-wise relationships\n"
-	(length all-relations))
-
-(define (get-relations-of-type RELATION)
-	(filter-map (lambda (relpair)
-		(equal? RELATION (gar (car
-			(cog-incoming-by-type relpair 'EvaluationLink)))))
-		all-relations))
-
-(define friend-relations (get-relations-of-type (Concept "friend")))
-(format #t "The social network consists of ~D friend-pairs\n"
-	(length friend-relations))
-
-(define stranger-relations (get-relations-of-type (Concept "stranger")))
-(format #t "The social network consists of ~D stranger-pairs\n"
-	(length stranger-relations))
-
-; ---------------------------------------------------------------------
 ; Reporting statistics.
 ;
-; As the simulation progresses, some reports are needed. This implements
-; a very simple reporting function.
+; Two reports are provided. The first describes the structure of the
+; generated network: the number of friend and stranger relationships
+; in the network. The second describes the progression of the disease
+; state.
 ;
+; Obtain a list of pairs of interacting individuals, who interact either
+; through friendship or stranger encounters.
+(define (get-relations-of-type RELATION)
+	(exec-unwrap
+		(Get
+			(TypedVariable (Variable "$pair") (Type "SetLink"))
+			(Present (Evaluation RELATION (Variable "$pair"))))))
+
+(format #t "The social network consists of ~D friend-pairs\n"
+	(length (get-relations-of-type (Concept "friend"))))
+
+(format #t "The social network consists of ~D stranger-pairs\n"
+	(length (get-relations-of-type (Concept "stranger"))))
+
+; ---------
 ; Obtain a list of individuals in a given state.
 (define (get-individuals-in-state STATE)
 	(exec-unwrap
