@@ -415,6 +415,47 @@
 			(cog-execute! (RandomNumber (Number 0.6) (Number 0.95)))))
 	individual-list)
 
+; The above uses a very traditional scheme `for-each` loop to perform
+; the initialization. This could also be done directly, in Atomese, as
+; shown below.
+
+; ------ But first, a handy utility:
+; Execute some Atomese. Assume that it returns a SetLink.
+; Unwrap the SetLink, discard it, return the contents.
+(define (exec-unwrap ATOMESE)
+	(define set-link (cog-execute! ATOMESE))
+	(define contents (cog-outgoing-set set-link))
+	(cog-delete set-link)
+	contents)
+
+; ---------
+
+; Here's the Atomese version of the above. This performs a search of the
+; AtomSpace, locating all individuals. They are easy to identify: each
+; individual was previously anchored via a MemberLink. The DeleteLink
+; runs the contents inside of it, but then deletes the return value.
+; This is handy, to avoid garbage from accumulating in the AtomSpace.
+
+(define (initialize-state)
+	(exec-unwrap
+		(Bind
+			(TypedVariable (Variable "$person") (Type "ConceptNode"))
+			(Present (Member (Variable "$person") anchor))
+			(Delete (List
+				(SetValue (Variable "$person") seir-state susceptible)
+				(SetValue (Variable "$person") susceptibility
+					(RandomNumber (Number 0.2) (Number 0.8)))
+				(SetValue (Variable "$person") infirmity
+					(RandomNumber (Number 0.01) (Number 0.55)))
+				(SetValue (Variable "$person") recovery
+					(RandomNumber (Number 0.6) (Number 0.95)))
+			))))
+	*unspecified*)
+
+; Run the above.
+(initialize-state)
+
+; ---------
 ; Pick one person, and make them infected.
 (cog-set-value! (car individual-list) seir-state infected)
 
@@ -454,16 +495,6 @@
 ; second way is ultimately simpler, and provides better automation,
 ; but both ways are illustrated, for comparison.
 
-; ------ But first, a handy utility:
-; Execute some Atomese. Assume that it returns a SetLink.
-; Unwrap the SetLink, discard it, return the contents.
-(define (exec-unwrap ATOMESE)
-	(define set-link (cog-execute! ATOMESE))
-	(define contents (cog-outgoing-set set-link))
-	(cog-delete set-link)
-	contents)
-
-; ---------
 ; A function that runs the transmission step once. This is written
 ; using a scheme `for-each` loop to iterate over all encounters.
 ; It requires, as input, the list of all relations created above.
