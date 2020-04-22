@@ -407,6 +407,25 @@
 ; ---------------------------------------------------------------------
 ; Assign initial susceptibility and infirmity values to individuals
 ; in the network. These will be randomly generated numbers.
+;
+; This will be done twice, illustrating two different styles of coding.
+; The first style is a traditional, scheme list (srfi-1) style of
+; coding, something that a naive coder might attempt. (This is not
+; scheme-specific; python coders might code the same way, if this
+; demo was written in python.) Despite every attempt to "keep it
+; simple", this code quickly becomes opaque and hard to understand.
+; Thus, the first thing shown is NOT the recommended style.
+;
+; The second time, it will be done in Atomese. The code is recognizably
+; identical to the first attempt, but with far fewer calls to srfi-1
+; routines to manage and transform lists.  This is because Atomese,
+; and specifically, the Atomese query language, is far more compact in
+; managing state. You don't have to juggle things around with maps
+; and lists and functions -- the query language manages all this,
+; automatically.
+;
+; ----------
+; So: version 1: traditional software proramming style.
 
 ; Each individual is linked back to the anchor node. Each individual
 ; is also represented with a ConceptNode (we have some other junk
@@ -434,9 +453,13 @@
 			(cog-execute! (RandomNumber (Number 0.6) (Number 0.95)))))
 	individual-list)
 
+; ----------
+; So: version 2: Atomese query language proramming style.
+
 ; The above uses a very traditional scheme `for-each` loop to perform
-; the initialization. This could also be done directly, in Atomese, as
-; shown below.
+; the initialization. The Atomese query language automatically iterates
+; over the entire contents of the AtomSpace, so this loop is not
+; explicitly needed.
 
 ; ------ But first, a handy utility:
 ; Execute some Atomese. Assume that it returns a SetLink.
