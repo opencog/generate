@@ -528,40 +528,11 @@
 	(length stranger-relations))
 
 ; ---------------------------------------------------------------------
-; Start applying state transition rules to the network.
+; Reporting statistics.
 ;
-; This will be done "by hand" for the first few rounds, just to show how
-; it works. Several different styles will be shown. One is by directly
-; running scheme code. A second, better way is by applying Atomese
-; search-and-update rules directly to the AtomSpace contents. The
-; second way is ultimately simpler, and provides better automation,
-; but both ways are illustrated, for comparison.
-
-; A function that runs the transmission step once. This is written
-; using a scheme `for-each` loop to iterate over all encounters.
-; It requires, as input, the list of all relations created above.
-; As such, it is "static", depending on a static relationship list.
-; Later in the demo, we'll replace this loop by a search over the
-; AtomSpace.
-(define (run-one-transmission-step)
-
-	; The transmission rule is directed, from second to first individual.
-	; But the relation-pairs are undirected, so we have to run the rule
-	; twice, swapping the individuals the second time.
-	(for-each
-		(lambda (relation)
-			(exec-unwrap (Put (DefinedSchema "transmission")
-				(List (gar relation) (gdr relation)))))
-		all-relations)
-
-	; And now swapped ...
-	(for-each
-		(lambda (relation)
-			(exec-unwrap (Put (DefinedSchema "transmission")
-				(List (gdr relation) (gar relation)))))
-		all-relations)
-)
-
+; As the simulation progresses, some reports are needed. This implements
+; a very simple reporting function.
+;
 ; Obtain a list of individuals in a given state.
 (define (get-individuals-in-state STATE)
 	(exec-unwrap
@@ -582,29 +553,9 @@
 		(length individual-list))
 	*unspecified*)
 
-; A function that rolls the dice, and updates state: looping over
-; all individuals, to see if they got infected, or recovered, or died.
-; As before, this uses a `for-each` loop in scheme to loop over all
-; individuals.
-(define (run-one-state-transition)
-	(for-each
-		(lambda (individual)
-			(exec-unwrap (Put (DefinedSchema "state transition")
-				individual)))
-		individual-list))
-
-; Now, actually run a few iterations, and see what happens.
-(run-one-transmission-step)
-(report-stats)
-(run-one-state-transition)
-(report-stats)
-
-(run-one-transmission-step)
-(report-stats)
-(run-one-state-transition)
-(report-stats)
-
 ; ---------------------------------------------------------------------
+; Start applying state transition rules to the network.
+;
 ; State transitions, applied as rewrite rules, run over the AtomSpace.
 ; Instead of iterating over scheme lists of relations and individuals,
 ; the code below searches the AtomSpace directly for the relevant
