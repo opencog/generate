@@ -405,63 +405,8 @@
 (format #t "Found a network of size ~D\n" (cog-arity (gar just-one)))
 
 ; ---------------------------------------------------------------------
-; Assign initial susceptibility and infirmity values to individuals
-; in the network. These will be randomly generated numbers.
-;
-; This will be done twice, illustrating two different styles of coding.
-; The first style is a traditional, scheme list (srfi-1) style of
-; coding, something that a naive coder might attempt. (This is not
-; scheme-specific; python coders might code the same way, if this
-; demo was written in python.) Despite every attempt to "keep it
-; simple", this code quickly becomes opaque and hard to understand.
-; Thus, the first thing shown is NOT the recommended style.
-;
-; The second time, it will be done in Atomese. The code is recognizably
-; identical to the first attempt, but with far fewer calls to srfi-1
-; routines to manage and transform lists.  This is because Atomese,
-; and specifically, the Atomese query language, is far more compact in
-; managing state. You don't have to juggle things around with maps
-; and lists and functions -- the query language manages all this,
-; automatically.
-;
-; ----------
-; So: version 1: traditional software proramming style.
+; A handy utility.  We need this for the rest of the demo.
 
-; Each individual is linked back to the anchor node. Each individual
-; is also represented with a ConceptNode (we have some other junk
-; also attached to the anchor, so filter that out.)
-(define individual-list
-	(filter (lambda (ind) (equal? (cog-type ind) 'ConceptNode))
-		(map gar (cog-incoming-by-type anchor 'MemberLink))))
-
-(format #t "The social network consists of ~D individuals\n"
-	(length individual-list))
-
-; Assign to each individual the state of "initially healthy".
-; Choose some random numbers for the overall population health:
-; some random susceptibility (the probability of becoming ill after
-; being exposed), the infirmity (probability of illness leading to
-; death) and a probability of recovering from illness.
-(for-each
-	(lambda (individual)
-		(cog-set-value! individual seir-state susceptible)
-		(cog-set-value! individual susceptibility
-			(cog-execute! (RandomNumber (Number 0.2) (Number 0.8))))
-		(cog-set-value! individual infirmity
-			(cog-execute! (RandomNumber (Number 0.01) (Number 0.55))))
-		(cog-set-value! individual recovery
-			(cog-execute! (RandomNumber (Number 0.6) (Number 0.95)))))
-	individual-list)
-
-; ----------
-; So: version 2: Atomese query language proramming style.
-
-; The above uses a very traditional scheme `for-each` loop to perform
-; the initialization. The Atomese query language automatically iterates
-; over the entire contents of the AtomSpace, so this loop is not
-; explicitly needed.
-
-; ------ But first, a handy utility:
 ; Execute some Atomese. Assume that it returns a SetLink.
 ; Unwrap the SetLink, discard it, return the contents.
 (define (exec-unwrap ATOMESE)
@@ -470,13 +415,23 @@
 	(cog-delete set-link)
 	contents)
 
-; ---------
-
-; Here's the Atomese version of the above. This performs a search of the
-; AtomSpace, locating all individuals. They are easy to identify: each
-; individual was previously anchored via a MemberLink. The DeleteLink
-; runs the contents inside of it, but then deletes the return value.
-; This is handy, to avoid garbage from accumulating in the AtomSpace.
+; ---------------------------------------------------------------------
+; Initialize the network.
+;
+; Assign to each individual the state of "initially healthy".
+; Choose some random numbers for the overall population health:
+; some random susceptibility (the probability of becoming ill after
+; being exposed), the infirmity (probability of illness leading to
+; death) and a probability of recovering from illness.
+;
+; The initialization is done with a graph-query and graph-rewrite
+; run over the AtomSpace. The query is simple: find all individuals
+; attached with a `MemberLink` to an anchor node. The rewrite is
+; trickier: its a `DeleteLink` whose contents are executed first.
+; The contents perform the intialization of each individual that is
+; found. The DeleteLink then just discards the wrapper ListLink.
+; We didn't actually need to discard it, but it seems nice to not
+; leave ponitless garbage lying round in the AtomSpace.
 
 (define (initialize-state)
 	(exec-unwrap
@@ -498,6 +453,16 @@
 (initialize-state)
 
 ; ---------
+; Each individual is linked back to the anchor node. Each individual
+; is also represented with a ConceptNode (we have some other junk
+; also attached to the anchor, so filter that out.)
+(define individual-list
+	(filter (lambda (ind) (equal? (cog-type ind) 'ConceptNode))
+		(map gar (cog-incoming-by-type anchor 'MemberLink))))
+
+(format #t "The social network consists of ~D individuals\n"
+	(length individual-list))
+
 ; Pick one person, and make them infected.
 (cog-set-value! (car individual-list) seir-state infected)
 
