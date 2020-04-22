@@ -136,10 +136,14 @@
 				(Or
 					(And
 						(Equal (Variable "$REL") (Concept "friend"))
-						(GreaterThan (RandomNumber (Number 0) (Number 1)) 0.3))
+						(GreaterThan
+							(RandomNumber (Number 0) (Number 1))
+							(Number 0.3)))
 					(And
 						(Equal (Variable "$REL") (Concept "stranger"))
-						(GreaterThan (RandomNumber (Number 0) (Number 1)) 0.7))))
+						(GreaterThan
+							(RandomNumber (Number 0) (Number 1))
+							(Number 0.7)))))
 			(SetValue (Variable "$A") seir-state exposed)
 		)))
 
