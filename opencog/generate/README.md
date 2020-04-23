@@ -134,19 +134,52 @@ is no weighting or ranking involved in the drawing of pieces.
 
 ## The `RandomCallback`
 
-Under construction. Will provide ranking. Will provide random weighted
-draws.
+Provides ranking. Provides random weighted draws. Need writeup here
+describing it.
+
+## Alternatives to Aggregation
+There are other ways of creating network graphs. The aggregation
+algorithm is an implementation of the idea that networks can be
+"assembled", and that the assembly process is very much like assembling
+a jogsaw puzzle: start with an edge-piece, and keep adding more and more
+pieces, until one is done. But there are other possibilities.
+
+* Changing priorities during aggregation.  So during early stages of
+  aggregation, if one consistntly picks high-arity pieces, one risks
+  combinatoric explosion and an infinite graph. To avoid this, the
+  probabilities could be adjusted to pick only lower-arity pieces,
+  as the number of unconnected connectors gets too large.
+
+* Swapping out pieces during aggregation. If there are too many
+  unconnected connectors, one could hunt for pieces that are identical,
+  in all respects, except that they have fewer connectors. These can
+  then be swaped in place of the bigger connector.
+
+* Like the above, but making the network more sparse, by activly cutting
+  links.
+
+* Growing a network. Inverse of the above: given an existing connected
+  edge, break it and insert a new piece in its place. This is
+  interesting because it is more "botanical" in it's process - its
+  actual growth.
+
+* Growth could be governed by explicit choices of substitution rules
+  (e.g. Lindenmeyer systems) and very specifically, the wealth of work
+  from Przemyslaw Prusinkiewicz at http://algorithmicbotany.org/papers/
+
+* The Prusinkiewicz work can be thought of as work with structure
+  grammars (e.g. BNF forms, classic Chomsky context-free grammars)
+  whereas the work here is with dependency grammars.  These two grammar
+  types are "in principle" interconvertible, but behave quite
+  differently. A wealk of possibilities open up by stealing the
+  Prusinkiewicz ideas and applying them to dependency grammars.
 
 ## To-do
 
 * Add weights to the polar-pairs list.
-* Add weights to the puzzle-pieces and/or connectors.
-* Add weighted random draw
 * Allow pieces to be drawn at most N times, for any given piece.
 * Force planar graphs
 * Control recursion when there are degenerate link-types.
-* Fix the one-connector-type-per-disjunct issue, see issue #4.
-
-And, of course... mandatory seeds!
+  (See issue #6)
 
 THE END. Thanks for paying attention!
