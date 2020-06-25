@@ -32,6 +32,8 @@ ENDIF (COGUTIL_FOUND)
 list(APPEND CMAKE_MODULE_PATH  ${COGUTIL_DATA_DIR}/cmake)
 
 include(${COGUTIL_DATA_DIR}/cmake/OpenCogGccOptions.cmake)
+include(${COGUTIL_DATA_DIR}/cmake/OpenCogLibOptions.cmake)
+include(${COGUTIL_DATA_DIR}/cmake/OpenCogInstallOptions.cmake)
 include(${COGUTIL_DATA_DIR}/cmake/Summary.cmake)
 
 # ===================================================================
@@ -60,20 +62,8 @@ ENDIF (CXXTEST_FOUND)
 
 # ----------------------------------------------------------
 # This is required for Guile
-FIND_LIBRARY(GMP_LIBRARY gmp)
-FIND_PATH(GMP_INCLUDE_DIR gmp.h)
 
-# Gnu Guile scheme interpreter
-# Version 2.2.2 is already specified by the atomspace.
-FIND_PACKAGE(Guile 2.2.2.)
-IF (GUILE_FOUND AND GMP_LIBRARY AND GMP_INCLUDE_DIR)
-	ADD_DEFINITIONS(-DHAVE_GUILE)
-	SET(HAVE_GUILE 1)
-	INCLUDE_DIRECTORIES(${GUILE_INCLUDE_DIR})
-ELSE (GUILE_FOUND AND GMP_LIBRARY AND GMP_INCLUDE_DIR)
-	SET(GUILE_DIR_MESSAGE "Guile was not found; needed for guile benchmarks.")
-	MESSAGE(STATUS "${GUILE_DIR_MESSAGE}")
-ENDIF (GUILE_FOUND AND GMP_LIBRARY AND GMP_INCLUDE_DIR)
+include(OpenCogFindGuile)
 
 # ===================================================================
 # Global includes
@@ -82,27 +72,6 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR} ${CMAKE_BINARY_DIR}
 	${COGUTIL_INCLUDE_DIR})
 
 INCLUDE("${ATOMSPACE_DATA_DIR}/cmake/OpenCogGuile.cmake")
-
-# -------------------------------------------------
-# Library configuration
-
-# RPATH handling (see https://cmake.org/Wiki/CMake_RPATH_handling)
-# Note: RPATH only supported under Linux!
-# The idea here is that during unit tests, we use the libraries in
-# the build directories, and NOT the system directories. But that
-# means that, during install, the paths have to be tweaked.
-SET(CMAKE_SKIP_BUILD_RPATH FALSE)
-SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
-SET(CMAKE_INSTALL_RPATH
-   "${CMAKE_INSTALL_PREFIX}/lib/opencog"
-   "${CMAKE_INSTALL_PREFIX}/lib/opencog/modules")
-SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-
-# -------------------------------------------------
-# Install configuration
-
-# Only list install files that have actually changed.
-SET(CMAKE_INSTALL_MESSAGE "LAZY")
 
 # ===================================================================
 # Add subdirectories
