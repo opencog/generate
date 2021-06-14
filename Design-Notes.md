@@ -92,3 +92,29 @@ different subjects).
 
 Do we need to have explicit "must-form-a-cycle" rules?  Can we do this
 statistically?
+
+
+
+Literature
+==========
+
+Wave-function Collapse
+----------------------
+The "wave-function collapse algorithm" described by Marian, "[Infinite
+procedurally generated city with the Wave Function Collapse
+algorithm](https://marian42.de/article/wfc/)" (2019) appears to be a
+good way of assembling pieces in a fixed n-dimensional world.
+
+It divides the universe into blocks (for sentence generation, this would
+be a 1-D universe - a linear string). It selects a location in this
+grid, picking the grid-point with the lowest entropy. Naively, this is
+the slot with the fewest choices.  More formally, its the slot with the
+smallest S = -sum_i p_i log p_i where -log p_i is the "cost". A single
+probability-weighted choice is made for that slot, and then the process
+is repeated.
+
+It is not clear how to enforce additional conditions, such as
+no-links-crossing, with this algo.
+
+Code for the blocks-world algo is here:
+https://github.com/mxgmn/WaveFunctionCollapse
