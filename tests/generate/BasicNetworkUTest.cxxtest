@@ -27,6 +27,7 @@ using namespace opencog;
 class BasicNetworkUTest: public CxxTest::TestSuite
 {
 private:
+	AtomSpacePtr asp;
 	AtomSpace* as;
 	SchemeEval* eval;
 	Aggregate* ag;
@@ -68,7 +69,8 @@ BasicNetworkUTest::~BasicNetworkUTest()
 
 void BasicNetworkUTest::setUp()
 {
-	as = new AtomSpace();
+	asp = createAtomSpace();
+	as = asp.get();
 	eval = new SchemeEval(as);
 	eval->eval("(add-to-load-path \"" PROJECT_SOURCE_DIR "\")");
 	ag = new Aggregate(as);
@@ -78,7 +80,6 @@ void BasicNetworkUTest::tearDown()
 {
 	delete ag;
 	delete eval;
-	delete as;
 }
 
 void BasicNetworkUTest::setup_dict()
@@ -91,7 +92,7 @@ void BasicNetworkUTest::setup_dict()
 
 	// The lexis to use XXX we should generate not read from file.
 	HandleSet lex;
-	as->get_handleset_by_type(lex, SECTION);
+	as->get_handleset_by_type(std::inserter(lex, lex.end()), SECTION);
 	dict->add_to_lexis(lex);
 }
 
