@@ -57,3 +57,6 @@
 (State (Member close-fraction basic-net-params) (Number 0.5))
 (State (Member max-steps basic-net-params) (Number 123123))
 (State (Member point-set-anchor basic-net-params) (Anchor "Basic-Net Points"))
+
+; Hush the output during load.
+*unspecified*
