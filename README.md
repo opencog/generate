@@ -120,19 +120,21 @@ must correspond to the words in a sentences, and the word-order must
 be preserved.
 
 ## Markov logic and Bayesian blankets
-Theorem proving (and generally, constraint-satisfaction) are known hard
-problems, and so, defacto this is what this project is aiming at. All
-the pitfalls apply, including combinatoric explosion, algorithmic
-heuristics, etc. On top of all of this, a very explicit aim is that
-each of the jigsaw pieces and connectors are weighted, so that certain
-kinds of assemblies are preferred over others. Were it not for this
-weighting, one might consider using existing constraint satisfaction
+[Theorem proving](https://en.wikipedia.org/wiki/Automated_theorem_proving)
+(and generally,
+[constraint satisfaction](https://en.wikipedia.org/wiki/Constraint_satisfaction))
+are known hard problems, and so, defacto this is what this project is
+aiming at. All the pitfalls apply, including combinatoric explosion,
+algorithmic heuristics, etc. On top of all of this, a very explicit aim
+is that each of the jigsaw pieces and connectors are weighted, so that
+certain kinds of assemblies are preferred over others. Were it not for
+this weighting, one might consider using existing constraint satisfaction
 solvers. For example, Answer-Set Programming (ASP) is a particularly
 convenient way of specifying discrete, crisp-logic constraints. More
-generally, one might even consider SAT solvers, or even Satisfiability
-Modules Theories (SMT) solvers.  Once on throws in weightings, none
-of the existing SMT solvers appear to be adequate for the job.  Thus,
-this project.
+generally, one might even consider SAT solvers, or maybe even
+[Satisfiability Modules Theories (SMT)](https://en.wikipedia.org/wiki/Satisfiability_modulo_theories)
+solvers.  Once on throws in weightings, none of the existing SMT solvers
+appear to be adequate for the job.  Thus, this project.
 
 The goal of saying "weighting" is to avoid saying "probability". In
 reality (based on long experience) the weights do resemble
@@ -142,7 +144,7 @@ theoretical arguments that the correct weighting is the Boltzmann
 distribution, and thus, the assembled jigsaw pieces form a Markov
 blanket. Insofar as the jigsaw pieces can encode logic, the resulting
 blankets can be taken to be Markov Logic blankets. Again, the formation,
-discovery and data-mining of such blankets is a know-hard problem,
+discovery and data-mining of such blankets is a known-hard problem,
 filled to the brim with combinatoric explosions, and eminently lacking
 in general tractable algorithms. C'est la vie.
 
@@ -152,14 +154,16 @@ network be directed and acyclic. Thus, again, MLN solvers and Bayesian
 network solvers (belief networks, decision networks) are insufficient to
 tackle the problem at hand.  Although the jigsaw connectors can have a
 polarity (and thus connections can be directed), there is no presumed
-constraint that the resulting graph is acyclic.
+constraint that the resulting graph is acyclic or directed (or planar,
+or has any other long-range properties that aren't encoded in the connector
+scheme.)
 
 # Strategic Development Plan
 The above provides an very abstract description of the project, and
 emphasizes just how daunting it is. The abstract goals are not
 achievable in a handful of programmer-years; it is potentially
 some dozens if not hundreds of scientist-years of research effort.
-Thus, a narrower, righter focus is needed.
+Thus, a narrower, tighter focus is needed.
 
 ## Characterizing learning systems
 This project is motivated by a need to characterize and evaluate
