@@ -3,7 +3,7 @@
 ;
 ; Example of a lexis that can be used to generate random networks.
 ; The lexis contains only one node type and one edge type, and so
-; the generated network will consist of ony these two. Six sections
+; the generated network will consist of only these two. Six sections
 ; are defined, having one through six connectors on them. These are
 ; given a weighting, so that when the network is assembled, the
 ; weights determine the probability that a node will be used.
@@ -64,7 +64,7 @@
 		(Connector (Concept "E") (ConnectorDir "*")))))
 
 ; Give each of them a weight; this will be the probaility of
-; thier being drawn (selected) when assempling the graph.
+; their being drawn (selected) when assempling the graph.
 (define weights (PredicateNode "weights"))
 
 (cog-set-value! b1 weights (FloatValue 1))

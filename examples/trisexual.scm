@@ -8,7 +8,8 @@
 ;
 ; Other parts of the code call this "polarity", and so the three examples
 ; could be called mono-polar, bipolar and tri-polar. The concept of "mating"
-; applies for either vocabulary.
+; applies for either vocabulary. "Joining" and "linking" are synonymous
+; ideas. Different blocks of code use these words interchangeably.
 ;
 (use-modules (opencog))
 ;
@@ -47,14 +48,21 @@
 (define dir-set (Concept "left-right connectors"))
 (Member (Set (ConnectorDir "+") (ConnectorDir "-")) dir-set)
 
+; Please keep in mind that a `Set` in Atomese is an unordered set. Thus,
+; the expression `(Set (ConnectorDir "+") (ConnectorDir "-"))` and also
+; `(Set (ConnectorDir "-") (ConnectorDir "+"))` are exactly the same set.
+; There is no need to specify both orderings.
+;
+; The above just says: "opposites attract".
+
 ; --------------------------------------
 ; The tri-sexual example follows below. It is not currently used in any
 ; demos; the reader is encouraged to construct one.
 ;
 ; The example here is that there are three sexes, `a`, `b` and `c`. The
-; mating rules are such that sex `a` can mate with `b`, but nothing else
+; mating rules are such that sex `a` can mate with `b`, but nothing else,
 ; so `a` cannot mate to other `a`'s nor to `c`. The sex `c` can also mate
-; to `b`, but not to itself. Finally, `b` cannot mate with itself. This
+; with `b`, but not to itself. Finally, `b` cannot mate with itself. This
 ; idea is encoded in the following rules:
 
 (define sexuality-set (Concept "abc example"))
