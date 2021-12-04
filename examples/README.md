@@ -42,4 +42,11 @@ also serve to constrain the parse itself.)
      The demo itself, employing the above dictionaries to generate a
      (small) corpus of sentences.
 
+Some general comments about the mating rules for connectors are given below:
+
+* [trisexual](trisexual.scm) --
+     Examples of mono-sexual, heterosexual and tri-sexual mating rules.
+     Plus a short explanation of why this is called "sexuality"; other
+     code calls this "polarity" (so, mono-polar, bipolar and tri-polar).
+
 That's all for now!
