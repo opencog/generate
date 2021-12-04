@@ -27,7 +27,7 @@ and it is grown by aggregation, until conclusion. Here "aggregation"
 means joining new puzzle-pieces to existing unconnected connectors.
 In depth-first aggregation, if the original seed has a second connector,
 it is completely ignored until all growths from the first have been
-fully explored.  This is why breadth-first aggregation is intiutively
+fully explored.  This is why breadth-first aggregation is intuitively
 more appealing: in breadth-first aggregation, all growing tips are
 explored in parallel.
 
@@ -43,7 +43,7 @@ have been added since then.
 Breadth-first aggregation is done in "parallel", with all open
 connectors being extended just one step, per time-step. Visually,
 this can be imagined as a wave or a boundary that is expanding at
-constant velocity: one attachement per connector per time step.
+constant velocity: one attachment per connector per time step.
 Its like a wave propagating outwards; all points on boundaries are
 explored simultaneously.
 
@@ -64,7 +64,7 @@ very long time before there is enough back-tracking to where those
 These last thoughts suggest that a better, more balanced sampling of
 the search space is to maintain a population of extensions grown from
 a seed, and explore each one distinctly, thus allowing "deep
-alternatives" to be fully sampled, even as getting boggged down at
+alternatives" to be fully sampled, even as getting bogged down at
 the edges of each growth.
 
 ### Pruning

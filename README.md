@@ -10,7 +10,7 @@ pathways, involving genes, proteins and other molecules, are graphical
 networks as well. So are social networks. What these all have in common
 is an underlying set of allowed (or preferred) attachments, moves,
 changes or state transitions, as well as hard and soft constraints on
-what attachements, moves are possible.
+what attachments, moves are possible.
 
 The goal of the code in this repo is to generate such networks, given
 a (weighted) collection of constraints and/or transition rules and/or
@@ -21,7 +21,7 @@ being of fundamentally different types. In between the start and end
 is a networked web of interconnected moves, transitions, constraints.
 In essence, this is as a constraint satisfaction solver which allows
 probabilistic weighting and guiding, and allows the general problem
-to be described as a collection of syntactical rules or moves (aka
+to be described as a collection of syntactical rules or moves (AKA
 rules of inference, axioms, judgments).
 
 Currently focused on natural language generation; however, the theory
@@ -29,7 +29,7 @@ is generic, and is intended for use on any deduction or induction
 problem. The image above was generated with [this example
 code](./examples/export-to-gml.scm); it shows a random network, with
 all links and nodes being of the same type, and the node arity (number
-of connections) being Zipfian-dsitributed (that's why most nodes have
+of connections) being Zipfian-distributed (that's why most nodes have
 only one connection, and only one has six connections).
 
 ## Sheaves, germs and syntax
@@ -311,7 +311,7 @@ design choices:
 The current code implements a breadth-first aggregation algorithm.
 It provides two search modes: a deterministic explorer that will
 exhaustively generate all finite "unambiguous" graphs, and an
-random network explorer, useful for sampling from larger grammers
+random network explorer, useful for sampling from larger grammars
 that cannot be fully explored via exhaustive enumeration.  It passes
 all unit tests. See
 [opencog/generate/README](opencog/generate/) for algo details.
@@ -323,7 +323,7 @@ to might generate an infinite number of graphs.
 
 The random explorer seems to work "well enough", but is still missing
 desirable features. These will be added as the need arises.  Foremost
-are additional tunable paramaters to control the statistical
+are additional tunable parameters to control the statistical
 distribution of the generated graphs.
 
 This has not yet been tried on anything but small, toy grammars, and
@@ -332,7 +332,7 @@ for large, complex grammars.
 
 Upcoming plans are to provide constraints to generate planar graphs.
 An extension to force linear order (so as to obtain sequences, e.g.
-word sequences) is also equired.
+word sequences) is also required.
 
 Some of the missing features are listed in the github issues list.
 
