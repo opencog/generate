@@ -242,8 +242,9 @@ used somewhat interchangeably. The differences are as follows:
   axioms of a sheaf must be satisfied.
 
 ## Germs
-With this in mind, germs are represented as OpenCog Atoms as
-follows:
+With this in mind, germs are represented as
+[OpenCog Atoms](https://wiki.opencog.org/w/Atomese)
+as follows:
 ```
    Section
        Atom "foo"
@@ -283,6 +284,9 @@ relationships: a variable that can be beta-reduced with a particular
 value.  The polarity pairs are by convention only; they are not
 mandated by the system.
 
+This representation is discussed in greater detail in the
+[Connectors and Sections](https://wiki.opencog.org/w/Connectors_and_Sections)
+wiki page.
 
 ## Implementation
 There is an inherent combinatorial explosion, which will certainly be
