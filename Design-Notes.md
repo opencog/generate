@@ -99,6 +99,13 @@ Walk through possible connections, randomly. But rather than uniform
 weighting, we need to spread "attention" according to weights. This
 would require a redesign of the attention allocation subsystem.
 
+#### Fun demo!
+Use a small collection of words from text chat to deposit attention
+into the network. Then trace throught grammatically network crawls
+throught the net. Do this on an IRC chat channel.  (This would resemble
+the behavior of bayesian/markov language generators, but different,
+because the network is defined differently.)
+
 
 Literature
 ==========
