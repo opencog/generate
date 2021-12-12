@@ -94,6 +94,11 @@ Do we need to have explicit "must-form-a-cycle" rules?  Can we do this
 statistically?
 
 
+### Random walks through possibilities
+Walk through possible connections, randomly. But rather than uniform
+weighting, we need to spread "attention" according to weights. This
+would require a redesign of the attention allocation subsystem.
+
 
 Literature
 ==========
