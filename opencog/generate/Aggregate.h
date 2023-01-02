@@ -38,7 +38,7 @@ class Aggregate
 {
 private:
 	AtomSpace* _as;
-	AtomSpace* _scratch;
+	AtomSpacePtr _scratch;
 
 	/// Decision-maker
 	GenerateCallback* _cb;

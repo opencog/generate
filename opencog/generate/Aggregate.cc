@@ -43,7 +43,6 @@ Aggregate::Aggregate(AtomSpace* as)
 
 Aggregate::~Aggregate()
 {
-	if (_scratch) delete _scratch;
 }
 
 /// Yuck. Should not allow re-use... XXX FIXME!?
@@ -56,9 +55,8 @@ void Aggregate::clear(void)
 	_frame.clear();
 	_odo.clear();
 
-	if (_scratch) delete _scratch;
-	_scratch = new AtomSpace(_as);
-	_cb->clear(_scratch);
+	_scratch = createAtomSpace(_as);
+	_cb->clear(_scratch.get());
 }
 
 /// The nuclei are the nucleation points: points that must
