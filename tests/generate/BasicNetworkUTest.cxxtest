@@ -92,7 +92,7 @@ void BasicNetworkUTest::setup_dict()
 
 	// The lexis to use XXX we should generate not read from file.
 	HandleSet lex;
-	as->get_handleset_by_type(std::inserter(lex, lex.end()), SECTION);
+	as->get_handles_by_type(lex, SECTION);
 	dict->add_to_lexis(lex);
 }
 
