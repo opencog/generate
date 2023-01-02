@@ -1,14 +1,14 @@
 
 
 ADD_LIBRARY(generate SHARED
-	Aggregate
-	BasicParameters
-	CollectStyle
-	Dictionary
-	Frame
-	LinkStyle
-	RandomCallback
-	SimpleCallback
+	Aggregate.cc
+	BasicParameters.cc
+	CollectStyle.cc
+	Dictionary.cc
+	LinkStyle.cc
+	Odometer.cc
+	RandomCallback.cc
+	SimpleCallback.cc
 )
 
 TARGET_LINK_LIBRARIES(generate
@@ -25,9 +25,9 @@ INSTALL(FILES
 	BasicParameters.h
 	CollectStyle.h
 	Dictionary.h
-	Frame.h
 	GenerateCallback.h
 	LinkStyle.h
+	Odometer.h
 	RandomCallback.h
 	RandomParameters.h
 	SimpleCallback.h

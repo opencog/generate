@@ -1,5 +1,5 @@
 /*
- * opencog/generate/Frame.h
+ * opencog/generate/Odometer.h
  *
  * Copyright (C) 2020 Linas Vepstas <linasvepstas@gmail.com>
  *
@@ -19,8 +19,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _OPENCOG_FRAME_H
-#define _OPENCOG_FRAME_H
+#ifndef _OPENCOG_ODOMETER_H
+#define _OPENCOG_ODOMETER_H
 
 #include <opencog/atomspace/AtomSpace.h>
 
@@ -31,7 +31,7 @@ namespace opencog
  */
 
 /// Current traversal state
-struct Frame
+struct OdoFrame
 {
 	/// Points that are unconnected
 	HandleSet _open_points;
@@ -82,11 +82,11 @@ struct Odometer
 	size_t _frame_depth;
 
 	void clear(void);
-	void print_odometer(const Frame&) const;
-	void print_wheel(const Frame&, size_t) const;
+	void print_odometer(const OdoFrame&) const;
+	void print_wheel(const OdoFrame&, size_t) const;
 };
 
 /** @}*/
 }  // namespace opencog
 
-#endif // _OPENCOG_FRAME_H
+#endif // _OPENCOG_ODOMETER_H

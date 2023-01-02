@@ -1,5 +1,5 @@
 /*
- * opencog/generate/Frame.cc
+ * opencog/generate/Odometer.cc
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License v3 as
@@ -23,11 +23,11 @@
 #include <opencog/atoms/base/Link.h>
 #include <opencog/atomspace/AtomSpace.h>
 
-#include "Frame.h"
+#include "Odometer.h"
 
 using namespace opencog;
 
-void Frame::clear(void)
+void OdoFrame::clear(void)
 {
 	_open_points.clear();
 	_open_sections.clear();
@@ -51,7 +51,7 @@ void Odometer::clear(void)
 // Current printing format makes assumptions about connectors
 // which will be invalid, in general. XXX FIMXE, someday.
 
-void Frame::print_section(const Handle& section)
+void OdoFrame::print_section(const Handle& section)
 {
 	logger().fine("    %s:",
 		section->getOutgoingAtom(0)->get_name().c_str());
@@ -70,9 +70,9 @@ void Frame::print_section(const Handle& section)
 	}
 }
 
-void Frame::print(void) const
+void OdoFrame::print(void) const
 {
-	logger().fine("Frame:");
+	logger().fine("OdoFrame:");
 	std::string pts;
 	for (const Handle& pt : _open_points)
 		pts += pt->get_name() + ", ";
@@ -89,7 +89,7 @@ void Frame::print(void) const
 
 // =================================================================
 
-void Odometer::print_wheel(const Frame& frm, size_t i) const
+void Odometer::print_wheel(const OdoFrame& frm, size_t i) const
 {
 	bool sect_open = true;
 	const Handle& fm_sect = _sections[i];
@@ -125,7 +125,7 @@ void Odometer::print_wheel(const Frame& frm, size_t i) const
 	}
 }
 
-void Odometer::print_odometer(const Frame& frm) const
+void Odometer::print_odometer(const OdoFrame& frm) const
 {
 	logger().fine("Odometer State: length %lu", _size);
 	for (size_t i=0; i<_size; i++)
