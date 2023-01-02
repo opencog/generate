@@ -22,7 +22,7 @@
 #ifndef _OPENCOG_RANDOM_PARAMETERS_H
 #define _OPENCOG_RANDOM_PARAMETERS_H
 
-#include <opencog/generate/Frame.h>
+#include <opencog/generate/Odometer.h>
 
 namespace opencog
 {
@@ -46,12 +46,12 @@ public:
 	/// the lexis. Consistently returning true will maximally close off
 	/// any open connectors without enlarging the network. Rturning false
 	/// will always increase the size of the network.
-	virtual bool connect_existing(const Frame&) = 0;
+	virtual bool connect_existing(const OdoFrame&) = 0;
 
 	/// Return true to continue stepping the odometer. Called before
 	/// taking an odometer step.  Returning false will abort the
 	/// current odometer.
-	virtual bool step(const Frame&) = 0;
+	virtual bool step(const OdoFrame&) = 0;
 };
 
 

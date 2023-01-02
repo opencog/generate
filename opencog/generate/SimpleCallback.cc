@@ -97,7 +97,7 @@ HandleSet SimpleCallback::next_root(void)
 
 /// Return a section containing `to_con`.
 /// Pick a new section from the lexis.
-Handle SimpleCallback::select_from_lexis(const Frame& frame,
+Handle SimpleCallback::select_from_lexis(const OdoFrame& frame,
                                const Handle& fm_sect, size_t offset,
                                const Handle& to_con)
 {
@@ -158,7 +158,7 @@ Handle SimpleCallback::check_self(const HandleSeq& to_sects,
 
 /// Return a section containing `to_con`.
 /// Try to attach to an existing open section.
-Handle SimpleCallback::select_from_open(const Frame& frame,
+Handle SimpleCallback::select_from_open(const OdoFrame& frame,
                                const Handle& fm_sect, size_t offset,
                                const Handle& to_con)
 {
@@ -204,7 +204,7 @@ Handle SimpleCallback::select_from_open(const Frame& frame,
 /// Return a section containing `to_con`.
 /// First try to attach to an existing open section.
 /// If that fails, then pick a new section from the lexis.
-Handle SimpleCallback::select(const Frame& frame,
+Handle SimpleCallback::select(const OdoFrame& frame,
                               const Handle& fm_sect, size_t offset,
                               const Handle& to_con)
 {
@@ -240,14 +240,14 @@ size_t SimpleCallback::num_links(const Handle& fm_sect,
 	return num_undirected_links(fm_sect, to_sect, link_type);
 }
 
-void SimpleCallback::push_frame(const Frame& frm)
+void SimpleCallback::push_frame(const OdoFrame& frm)
 {
 	_opensel_stack.push(_opensel);
 	_opensel._opensect.clear();
 	_opensel._openit.clear();
 }
 
-void SimpleCallback::pop_frame(const Frame& frm)
+void SimpleCallback::pop_frame(const OdoFrame& frm)
 {
 	_opensel = _opensel_stack.top(); _opensel_stack.pop();
 }
@@ -263,7 +263,7 @@ void SimpleCallback::pop_odometer(const Odometer& odo)
 	_lexlit = _lexlit_stack.top(); _lexlit_stack.pop();
 }
 
-bool SimpleCallback::step(const Frame& frm)
+bool SimpleCallback::step(const OdoFrame& frm)
 {
 	_steps_taken ++;
 	if (max_steps < _steps_taken) return false;
@@ -273,7 +273,7 @@ bool SimpleCallback::step(const Frame& frm)
 	return true;
 }
 
-void SimpleCallback::solution(const Frame& frm)
+void SimpleCallback::solution(const OdoFrame& frm)
 {
 	record_solution(frm);
 }

@@ -34,7 +34,7 @@ CollectStyle::~CollectStyle() {}
 /// In this "style" of recording a result, we just tack it onto
 /// a C++ container holding the solutions. Other "styles" are
 /// possible; we could report them elsewehre, too...
-void CollectStyle::record_solution(const Frame& frm)
+void CollectStyle::record_solution(const OdoFrame& frm)
 {
 	size_t nsolns = _solutions.size();
 	_solutions.insert(frm._linkage);

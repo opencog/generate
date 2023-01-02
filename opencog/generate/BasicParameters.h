@@ -42,8 +42,8 @@ public:
 	BasicParameters();
 	virtual ~BasicParameters();
 
-	virtual bool connect_existing(const Frame&);
-	virtual bool step(const Frame&);
+	virtual bool connect_existing(const OdoFrame&);
+	virtual bool step(const OdoFrame&);
 
 	/// Fraction of the time that an attempt should be made to join
 	/// together two existing open connectors, if that is possible.

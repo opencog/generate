@@ -23,7 +23,7 @@
 #define _OPENCOG_GENERATE_CALLBACK_H
 
 #include <opencog/atomspace/AtomSpace.h>
-#include <opencog/generate/Frame.h>
+#include <opencog/generate/Odometer.h>
 
 namespace opencog
 {
@@ -91,7 +91,7 @@ public:
 	/// This should be implemented so that it behaves like a 'future'
 	/// or a 'promise', so that, when called, it returns the next
 	/// section from a (virtual) list of eligible sections.
-	virtual Handle select(const Frame&,
+	virtual Handle select(const OdoFrame&,
 	                      const Handle& fm_sect, size_t offset,
 	                      const Handle& to_con) = 0;
 
@@ -108,8 +108,8 @@ public:
 	virtual size_t num_links(const Handle& fm_sect, const Handle& to_sect,
 	                         const Handle& link_type) = 0;
 
-	virtual void push_frame(const Frame&) {}
-	virtual void pop_frame(const Frame&) {}
+	virtual void push_frame(const OdoFrame&) {}
+	virtual void pop_frame(const OdoFrame&) {}
 
 	virtual void push_odometer(const Odometer&) {}
 	virtual void pop_odometer(const Odometer&) {}
@@ -120,11 +120,11 @@ public:
 	/// Traversal will resume at an earlier level.
 	///
 	/// The default below allows infinite recursion.
-	virtual bool step(const Frame&) { return true; }
+	virtual bool step(const OdoFrame&) { return true; }
 
 	/// Called when a solution is found. A solution is a linkage,
 	/// with no open connectors.
-	virtual void solution(const Frame&) = 0;
+	virtual void solution(const OdoFrame&) = 0;
 
 	/// Return a SetLink with all of the solutions that were
 	/// reported via the above callback. Perform any other AtomSpace

@@ -327,8 +327,8 @@ HandlePair Aggregate::connect_section(const Handle& fm_sect,
 	// logger().fine("Connect %s\nto %s",
 	//	fm_sect->to_string().c_str(), to_sect->to_string().c_str());
 	logger().fine("Connect fm-offset=%lu:", offset);
-	Frame::print_section(fm_sect);
-	Frame::print_section(to_sect);
+	OdoFrame::print_section(fm_sect);
+	OdoFrame::print_section(to_sect);
 
 	const Handle& fm_point = fm_sect->getOutgoingAtom(0);
 	const Handle& to_point = to_sect->getOutgoingAtom(0);

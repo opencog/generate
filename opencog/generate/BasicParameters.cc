@@ -41,12 +41,12 @@ static inline double uniform_double(void)
    return dist(rangen);
 }
 
-bool BasicParameters::connect_existing(const Frame& frm)
+bool BasicParameters::connect_existing(const OdoFrame& frm)
 {
 	return uniform_double() < close_fraction;
 }
 
-bool BasicParameters::step(const Frame& frm)
+bool BasicParameters::step(const OdoFrame& frm)
 {
 	return true;
 }
