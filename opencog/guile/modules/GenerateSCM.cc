@@ -166,7 +166,8 @@ Handle GenerateSCM::do_random_aggregate(Handle poles,
                                         Handle params,
                                         Handle root)
 {
-	AtomSpace* as = SchemeSmob::ss_get_env_as("cog-random-aggregate");
+	AtomSpacePtr asp = SchemeSmob::ss_get_env_as("cog-random-aggregate");
+	AtomSpace* as = asp.get();
 
 	Dictionary dict(decode_lexis(as, poles, lexis));
 
@@ -192,7 +193,8 @@ Handle GenerateSCM::do_simple_aggregate(Handle poles,
                                         Handle params,
                                         Handle root)
 {
-	AtomSpace* as = SchemeSmob::ss_get_env_as("cog-simple-aggregate");
+	AtomSpacePtr asp = SchemeSmob::ss_get_env_as("cog-simple-aggregate");
+	AtomSpace* as = asp.get();
 
 	Dictionary dict(decode_lexis(as, poles, lexis));
 
