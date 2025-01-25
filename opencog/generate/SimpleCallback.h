@@ -22,6 +22,8 @@
 #ifndef _OPENCOG_SIMPLE_CALLBACK_H
 #define _OPENCOG_SIMPLE_CALLBACK_H
 
+#include <opencog/util/Counter.h>
+
 #include <opencog/generate/CollectStyle.h>
 #include <opencog/generate/Dictionary.h>
 #include <opencog/generate/GenerateCallback.h>
@@ -32,6 +34,9 @@ namespace opencog
 /** \addtogroup grp_generate
  *  @{
  */
+
+//! a map from handle to unsigned
+typedef Counter<Handle, unsigned> HandleUCounter;
 
 /// Callback to provide sections (aka "puzzle pieces") to extend the
 /// current assembly. The current implementation here is deterministic,
